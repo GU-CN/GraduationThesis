@@ -1,109 +1,220 @@
 % !TEX root = ./main.tex
 
+% ============================================================
+% 五人团队信息：在这里填写姓名、学号和导师
+% 英文姓名请使用学籍系统中的正式拼写
+% ============================================================
+
+% 第一位成员
+\newcommand{\TeamMemberOneZh}{杨皓然}
+\newcommand{\TeamMemberOneEn}{Yang Haoran}
+\newcommand{\TeamMemberOneID}{520XXXXXXXX}
+
+% 第二位成员
+\newcommand{\TeamMemberTwoZh}{吴律}
+\newcommand{\TeamMemberTwoEn}{Wu Lu}
+\newcommand{\TeamMemberTwoID}{520XXXXXXXX}
+
+% 第三位成员
+\newcommand{\TeamMemberThreeZh}{吴毅昕}
+\newcommand{\TeamMemberThreeEn}{Wu Yixin}
+\newcommand{\TeamMemberThreeID}{520XXXXXXXX}
+
+% 第四位成员
+\newcommand{\TeamMemberFourZh}{程天纵}
+\newcommand{\TeamMemberFourEn}{Cheng Tianzong}
+\newcommand{\TeamMemberFourID}{520XXXXXXXX}
+
+% 第五位成员
+\newcommand{\TeamMemberFiveZh}{顾益铭}
+\newcommand{\TeamMemberFiveEn}{Gu Yiming}
+\newcommand{\TeamMemberFiveID}{520XXXXXXXX}
+
+% 其他封面信息
+\newcommand{\ThesisSupervisorZh}{李四}
+\newcommand{\ThesisSupervisorEn}{Li Si}
+
+\newcommand{\ThesisDepartmentZh}{浦江国际学院}
+\newcommand{\ThesisDepartmentEn}{Global College}
+
+\newcommand{\ThesisMajorZh}{工业工程}
+\newcommand{\ThesisMajorEn}{Industrial Engineering}
+
+\newcommand{\ThesisDegreeZh}{学士}
+
+% 用于论文元数据的姓名和学号列表
+\newcommand{\TeamNamesZhInline}{%
+  \TeamMemberOneZh、\TeamMemberTwoZh、\TeamMemberThreeZh、%
+  \TeamMemberFourZh、\TeamMemberFiveZh%
+}
+
+\newcommand{\TeamNamesEnInline}{%
+  \TeamMemberOneEn, \TeamMemberTwoEn, \TeamMemberThreeEn, %
+  \TeamMemberFourEn, and \TeamMemberFiveEn%
+}
+
+\newcommand{\TeamIDsInline}{%
+  \TeamMemberOneID, \TeamMemberTwoID, \TeamMemberThreeID, %
+  \TeamMemberFourID, \TeamMemberFiveID%
+}
+
+% 中文封面的五人姓名和学号表
+\newcommand{\TeamMembersZh}{%
+  \begingroup
+  \zihao{4}%
+  \renewcommand{\arraystretch}{1.08}%
+  \begin{tabular}[t]{@{}l@{\hspace{3.5em}}l@{}}
+    \heiti 姓名 & \heiti 学号 \\
+    \TeamMemberOneZh   & \TeamMemberOneID   \\
+    \TeamMemberTwoZh   & \TeamMemberTwoID   \\
+    \TeamMemberThreeZh & \TeamMemberThreeID \\
+    \TeamMemberFourZh  & \TeamMemberFourID  \\
+    \TeamMemberFiveZh  & \TeamMemberFiveID
+  \end{tabular}%
+  \endgroup
+}
+
+% 英文封面的五人姓名和学号表
+\newcommand{\TeamMembersEn}{%
+  \begingroup
+  \zihao{4}%
+  \renewcommand{\arraystretch}{1.08}%
+  \begin{tabular}[t]{@{}l@{\hspace{3.5em}}l@{}}
+    \textbf{Name} & \textbf{Student ID} \\
+    \TeamMemberOneEn   & \TeamMemberOneID   \\
+    \TeamMemberTwoEn   & \TeamMemberTwoID   \\
+    \TeamMemberThreeEn & \TeamMemberThreeID \\
+    \TeamMemberFourEn  & \TeamMemberFourID  \\
+    \TeamMemberFiveEn  & \TeamMemberFiveID
+  \end{tabular}%
+  \endgroup
+}
+
+% 中文封面的导师、学院、专业和学位
+\newcommand{\CoverDetailsZh}{%
+  \begingroup
+  \zihao{4}%
+  \renewcommand{\arraystretch}{1.08}%
+  \begin{tabular}[t]{@{}r@{\hspace{0.5em}：\hspace{0.8em}}l@{}}
+    \heiti 导\qquad 师 & \ThesisSupervisorZh \\
+    \heiti 学\qquad 院 & \ThesisDepartmentZh \\
+    \heiti 专业名称 & \ThesisMajorZh \\
+    \heiti 申请学位层次 & \ThesisDegreeZh
+  \end{tabular}%
+  \endgroup
+}
+
+% 英文封面的导师
+\newcommand{\CoverSupervisorEn}{%
+  \begingroup
+  \zihao{4}%
+  \begin{tabular}[t]{@{}r@{\hspace{0.5em}:\hspace{0.8em}}l@{}}
+    \textbf{Supervisor} & \ThesisSupervisorEn
+  \end{tabular}%
+  \endgroup
+}
+
 \sjtusetup{
-  %
-  %******************************
-  % 注意：
-  %   1. 配置里面不要出现空行
-  %   2. 不需要的配置信息可以删除
-  %******************************
-  %
-  % 信息录入
-  %
   info = {%
-    %
-    % 标题
-    %
-    zh / title           = {面向3C工业生产线的双臂机器人视觉-语言-动作模型},
-    en / title           = {Vision-Language-Action Model for Bimanual Robotic Arm in 3C Industrial Production Line
-},
-    %
-    % 标题页标题
-    %   可使用“\\”命令手动控制换行
-    %
-    % zh / display-title   = {上海交通大学学位论文\\ \LaTeX{} 模板示例文档},
-    % en / display-title   = {A Sample Document \\ for \LaTeX-based SJTU Thesis Template},
-    %
+    % 论文题目
+    zh / title = {
+      面向 3C 工业生产线的双臂机器人视觉-语言-动作模型
+    },
+    en / title = {
+      A Vision-Language-Action Model for Dual-Arm Robots
+      in 3C Industrial Production Lines
+    },
+
     % 关键词
-    %
-    zh / keywords        = {学位论文，论文格式，规范化，模板},
-    en / keywords        = { dissertation, dissertation format, standardization, template},
-    %
-    % 姓名
-    %
-    zh / author          = {杨皓然\quad 吴律\quad 吴毅昕\\程天纵\quad 顾益铭},
-    en / author          = {\textbf{Yang Haoran, Wu Lv, Wu Yixin,}\\\textbf{Cheng Tianzong, Gu Yiming}},
-    %
-    % 指导教师
-    %
-    zh / supervisor      = {李四},
-    en / supervisor      = {\textbf{Li Si}},
-    %
-    % 副指导教师
-    %
-    % assoc-supervisor  = {某某教授},
-    % assoc-supervisor* = {Prof. Uom Uom},
-    %
-    % 学号（与作者顺序一一对应）
-    %
-    id              = {520XXXXXXXX\quad 520XXXXXXXX\quad 520XXXXXXXX\\520XXXXXXXX\quad 520XXXXXXXX},
-    %
+    zh / keywords = {
+      双臂机器人，视觉-语言-动作模型，工业自动化
+    },
+    en / keywords = {
+      dual-arm robot, vision-language-action model,
+      industrial automation
+    },
+
+    % 作者
+    zh / author = {\TeamNamesZhInline},
+    en / author = {\TeamNamesEnInline},
+
+    % 导师
+    zh / supervisor = {\ThesisSupervisorZh},
+    en / supervisor = {\ThesisSupervisorEn},
+
+    % 五个学号
+    id = {\TeamIDsInline},
+
     % 学位
-    %   本科生不需要填写
-    %
-    zh / degree          = {学士},
-    en / degree          = {Master of Engineering},
-    %
+    zh / degree = {\ThesisDegreeZh},
+    en / degree = {Bachelor of Engineering},
+
     % 专业
-    %
-    zh / major           = {工业工程},
-    en / major           = {A Very Important Major},
-    %
-    % 所属院系
-    %
-    zh / department      = {机械与动力工程学院},
-    en / department      = {School of XXXXXXX},
-    %
-    % 答辩日期
-    %   使用 ISO 格式 (yyyy-mm-dd)；默认为当前时间
-    %
-     date                 = {2024-06},
-    %
-    % 标题页显示日期
-    %   覆盖对应标题页的日期显示，原样输出
-    %
-     zh / display-date    = {20XX 年 XX 月},
-    %
-    % 资助基金
-    %
-    % zh / fund  = {
-    %                {国家 973 项目 (No. 2025CB000000)},
-    %                {国家自然科学基金 (No. 81120250000)},
-    %              },
-    % en / fund  = {
-    %                {National Basic Research Program of China (Grant No. 2025CB000000)},
-    %                {National Natural Science Foundation of China (Grant No. 81120250000)},
-    %              },
+    zh / major = {\ThesisMajorZh},
+    en / major = {\ThesisMajorEn},
+
+    % 学院
+    zh / department = {\ThesisDepartmentZh},
+    en / department = {\ThesisDepartmentEn},
+
+    % 日期
+    date = {2026-08},
+    zh / display-date = {2026 年 8 月},
   },
-  %
-  % 风格设置
-  %
+
   style = {%
-    %
-    % 论文标题页 logo 颜色 (red/blue/black)
-    %
     % title-logo-color = black,
   },
-  %
-  % 名称设置
-  %
+
   name = {
-    % bib             = {References},
-    % ack             = {谢\hspace{\ccwd}辞},
-    % achv            = {攻读学位期间完成的论文},
-    digest={},
+    digest = {},
   },
 }
+
+% ============================================================
+% 将原来的单人封面信息区改为五人表格
+% 只修改 setup.tex，不需要修改 cls 或 def 文件
+% ============================================================
+
+\ExplSyntaxOn
+
+% 中文封面
+\EditInstance { sjtu } { title / zh / info }
+  {
+    format = \zihao { 4 } \fixedlineskip { 31.2 bp },
+
+    content =
+      {
+        \TeamMembersZh
+
+        \par
+        \vspace { 7.8 bp }
+
+        \CoverDetailsZh
+      },
+
+    bottom-skip = 31.2 bp
+  }
+
+% 英文封面
+\EditInstance { sjtu } { title / en / info }
+  {
+    format = \zihao { 3 } \fixedlineskip { 31.2 bp },
+
+    content =
+      {
+        \TeamMembersEn
+
+        \par
+        \vspace { 7.8 bp }
+
+        \CoverSupervisorEn
+      },
+
+    bottom-skip = \c_zero_dim plus 3 fill
+  }
+
+\ExplSyntaxOff
 
 % 使用 BibLaTeX 处理参考文献
 %   biblatex-gb7714-2015 常用选项
