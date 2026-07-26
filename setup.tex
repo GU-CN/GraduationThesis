@@ -31,8 +31,12 @@
 \newcommand{\TeamMemberFiveID}{520XXXXXXXX}
 
 % 其他封面信息
-\newcommand{\ThesisSupervisorZh}{李四}
-\newcommand{\ThesisSupervisorEn}{Li Si}
+% Mentor / 导师
+\newcommand{\ThesisMentorZh}{班雨桐}
+\newcommand{\ThesisMentorEn}{Prof.\ Yutong Ban}
+% Instructor / 指导教师
+\newcommand{\ThesisInstructorZh}{黄佩森}
+\newcommand{\ThesisInstructorEn}{Prof.\ Peisen Huang}
 
 \newcommand{\ThesisDepartmentZh}{浦江国际学院}
 \newcommand{\ThesisDepartmentEn}{Global College}
@@ -76,7 +80,8 @@
                         & \TeamMemberThreeZh & \TeamMemberThreeID \\
                         & \TeamMemberFourZh  & \TeamMemberFourID  \\
                         & \TeamMemberFiveZh  & \TeamMemberFiveID  \\
-    \CoverLabelZh{导师} & \ThesisSupervisorZh & \\
+    \CoverLabelZh{导师} & \ThesisMentorZh & \\
+    \CoverLabelZh{指导教师} & \ThesisInstructorZh & \\
     \CoverLabelZh{学院} & \ThesisDepartmentZh & \\
     \CoverLabelZh{专业名称} & \ThesisMajorZh & \\
     \CoverLabelZh{申请学位层次} & \ThesisDegreeZh &
@@ -84,8 +89,8 @@
   \endgroup
 }
 
-% 英文封面标签：固定宽度左对齐，Name / Supervisor / College 左缘对齐
-\newcommand{\CoverLabelEn}[1]{\hbox to 9em{\textbf{#1}:\hss}}
+% 英文封面标签：固定宽度左对齐，Name / Mentor / Instructor / College 左缘对齐
+\newcommand{\CoverLabelEn}[1]{\hbox to 10em{\textbf{#1}:\hss}}
 
 % 英文封面：单层表格；续行不输出冒号；内容同一左缘
 \newcommand{\CoverInfoEn}{%
@@ -99,7 +104,8 @@
                         & \TeamMemberThreeEn & \TeamMemberThreeID \\
                         & \TeamMemberFourEn  & \TeamMemberFourID  \\
                         & \TeamMemberFiveEn  & \TeamMemberFiveID  \\
-    \CoverLabelEn{Supervisor} & \ThesisSupervisorEn & \\
+    \CoverLabelEn{Mentor} & \ThesisMentorEn & \\
+    \CoverLabelEn{Instructor} & \ThesisInstructorEn & \\
     \CoverLabelEn{College} & \ThesisDepartmentEn &
   \end{tabular}%
   \endgroup
@@ -133,9 +139,11 @@
     % 作者（元数据用；封面显示由 CoverInfo 宏负责）
     zh / author = {\TeamNamesZhInline},
     en / author = {\TeamNamesEnInline},
-    % 导师
-    zh / supervisor = {\ThesisSupervisorZh},
-    en / supervisor = {\ThesisSupervisorEn},
+    % 导师（Mentor）与指导教师（Instructor）
+    zh / supervisor = {\ThesisMentorZh},
+    en / supervisor = {\ThesisMentorEn},
+    zh / assoc-supervisor = {\ThesisInstructorZh},
+    en / assoc-supervisor = {\ThesisInstructorEn},
     % 五个学号
     id = {\TeamIDsInline},
     % 学位
