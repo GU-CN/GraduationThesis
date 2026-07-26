@@ -58,58 +58,50 @@
   \TeamMemberFourID, \TeamMemberFiveID%
 }
 
-% 中文封面的五人姓名和学号表
-\newcommand{\TeamMembersZh}{%
+% 中文封面标签：固定 6em 撑满，左缘与冒号同时对齐（同模板封面）
+\newcommand{\CoverLabelZh}[1]{%
+  \hbox to 6em{%
+    \csname __sjtu_cjk_spread_box:nn\endcsname{6em}{\heiti #1}%
+  }：%
+}
+
+% 中文封面：单层表格；续行不输出冒号；姓名/导师/学院内容同一左缘
+\newcommand{\CoverInfoZh}{%
   \begingroup
+  \centering
   \zihao{4}%
-  \renewcommand{\arraystretch}{1.08}%
-  \begin{tabular}[t]{@{}l@{\hspace{3.5em}}l@{}}
-    \heiti 姓名 & \heiti 学号 \\
-    \TeamMemberOneZh   & \TeamMemberOneID   \\
-    \TeamMemberTwoZh   & \TeamMemberTwoID   \\
-    \TeamMemberThreeZh & \TeamMemberThreeID \\
-    \TeamMemberFourZh  & \TeamMemberFourID  \\
-    \TeamMemberFiveZh  & \TeamMemberFiveID
+  \renewcommand{\arraystretch}{1.2}%
+  \begin{tabular}{@{}l@{\hspace{0.8em}}l@{\hspace{3em}}l@{}}
+    \CoverLabelZh{姓名} & \TeamMemberOneZh   & \TeamMemberOneID   \\
+                        & \TeamMemberTwoZh   & \TeamMemberTwoID   \\
+                        & \TeamMemberThreeZh & \TeamMemberThreeID \\
+                        & \TeamMemberFourZh  & \TeamMemberFourID  \\
+                        & \TeamMemberFiveZh  & \TeamMemberFiveID  \\
+    \CoverLabelZh{导师} & \ThesisSupervisorZh & \\
+    \CoverLabelZh{学院} & \ThesisDepartmentZh & \\
+    \CoverLabelZh{专业名称} & \ThesisMajorZh & \\
+    \CoverLabelZh{申请学位层次} & \ThesisDegreeZh &
   \end{tabular}%
   \endgroup
 }
 
-% 英文封面的五人姓名和学号表
-\newcommand{\TeamMembersEn}{%
-  \begingroup
-  \zihao{4}%
-  \renewcommand{\arraystretch}{1.08}%
-  \begin{tabular}[t]{@{}l@{\hspace{3.5em}}l@{}}
-    \textbf{Name} & \textbf{Student ID} \\
-    \TeamMemberOneEn   & \TeamMemberOneID   \\
-    \TeamMemberTwoEn   & \TeamMemberTwoID   \\
-    \TeamMemberThreeEn & \TeamMemberThreeID \\
-    \TeamMemberFourEn  & \TeamMemberFourID  \\
-    \TeamMemberFiveEn  & \TeamMemberFiveID
-  \end{tabular}%
-  \endgroup
-}
+% 英文封面标签：固定宽度左对齐，Name / Supervisor / College 左缘对齐
+\newcommand{\CoverLabelEn}[1]{\hbox to 9em{\textbf{#1}:\hss}}
 
-% 中文封面的导师、学院、专业和学位
-\newcommand{\CoverDetailsZh}{%
+% 英文封面：单层表格；续行不输出冒号；内容同一左缘
+\newcommand{\CoverInfoEn}{%
   \begingroup
+  \centering
   \zihao{4}%
-  \renewcommand{\arraystretch}{1.08}%
-  \begin{tabular}[t]{@{}r@{\hspace{0.5em}：\hspace{0.8em}}l@{}}
-    \heiti 导\qquad 师 & \ThesisSupervisorZh \\
-    \heiti 学\qquad 院 & \ThesisDepartmentZh \\
-    \heiti 专业名称 & \ThesisMajorZh \\
-    \heiti 申请学位层次 & \ThesisDegreeZh
-  \end{tabular}%
-  \endgroup
-}
-
-% 英文封面的导师
-\newcommand{\CoverSupervisorEn}{%
-  \begingroup
-  \zihao{4}%
-  \begin{tabular}[t]{@{}r@{\hspace{0.5em}:\hspace{0.8em}}l@{}}
-    \textbf{Supervisor} & \ThesisSupervisorEn
+  \renewcommand{\arraystretch}{1.2}%
+  \begin{tabular}{@{}l@{\hspace{0.8em}}l@{\hspace{2.5em}}l@{}}
+    \CoverLabelEn{Name} & \TeamMemberOneEn   & \TeamMemberOneID   \\
+                        & \TeamMemberTwoEn   & \TeamMemberTwoID   \\
+                        & \TeamMemberThreeEn & \TeamMemberThreeID \\
+                        & \TeamMemberFourEn  & \TeamMemberFourID  \\
+                        & \TeamMemberFiveEn  & \TeamMemberFiveID  \\
+    \CoverLabelEn{Supervisor} & \ThesisSupervisorEn & \\
+    \CoverLabelEn{College} & \ThesisDepartmentEn &
   \end{tabular}%
   \endgroup
 }
@@ -139,7 +131,7 @@
       dual-arm robot, vision-language-action model,
       industrial automation
     },
-    % 作者
+    % 作者（元数据用；封面显示由 CoverInfo 宏负责）
     zh / author = {\TeamNamesZhInline},
     en / author = {\TeamNamesEnInline},
     % 导师
@@ -169,7 +161,7 @@
 }
 
 % ============================================================
-% 将原来的单人封面信息区改为五人表格
+% 中英文封面均用统一表格，保证姓名/导师/学院左缘与冒号对齐
 % 只修改 setup.tex，不需要修改 cls 或 def 文件
 % ============================================================
 
@@ -179,35 +171,17 @@
 \EditInstance { sjtu } { title / zh / info }
   {
     format = \zihao { 4 } \fixedlineskip { 31.2 bp },
-
-    content =
-      {
-        \TeamMembersZh
-
-        \par
-        \vspace { 7.8 bp }
-
-        \CoverDetailsZh
-      },
-
+    content = { \CoverInfoZh },
+    align = center,
     bottom-skip = 31.2 bp
   }
 
 % 英文封面
 \EditInstance { sjtu } { title / en / info }
   {
-    format = \zihao { 3 } \fixedlineskip { 31.2 bp },
-
-    content =
-      {
-        \TeamMembersEn
-
-        \par
-        \vspace { 7.8 bp }
-
-        \CoverSupervisorEn
-      },
-
+    format = \zihao { 4 } \fixedlineskip { 31.2 bp },
+    content = { \CoverInfoEn },
+    align = normal,
     bottom-skip = \c_zero_dim plus 3 fill
   }
 
