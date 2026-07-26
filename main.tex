@@ -1,4 +1,11 @@
 % !TeX encoding = UTF-8
+% !TeX program = xelatex
+
+% Overleaf 若直接选 XeLaTeX（不走 latexmk），不会读取 .latexmkrc，
+% 这里显式把项目自带的 sjtuthesis 加入搜索路径，避免用到平台自带旧版模板。
+\makeatletter
+\def\input@path{{./texmf/tex/latex/sjtutex/}{./texmf/tex/latex/sjtutex/fd/}}
+\makeatother
 
 % 载入 SJTUThesis 模版
 \documentclass[type=bachelor,lang=en, oneside]{sjtuthesis}

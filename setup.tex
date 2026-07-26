@@ -58,11 +58,10 @@
   \TeamMemberFourID, \TeamMemberFiveID%
 }
 
-% 中文封面标签：固定 6em 撑满，左缘与冒号同时对齐（同模板封面）
+% 中文封面标签：固定 6em，冒号贴在标签盒右侧，保证各行冒号对齐
+% 不用模板内部私有宏，避免 Overleaf / 不同 TeX 版本下失效
 \newcommand{\CoverLabelZh}[1]{%
-  \hbox to 6em{%
-    \csname __sjtu_cjk_spread_box:nn\endcsname{6em}{\heiti #1}%
-  }：%
+  \makebox[6em][l]{\heiti #1}：%
 }
 
 % 中文封面：单层表格；续行不输出冒号；姓名/导师/学院内容同一左缘
