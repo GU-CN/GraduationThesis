@@ -67,7 +67,7 @@
 \contentsline {subsection}{\numberline {4.3.7}Data processing pipeline}{36}{subsection.4.3.7}%
 \contentsline {subsection}{\numberline {4.3.8}Policy-training system}{36}{subsection.4.3.8}%
 \contentsline {subsection}{\numberline {4.3.9}Robot control and deployment system}{36}{subsection.4.3.9}%
-\contentsline {subsection}{\numberline {4.3.10}Hardware--software interfaces}{36}{subsection.4.3.10}%
+\contentsline {subsection}{\numberline {4.3.10}Hardware--software interfaces}{37}{subsection.4.3.10}%
 \contentsline {subsection}{\numberline {4.3.11}Task definitions and bilateral role allocation}{38}{subsection.4.3.11}%
 \contentsline {subsection}{\numberline {4.3.12}System operation}{38}{subsection.4.3.12}%
 \contentsline {subsubsection}{\numberline {4.3.12.1}Pre-run checks}{38}{subsubsection.4.3.12.1}%
