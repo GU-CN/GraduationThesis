@@ -653,8 +653,8 @@
       \strng{nameanamehash}{3cd941f1ac9898f068bf5440ed0a38af}
       \strng{nameafullhash}{3cd941f1ac9898f068bf5440ed0a38af}
       \field{extraname}{1}
-      \field{sortinit}{5}
-      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
+      \field{sortinit}{9}
+      \field{sortinithash}{0a5ebc79d83c96b6579069544c73c7d4}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{booktitle}{Conference on Robot Learning (CoRL)}
@@ -700,8 +700,8 @@
       \strng{nameanamehash}{3cd941f1ac9898f068bf5440ed0a38af}
       \strng{nameafullhash}{3cd941f1ac9898f068bf5440ed0a38af}
       \field{extraname}{2}
-      \field{sortinit}{5}
-      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
+      \field{sortinit}{9}
+      \field{sortinithash}{0a5ebc79d83c96b6579069544c73c7d4}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{booktitle}{Conference on Robot Learning (CoRL)}
@@ -746,8 +746,8 @@
       \strng{nameabibnamehash}{e93feec35a48e4c8379a56a662d398af}
       \strng{nameanamehash}{e93feec35a48e4c8379a56a662d398af}
       \strng{nameafullhash}{e93feec35a48e4c8379a56a662d398af}
-      \field{sortinit}{6}
-      \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{booktitle}{Conference on Robot Learning (CoRL)}
@@ -792,8 +792,8 @@
       \strng{nameabibnamehash}{5328530b4c3769ef031ec2954131433a}
       \strng{nameanamehash}{5328530b4c3769ef031ec2954131433a}
       \strng{nameafullhash}{5328530b4c3769ef031ec2954131433a}
-      \field{sortinit}{6}
-      \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{booktitle}{Robotics: Science and Systems (RSS)}
@@ -838,8 +838,8 @@
       \strng{nameabibnamehash}{9fbd8802d6fb7d7d127cabbac30f865d}
       \strng{nameanamehash}{9fbd8802d6fb7d7d127cabbac30f865d}
       \strng{nameafullhash}{9fbd8802d6fb7d7d127cabbac30f865d}
-      \field{sortinit}{6}
-      \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{booktitle}{Conference on Robot Learning (CoRL)}
@@ -884,8 +884,8 @@
       \strng{nameabibnamehash}{6ad86acb92056312e62a85701e6c5142}
       \strng{nameanamehash}{6ad86acb92056312e62a85701e6c5142}
       \strng{nameafullhash}{6ad86acb92056312e62a85701e6c5142}
-      \field{sortinit}{7}
-      \field{sortinithash}{108d0be1b1bee9773a1173443802c0a3}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{booktitle}{IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)}
@@ -930,8 +930,8 @@
       \strng{nameabibnamehash}{e7c54e991d05a41de60c20885f5f2f58}
       \strng{nameanamehash}{e7c54e991d05a41de60c20885f5f2f58}
       \strng{nameafullhash}{e7c54e991d05a41de60c20885f5f2f58}
-      \field{sortinit}{8}
-      \field{sortinithash}{a231b008ebf0ecbe0b4d96dcc159445f}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{booktitle}{Robotics: Science and Systems (RSS)}
@@ -976,8 +976,8 @@
       \strng{nameabibnamehash}{60bd1d95963e0f56c3513a5eda251c50}
       \strng{nameanamehash}{60bd1d95963e0f56c3513a5eda251c50}
       \strng{nameafullhash}{60bd1d95963e0f56c3513a5eda251c50}
-      \field{sortinit}{9}
-      \field{sortinithash}{0a5ebc79d83c96b6579069544c73c7d4}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{howpublished}{GitHub repository}
