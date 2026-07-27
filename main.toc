@@ -22,34 +22,78 @@
 \contentsline {chapter}{\numberline {Chapter 4}Final design and implementation}{14}{chapter.4}%
 \contentsline {section}{\numberline {4.1}Selected concept description}{14}{section.4.1}%
 \contentsline {subsection}{\numberline {4.1.1}Design evolution from the DR3 baseline}{14}{subsection.4.1.1}%
-\contentsline {subsection}{\numberline {4.1.2}Selected concept overview}{14}{subsection.4.1.2}%
-\contentsline {subsection}{\numberline {4.1.3}Operational workflow}{15}{subsection.4.1.3}%
-\contentsline {section}{\numberline {4.2}Engineering design analysis}{16}{section.4.2}%
-\contentsline {subsection}{\numberline {4.2.1}Bimanual state and action representation}{16}{subsection.4.2.1}%
-\contentsline {subsection}{\numberline {4.2.2}Temporal interface and action chunking}{16}{subsection.4.2.2}%
-\contentsline {subsection}{\numberline {4.2.3}Perception and camera configuration}{17}{subsection.4.2.3}%
-\contentsline {subsection}{\numberline {4.2.4}Packet synchronization and action-label alignment}{17}{subsection.4.2.4}%
-\contentsline {subsection}{\numberline {4.2.5}Multi-task dataset construction}{18}{subsection.4.2.5}%
-\contentsline {subsection}{\numberline {4.2.6}LeRobot $\pi _{0.5}$ policy}{19}{subsection.4.2.6}%
-\contentsline {subsection}{\numberline {4.2.7}Control, computation, and safety}{20}{subsection.4.2.7}%
-\contentsline {section}{\numberline {4.3}Detailed system design}{21}{section.4.3}%
-\contentsline {subsection}{\numberline {4.3.1}Dual-arm robotic platform}{21}{subsection.4.3.1}%
-\contentsline {subsection}{\numberline {4.3.2}Task-compatible gripper}{21}{subsection.4.3.2}%
-\contentsline {subsection}{\numberline {4.3.3}Hardware--software interfaces}{21}{subsection.4.3.3}%
-\contentsline {subsection}{\numberline {4.3.4}Task definitions and bilateral role allocation}{21}{subsection.4.3.4}%
-\contentsline {section}{\numberline {4.4}Manufacturing and implementation}{21}{section.4.4}%
-\contentsline {subsection}{\numberline {4.4.1}Implementation workflow}{21}{subsection.4.4.1}%
-\contentsline {subsection}{\numberline {4.4.2}Deployment procedure}{23}{subsection.4.4.2}%
-\contentsline {subsection}{\numberline {4.4.3}Current implementation status}{23}{subsection.4.4.3}%
-\contentsline {chapter}{\numberline {Chapter 5}Validation results}{24}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Validation overview}{24}{section.5.1}%
-\contentsline {section}{\numberline {5.2}Key data}{24}{section.5.2}%
-\contentsline {section}{\numberline {5.3}Validation summary}{24}{section.5.3}%
-\contentsline {chapter}{\numberline {Chapter 6}Discussion and conclusions}{25}{chapter.6}%
-\contentsline {section}{\numberline {6.1}Discussion}{25}{section.6.1}%
-\contentsline {section}{\numberline {6.2}Conclusions}{25}{section.6.2}%
-\contentsline {chapter}{References}{27}{chapter*.17}%
-\contentsline {chapter}{Appendix I.\ Documentation of Generated Concepts}{29}{chapter*.19}%
-\contentsline {chapter}{Appendix II.\ Bill of materials}{32}{chapter*.30}%
-\contentsline {chapter}{Research\ Projects\ and\ Publications\ during\ Undergraduate\ Period}{33}{section*.32}%
-\contentsline {chapter}{Acknowledgements}{34}{section*.34}%
+\contentsline {subsection}{\numberline {4.1.2}Overall system architecture}{14}{subsection.4.1.2}%
+\contentsline {subsection}{\numberline {4.1.3}Selected module concepts}{15}{subsection.4.1.3}%
+\contentsline {subsubsection}{\numberline {4.1.3.1}Dual-FR3 bimanual platform}{15}{subsubsection.4.1.3.1}%
+\contentsline {subsubsection}{\numberline {4.1.3.2}GELLO demonstration interface}{16}{subsubsection.4.1.3.2}%
+\contentsline {subsubsection}{\numberline {4.1.3.3}Three-camera visual observation}{16}{subsubsection.4.1.3.3}%
+\contentsline {subsubsection}{\numberline {4.1.3.4}Custom compliant grippers}{17}{subsubsection.4.1.3.4}%
+\contentsline {subsubsection}{\numberline {4.1.3.5}LeRobot $\pi _{0.5}$ policy}{17}{subsubsection.4.1.3.5}%
+\contentsline {subsection}{\numberline {4.1.4}Operational workflow}{17}{subsection.4.1.4}%
+\contentsline {subsubsection}{\numberline {4.1.4.1}Workcell initialization}{17}{subsubsection.4.1.4.1}%
+\contentsline {subsubsection}{\numberline {4.1.4.2}Demonstration collection}{17}{subsubsection.4.1.4.2}%
+\contentsline {subsubsection}{\numberline {4.1.4.3}Dataset screening and training}{18}{subsubsection.4.1.4.3}%
+\contentsline {subsubsection}{\numberline {4.1.4.4}Closed-loop deployment}{18}{subsubsection.4.1.4.4}%
+\contentsline {section}{\numberline {4.2}Engineering design analysis}{18}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}Relevant engineering fundamentals}{18}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.2.2}Design assumptions and constraints}{19}{subsection.4.2.2}%
+\contentsline {subsection}{\numberline {4.2.3}FR3 parameters and bimanual kinematic suitability}{20}{subsection.4.2.3}%
+\contentsline {subsection}{\numberline {4.2.4}Bimanual state and action representation}{22}{subsection.4.2.4}%
+\contentsline {subsection}{\numberline {4.2.5}Shared workspace and role allocation}{23}{subsection.4.2.5}%
+\contentsline {subsection}{\numberline {4.2.6}Contact, clearance, and insertion tolerance analysis}{23}{subsection.4.2.6}%
+\contentsline {subsubsection}{\numberline {4.2.6.1}Ring-over-can placement}{23}{subsubsection.4.2.6.1}%
+\contentsline {subsubsection}{\numberline {4.2.6.2}Plug insertion}{24}{subsubsection.4.2.6.2}%
+\contentsline {subsubsection}{\numberline {4.2.6.3}Memory-module extraction}{24}{subsubsection.4.2.6.3}%
+\contentsline {subsection}{\numberline {4.2.7}Custom gripper geometry and mechanical analysis}{25}{subsection.4.2.7}%
+\contentsline {subsection}{\numberline {4.2.8}Perception working distance, field of view, and camera selection}{25}{subsection.4.2.8}%
+\contentsline {subsection}{\numberline {4.2.9}Image format and preprocessing}{27}{subsection.4.2.9}%
+\contentsline {subsection}{\numberline {4.2.10}GELLO hardware and leader--follower mapping}{27}{subsection.4.2.10}%
+\contentsline {subsection}{\numberline {4.2.11}Data-collection pipeline}{29}{subsection.4.2.11}%
+\contentsline {subsection}{\numberline {4.2.12}Packet synchronization and action-label alignment}{29}{subsection.4.2.12}%
+\contentsline {subsection}{\numberline {4.2.13}Dataset construction and episode split}{30}{subsection.4.2.13}%
+\contentsline {subsection}{\numberline {4.2.14}$\pi _{0.5}$ base model and software configuration}{30}{subsection.4.2.14}%
+\contentsline {subsection}{\numberline {4.2.15}Training procedure}{31}{subsection.4.2.15}%
+\contentsline {subsection}{\numberline {4.2.16}Validation and checkpoint selection}{32}{subsection.4.2.16}%
+\contentsline {subsection}{\numberline {4.2.17}Action chunking and temporal interface}{32}{subsection.4.2.17}%
+\contentsline {subsection}{\numberline {4.2.18}Deployment pipeline}{32}{subsection.4.2.18}%
+\contentsline {subsection}{\numberline {4.2.19}Control, computation, and safety boundary}{33}{subsection.4.2.19}%
+\contentsline {section}{\numberline {4.3}Detailed system design}{33}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}Workcell layout}{33}{subsection.4.3.1}%
+\contentsline {subsection}{\numberline {4.3.2}Dual-arm robotic platform}{34}{subsection.4.3.2}%
+\contentsline {subsection}{\numberline {4.3.3}GELLO leader assemblies}{34}{subsection.4.3.3}%
+\contentsline {subsection}{\numberline {4.3.4}End-effector and mechanical components}{35}{subsection.4.3.4}%
+\contentsline {subsection}{\numberline {4.3.5}Vision and sensing system}{35}{subsection.4.3.5}%
+\contentsline {subsection}{\numberline {4.3.6}Demonstration data-collection system}{35}{subsection.4.3.6}%
+\contentsline {subsection}{\numberline {4.3.7}Data processing pipeline}{36}{subsection.4.3.7}%
+\contentsline {subsection}{\numberline {4.3.8}Policy-training system}{36}{subsection.4.3.8}%
+\contentsline {subsection}{\numberline {4.3.9}Robot control and deployment system}{36}{subsection.4.3.9}%
+\contentsline {subsection}{\numberline {4.3.10}Hardware--software interfaces}{36}{subsection.4.3.10}%
+\contentsline {subsection}{\numberline {4.3.11}Task definitions and bilateral role allocation}{38}{subsection.4.3.11}%
+\contentsline {subsection}{\numberline {4.3.12}System operation}{38}{subsection.4.3.12}%
+\contentsline {subsubsection}{\numberline {4.3.12.1}Pre-run checks}{38}{subsubsection.4.3.12.1}%
+\contentsline {subsubsection}{\numberline {4.3.12.2}Collection run}{38}{subsubsection.4.3.12.2}%
+\contentsline {subsubsection}{\numberline {4.3.12.3}Policy dry run}{39}{subsubsection.4.3.12.3}%
+\contentsline {subsubsection}{\numberline {4.3.12.4}Autonomous run}{39}{subsubsection.4.3.12.4}%
+\contentsline {subsection}{\numberline {4.3.13}Parts and components}{39}{subsection.4.3.13}%
+\contentsline {section}{\numberline {4.4}Manufacturing and implementation plan}{41}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Implementation scope}{41}{subsection.4.4.1}%
+\contentsline {subsection}{\numberline {4.4.2}Materials and manufacturing processes}{42}{subsection.4.4.2}%
+\contentsline {subsection}{\numberline {4.4.3}Gripper fabrication and inspection}{42}{subsection.4.4.3}%
+\contentsline {subsection}{\numberline {4.4.4}GELLO assembly and calibration}{43}{subsection.4.4.4}%
+\contentsline {subsection}{\numberline {4.4.5}Camera and fixture implementation}{43}{subsection.4.4.5}%
+\contentsline {subsection}{\numberline {4.4.6}Software implementation}{44}{subsection.4.4.6}%
+\contentsline {subsection}{\numberline {4.4.7}System integration sequence}{44}{subsection.4.4.7}%
+\contentsline {subsection}{\numberline {4.4.8}Budget}{46}{subsection.4.4.8}%
+\contentsline {subsection}{\numberline {4.4.9}Current implementation status and remaining documentation}{46}{subsection.4.4.9}%
+\contentsline {chapter}{\numberline {Chapter 5}Validation results}{47}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Validation overview}{47}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Key data}{47}{section.5.2}%
+\contentsline {section}{\numberline {5.3}Validation summary}{47}{section.5.3}%
+\contentsline {chapter}{\numberline {Chapter 6}Discussion and conclusions}{48}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Discussion}{48}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Conclusions}{48}{section.6.2}%
+\contentsline {chapter}{References}{50}{chapter*.26}%
+\contentsline {chapter}{Appendix I.\ Documentation of Generated Concepts}{52}{chapter*.28}%
+\contentsline {chapter}{Appendix II.\ Bill of materials}{55}{chapter*.39}%
+\contentsline {chapter}{Research\ Projects\ and\ Publications\ during\ Undergraduate\ Period}{56}{section*.41}%
+\contentsline {chapter}{Acknowledgements}{57}{section*.43}%
