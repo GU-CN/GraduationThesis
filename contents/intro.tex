@@ -1,15 +1,29 @@
 % !TEX root = ../main.tex
 
-\chapter{Introduction}
+\chapter{Introduction}\label{chap:intro}
 
 \section{Background and significance}
-This chapter introduces the project background, motivation, and overall scope of developing a vision-language-action model for dual-arm robots in 3C industrial production lines.
+
+The 3C (Computer, Communication, Consumer electronics) manufacturing industry increasingly demands flexible robotic systems that can cope with short product life-cycles, diverse part geometries, and frequent line changeovers. Traditional hard-coded automation approaches exhibit significant limitations in such scenarios, as each product variant typically necessitates reprogramming and system reconfiguration, thereby increasing development and maintenance costs. In contrast, human operators can rapidly comprehend novel tasks from natural language instructions and adapt to new operating conditions with minimal prior programming. This highlights the importance of advancing industrial robotic systems toward human-aligned capabilities, particularly in terms of semantic understanding of instructions and few-shot generalization to unseen tasks under limited demonstrations.
+
+Recent advances in Vision-Language-Action (VLA) models offer a promising direction. By jointly learning from visual observations, language instructions, and robot action data, VLA models can, in principle, generalize across tasks without per-task engineering. Several landmark works, including RT-2~\cite{rt2}, OpenVLA~\cite{openvla}, RDT-1B~\cite{rdt1b}, and the $\pi$ series~\cite{pi0}, have demonstrated encouraging results on tabletop manipulation benchmarks. However, most of these demonstrations focus on single-arm, short-horizon tasks with relatively forgiving tolerances.
+Earlier work on visual and language-conditioned manipulation established complementary design patterns: Transporter Networks use spatially grounded pick-and-place representations, CLIPort combines semantic and spatial pathways, and PerAct couples language goals to structured visual observations~\cite{transporter,cliport,peract}. In parallel, BridgeData~V2, Open~X-Embodiment, DROID, and LIBERO have made dataset scale, embodiment diversity, and reproducible task evaluation central considerations in robot-learning system design~\cite{bridgev2,openx,droid,libero}.
 
 \subsection{Problem statement in 3C production lines}
-……
+
+PC key-component assembly is representative of the broader 3C challenge: the parts are small, the insertion and seating tolerances are tight, and the contact events are difficult to encode as fixed trajectories. Representative operations considered in this project include RAM insertion, CPU placement, and power-cable connection. These tasks remain difficult for conventional fixed-program robots because each product variant and fixture change tends to require reprogramming, recalibration, or both. The central engineering question is therefore how to couple visual observations and robot proprioceptive state to learned actions that can execute such contact-rich steps with measurable success, pose accuracy, and failure-handling targets.
 
 \section{Project objectives and scope}
-……
+
+The project aims to prototype a dual-arm industrial manipulation platform that couples camera observations and robot proprioceptive state to learned task actions for a scoped set of PC assembly operations. The robot platform consists of two Franka Research~3 (FR3) arms with complementary top and wrist/side camera views. At the present stage, task-specific ACT checkpoints are selected by the operator rather than inferred from a language command. The expected outcome is a measurable real-robot demonstration of the scoped assembly step, including task success, pose-estimation, and failure-handling evaluation.
+
+The current implementation uses the Action Chunking with Transformers (ACT) policy in the LeRobot framework~\cite{act,lerobot}. It collects staged, task-specific demonstrations through teleoperation and deploys the checkpoint selected for the requested task. Language-conditioned inference and unified multi-task control remain later extensions toward the intended VLA capability.
 
 \section{Organization of this thesis}
-……
+
+The remainder of this thesis is organized as follows.
+Chapter~\ref{chap:design-spec} presents the customer requirements, engineering specifications, and quality function deployment.
+Chapter~\ref{chap:concept} describes concept generation and concept selection for the major system modules.
+Chapter~\ref{chap:final-design} details the final design and the manufacturing or implementation plan for the prototype.
+Chapter~\ref{chap:validation} reports the validation methods and results.
+Chapter~\ref{chap:discussion} discusses the strengths and limitations of the design and concludes with recommendations for future work.
