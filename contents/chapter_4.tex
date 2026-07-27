@@ -395,9 +395,11 @@ and training reads the converted PyTorch parameters from
 \nolinkurl{real-exp/.hf-cache/pi05_base_pytorch/model.safetensors}.
 The base architecture combines a PaliGemma \texttt{gemma\_2b} vision-language component with a \texttt{gemma\_300m} action expert. The model weights use \texttt{bfloat16}.
 
-The project uses LeRobot~0.5.2 at commit
-\texttt{dc06dba9\allowbreak d6220ab9\allowbreak 9c94e83e\allowbreak c7f0d45a\allowbreak 35b44bed},
-together with local project modifications. The dataset format is LeRobot Dataset v3.0. Training is executed on physical GPU~1 of an NVIDIA RTX~A6000 with 48~GB of memory.
+The project uses LeRobot~0.5.2 with local project modifications. The base commit is
+\begin{center}
+\small\texttt{dc06dba9d6220ab99c94e83ec7f0d45a35b44bed}.
+\end{center}
+The dataset format is LeRobot Dataset v3.0. Training is executed on physical GPU~1 of an NVIDIA RTX~A6000 with 48~GB of memory.
 
 \subsection{Training procedure}
 
@@ -796,6 +798,6 @@ The CNY~0 value is therefore an incremental cash figure, not the total system va
 
 The final implementation now includes dual-arm state and action handling, three RGB inputs, LeRobot Dataset v3.0 data, one jointly trained $\pi_{0.5}$ checkpoint, equal-probability three-task sampling, the defined episode-level validation split, macro flow-matching checkpoint selection, and a 5~Hz absolute-action deployment interface. The selected DR3 hardware modules and engineering drawings have been retained in this chapter.
 
-Several quantities remain documentation gaps rather than model-design gaps: measured FR3 base poses, camera extrinsics and mounting distances, dimensioned fixture locations, ring and can clearances, final socket insertion clearance and depth, motherboard and memory-module clearances, measured gripper force--deflection behavior, TPU print settings, print mass and time, full in-kind asset value, and measured end-to-end latency. These values should be added if the report is expected to make production-level tolerance, structural, timing, or economic claims.
+Several quantities remain documentation gaps rather than model-design gaps. They include measured FR3 base poses, camera extrinsics and mounting distances, dimensioned fixture locations, ring and can clearances, and final socket insertion clearance and depth. They also include motherboard and memory-module clearances, measured gripper force--deflection behaviour, TPU print settings, print mass and time, full in-kind asset value, and measured end-to-end latency. These values should be added if the report is expected to make production-level tolerance, structural, timing, or economic claims.
 
 \setlength{\emergencystretch}{0pt}
