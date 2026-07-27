@@ -770,27 +770,58 @@ This sequence isolates failures. A camera-identity error should be found before 
 
 \subsection{Budget}
 
-\begin{table}[htbp]
-  \centering
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{2pt}
+\renewcommand{\arraystretch}{1.08}
+\begin{longtable}{
+  >{\centering\arraybackslash}p{0.04\textwidth}
+  >{\raggedright\arraybackslash}p{0.24\textwidth}
+  >{\raggedright\arraybackslash}p{0.16\textwidth}
+  >{\raggedright\arraybackslash}p{0.15\textwidth}
+  >{\raggedright\arraybackslash}p{0.31\textwidth}}
   \caption{Expanded implementation budget and resource status}
-  \label{tab:ch4-budget}
-  \footnotesize
-  \begin{tabularx}{\textwidth}{p{0.04\textwidth}p{0.23\textwidth}p{0.18\textwidth}p{0.10\textwidth}p{0.16\textwidth}X}
-    \toprule
-    \textbf{No.} & \textbf{Component or service} & \textbf{Provider} & \textbf{Qty.} & \textbf{Cash cost} & \textbf{Status and accounting note} \\
-    \midrule
-    1 & Two FR3 arms, controllers, and safety equipment & Laboratory & 2 sets & CNY~0 incremental & Existing in-kind assets; acquisition value not supplied \\
-    2 & D435i and two D405 cameras with mounts & Laboratory & 3 & CNY~0 incremental & Existing in-kind assets; mount material not separately recorded \\
-    3 & RTX A6000 training workstation and storage & Laboratory & 1 set & CNY~0 incremental & Existing shared compute; energy and depreciation not allocated \\
-    4 & Two GELLO leader assemblies & Laboratory / project resources & 2 & CNY~0 incremental & DR3 records availability; itemized acquisition value not supplied \\
-    5 & TPU~64D compliant fingers & Student Innovation Center & 4 & CNY~0 incremental & Fabricated through available resources; material mass and print time not recorded \\
-    6 & Task objects and fixtures & Laboratory / Student Innovation Center & 3 sets & CNY~0 incremental & Available; final fixture-material value not supplied \\
-    7 & Software stack & Open source and project code & 1 config. & CNY~0 licence cost & LeRobot, ROS~2, PyTorch, and project modifications \\
-    \midrule
-    \multicolumn{4}{r}{\textbf{Reported additional out-of-pocket cost}} & \textbf{CNY~0} & Excludes in-kind asset value, labour, energy, and depreciation \\
-    \bottomrule
-  \end{tabularx}
-\end{table}
+  \label{tab:ch4-budget}\\
+  \toprule
+  \textbf{No.} & \textbf{Component, service, and quantity} &
+  \textbf{Provider} & \textbf{Cash cost} &
+  \textbf{Status and accounting note} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{No.} & \textbf{Component, service, and quantity} &
+  \textbf{Provider} & \textbf{Cash cost} &
+  \textbf{Status and accounting note} \\
+  \midrule
+  \endhead
+  1 & Two FR3 arms, controllers, and safety equipment (2 sets) &
+  Laboratory & CNY~0 incremental &
+  Existing in-kind assets; acquisition value not supplied \\
+  2 & D435i, two D405 cameras, and mounts (3 cameras) &
+  Laboratory & CNY~0 incremental &
+  Existing in-kind assets; mount material not separately recorded \\
+  3 & RTX A6000 training workstation and storage (1 set) &
+  Laboratory & CNY~0 incremental &
+  Existing shared compute; energy and depreciation not allocated \\
+  4 & GELLO leader assemblies (2) &
+  Laboratory / project resources & CNY~0 incremental &
+  DR3 records availability; itemized acquisition value not supplied \\
+  5 & TPU~64D compliant fingers (4) &
+  Student Innovation Center & CNY~0 incremental &
+  Fabricated through available resources; material mass and print time not recorded \\
+  6 & Task objects and fixtures (3 sets) &
+  Laboratory / Student Innovation Center & CNY~0 incremental &
+  Available; final fixture-material value not supplied \\
+  7 & Software stack (1 configuration) &
+  Open source and project code & CNY~0 licence cost &
+  LeRobot, ROS~2, PyTorch, and project modifications \\
+  \midrule
+  \multicolumn{3}{r}{\textbf{Reported additional out-of-pocket cost}} &
+  \textbf{CNY~0} &
+  Excludes in-kind asset value, labour, energy, and depreciation \\
+  \bottomrule
+\end{longtable}
+\endgroup
 
 The CNY~0 value is therefore an incremental cash figure, not the total system value. A full economic budget would require the purchase or replacement value of two FR3 systems, two GELLO assemblies, three cameras, the GPU workstation, storage, safety hardware, print material, print time, labour, and energy. Those values were not included in the supplied DR3 or final implementation record and should be added only from invoices or the laboratory asset register.
 
