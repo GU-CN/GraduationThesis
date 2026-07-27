@@ -83,7 +83,7 @@
 \contentsline {subsection}{\numberline {4.4.5}Camera and fixture implementation}{43}{subsection.4.4.5}%
 \contentsline {subsection}{\numberline {4.4.6}Software implementation}{44}{subsection.4.4.6}%
 \contentsline {subsection}{\numberline {4.4.7}System integration sequence}{44}{subsection.4.4.7}%
-\contentsline {subsection}{\numberline {4.4.8}Budget}{44}{subsection.4.4.8}%
+\contentsline {subsection}{\numberline {4.4.8}Budget}{45}{subsection.4.4.8}%
 \contentsline {subsection}{\numberline {4.4.9}Current implementation status and remaining documentation}{46}{subsection.4.4.9}%
 \contentsline {chapter}{\numberline {Chapter 5}Validation results}{47}{chapter.5}%
 \contentsline {section}{\numberline {5.1}Validation overview}{47}{section.5.1}%
