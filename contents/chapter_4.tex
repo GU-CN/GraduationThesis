@@ -6,39 +6,171 @@
 
 \subsection{Design evolution from the DR3 baseline}
 
-The final implementation retains the modular architecture established during Design Review~3 (DR3), but updates both the learned policy and the demonstrated task scope. DR3 used task-specific Action Chunking with Transformers (ACT) checkpoints as the deployable baseline and treated language-conditioned bimanual control as future work. During subsequent development, the policy was replaced by the LeRobot implementation of $\pi_{0.5}$, the state and action interfaces were expanded to two robot arms, and three long-horizon tasks were combined in one multi-task training run. ACT is therefore retained as a development baseline rather than the final deployed controller.
+The final implementation retains the modular physical architecture selected in Design Review~3 (DR3), but the learning system and the demonstrated scope have changed substantially. DR3 proposed a dual-Franka Research~3 (FR3) workcell, GELLO-based demonstration collection, two wrist cameras and one overhead camera, custom compliant fingers, a LeRobot dataset, and an imitation-learning policy. At that stage, Action Chunking with Transformers (ACT) and task-specific checkpoints were the deployable baseline, while language-conditioned bimanual control was a future objective.
 
-The resulting system is a language-conditioned bimanual manipulation platform. It combines a dual-Franka Research~3 (FR3) workcell, GELLO-based demonstration collection, three synchronized RGB cameras, bilateral robot and gripper state acquisition, a LeRobot Dataset v3.0 dataset, one jointly trained $\pi_{0.5}$ checkpoint, and robot-side execution and safety interfaces. $\pi_{0.5}$ is a vision-language-action policy designed to combine visual observations, natural-language task descriptions, robot state, and action generation~\cite{pi05}. The implementation used in this project follows the Pi05 policy integration in LeRobot, which is adapted from the open-source OpenPI implementation~\cite{lerobot,lerobotpi05,openpi}.
+The completed system replaces the task-specific ACT controller with the LeRobot implementation of $\pi_{0.5}$. It uses two FR3 arms, two grippers, three RGB views, a 16-dimensional bilateral state and action interface, and one jointly trained multi-task checkpoint. The three tasks are selected by natural-language instructions rather than by manually loading three independent policy files. ACT therefore remains part of the design history and concept-selection evidence, but it is not presented as the final controller.
 
-\subsection{Selected concept overview}
+The mechanical elements selected in DR3 remain directly relevant. The two FR3 arms provide a common kinematic and controller interface; the two GELLO leaders provide matched bilateral demonstration inputs; the wrist and overhead cameras provide complementary local and global views; and the 3D-printed compliant fingers provide a task-compatible contact interface. The later policy update changes how these modules are connected and trained, but does not remove the need for their original engineering analysis.
 
-The selected concept connects demonstration collection, dataset construction, policy training, real-robot deployment, and task-level validation in one closed pipeline. The physical workcell consists of two FR3 arms operating in a shared, bounded workspace. Two Intel RealSense D405 cameras provide local wrist views, and one Intel RealSense D435i provides a fixed global view from above. The workcell uses the custom compliant gripper developed during DR3. Its two identical screw-mounted fingers are 3D-printed in TPU~64D and have an overall bounding-box size of
+\subsection{Overall system architecture}
+
+The final system is organized as four connected layers:
+\begin{enumerate}
+  \item the physical workcell, consisting of two FR3 arms, two custom grippers, task fixtures, and three cameras;
+  \item the demonstration layer, consisting of the two GELLO leader devices, the ROS~2 bridge, and the episode recorder;
+  \item the learning layer, consisting of LeRobot Dataset v3.0, the $\pi_{0.5}$ training configuration, and task-balanced validation; and
+  \item the deployment layer, consisting of language-conditioned policy inference, action-chunk handling, the bilateral robot adapter, and deterministic safety checks.
+\end{enumerate}
+
+During demonstration collection, the operator moves the two GELLO leaders. The follower-side system commands the two FR3 arms and records three RGB images, the measured bilateral state, the bilateral arm targets, the gripper commands, the episode index, and the task instruction. Accepted episodes are stored in LeRobot Dataset v3.0 format. During training, the three task datasets are sampled with equal task probability and used to update one $\pi_{0.5}$ model. During deployment, one of the three language instructions and the current three-view observation are supplied to the same checkpoint. The policy returns an action chunk, and the robot-side adapter sends the admissible absolute targets to the two FR3 controllers.
+
+Figure~\ref{fig:ch4-dr3-architecture} is retained from DR3 because it records the selected modular architecture and the intended connection between demonstration collection, learning, and closed-loop execution. Two parts of the diagram are historical: the ACT block has been replaced by $\pi_{0.5}$, and the task-specific checkpoint block has been replaced by one unified checkpoint. The three-camera workcell, GELLO collection concept, LeRobot dataset, action-chunk interface, dual-FR3 controller, and deterministic failure-handling boundary remain consistent with the final system.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.98\textwidth]{dr3-report/imgs/overview_workflow_gai.png}
+  \caption{System architecture retained from DR3 as the design baseline. In the final implementation, the ACT and task-specific-checkpoint blocks are superseded by one language-conditioned LeRobot $\pi_{0.5}$ checkpoint; the physical workcell and data-flow modules remain applicable.}
+  \label{fig:ch4-dr3-architecture}
+\end{figure}
+
+\subsection{Selected module concepts}
+
+\subsubsection{Dual-FR3 bimanual platform}
+
+Two FR3 arms are used as the follower robots. The use of the same robot model on both sides reduces interface asymmetry: each side contributes seven joint positions, receives seven absolute joint targets, and uses the same low-level controller family. The shared kinematic structure also makes bilateral indexing, joint-limit validation, and data normalization easier to audit. Bimanual operation is required because each task includes a preparation or stabilization action followed by a more precise manipulation action.
+
+\subsubsection{GELLO demonstration interface}
+
+The demonstration interface uses one GELLO leader for each follower arm. GELLO provides a physical leader whose joint arrangement is mapped to the follower robot, giving the operator direct control of coordinated arm motion~\cite{gello}. The selected project configuration provides seven arm channels and one gripper channel per leader. Its low-cost modular construction also allows damaged or geometrically unsuitable leader components to be reprinted without changing the follower robot.
+
+\subsubsection{Three-camera visual observation}
+
+The final observation contains one fixed overhead view and two wrist views. The overhead Intel RealSense D435i observes the shared workspace, fixture positions, and large object motion. The two Intel RealSense D405 cameras move with the left and right wrists and preserve local visual information near grasp, contact, insertion, extraction, and placement regions. This arrangement avoids relying on a single global view that may be occluded by either arm, while avoiding a wrist-only configuration that loses global task context.
+
+\subsubsection{Custom compliant grippers}
+
+Each arm uses the custom gripper developed during DR3. An assembly contains two identical screw-mounted fingers printed in TPU~64D. Each finger has an overall bounding-box size of
 \[
 123.36\times25.80\times40.00~\mathrm{mm}.
 \]
-The compliant finger geometry accommodates variation in object shape and reduces concentrated contact forces, while the reinforced mounting region provides a repeatable mechanical interface.
+The tapered outline and repeated ribs permit passive deformation around the handled ring, the insulated plug body, the motherboard edge, and the memory module. The reinforced mounting end keeps the screw interface stiffer than the contact region. Compliance is used to increase geometric tolerance; it is not treated as a substitute for camera coverage, accurate demonstration, or robot-side contact limits.
 
-Human demonstrations are collected through the GELLO leader devices~\cite{gello}. During collection, the system records the three camera streams, the current state of both arms and grippers, the commanded bilateral action, and the natural-language task instruction. Accepted episodes are stored in LeRobot Dataset v3.0 format and are checked for complete observation, state, action, video, and task fields before training.
+\subsubsection{LeRobot \texorpdfstring{$\pi_{0.5}$}{pi0.5} policy}
 
-At deployment time, the three tasks use one common $\pi_{0.5}$ checkpoint. The current camera observations, bilateral robot state, and selected language instruction are passed to the policy. The policy predicts an action chunk, of which the first configured execution segment is sent through the robot-side interface. The interface validates the action representation before sending absolute joint targets and absolute gripper-width targets to the two FR3 controllers. Joint limits, workspace limits, controller protections, and emergency-stop procedures remain outside the learned policy and are active throughout execution~\cite{frankafci}.
+The final policy is the LeRobot implementation of $\pi_{0.5}$, adapted from the open-source OpenPI implementation~\cite{pi05,openpi,lerobot,lerobotpi05}. It receives three RGB images, the current bilateral state, and a language instruction. It predicts a chunk of bilateral actions in the same absolute joint-and-gripper representation used by the recorder and executor. The same model parameters are used for all three tasks.
 
 \subsection{Operational workflow}
 
-For each trial, the two FR3 arms, grippers, cameras, task fixture, and manipulated objects are returned to a documented initial condition. The operator then selects one of the three task instructions and verifies that the instruction matches the prepared scene. The policy receives the instruction together with the synchronized visual and proprioceptive observations and generates the bilateral action sequence. After each executed segment, new observations and robot states are acquired and the policy is queried again.
+\subsubsection{Workcell initialization}
 
-The three tasks exercise complementary forms of long-horizon bimanual manipulation:
-\begin{enumerate}
-  \item repositioning a can, grasping a handled ring, and placing the ring over the can;
-  \item repositioning a socket box, grasping a plug, and performing constrained plug insertion; and
-  \item repositioning a motherboard, extracting a memory module, and placing it in a tray.
-\end{enumerate}
-The common checkpoint and language interface allow the requested behavior to be changed without replacing the deployed policy file.
+Before an episode or an autonomous trial begins, the two arms are returned to the documented initial joint region, the grippers are inspected, and the task objects are reset. Camera mounts, image identities, network connections, controller status, workspace boundaries, and emergency-stop access are checked. The socket fixture is kept electrically unpowered. A run is not started if a camera is missing, a robot state is stale, or the scene does not match the selected instruction.
+
+\subsubsection{Demonstration collection}
+
+The operator performs the selected task using the two GELLO leaders. The ROS~2 bridge assembles packets containing the three images, the measured robot and gripper state, and the commanded arm and gripper values. The recorder samples these packets at 5~Hz and stores a complete episode. The operator then reviews task completion and resets the workcell before the next episode. Episode boundaries are preserved so that complete trajectories, rather than individual frames, can be assigned to training or validation.
+
+\subsubsection{Dataset screening and training}
+
+The recorded episode is checked for the presence and consistent length of all three image streams, the 16-dimensional state, the 16-dimensional action, the task identity, and the episode metadata. Accepted episodes are added to one of the three task datasets. Training then samples the three tasks with equal probability, applies the defined image and numeric preprocessing, and fine-tunes one $\pi_{0.5}$ checkpoint for 100,000 optimizer steps.
+
+\subsubsection{Closed-loop deployment}
+
+At deployment, the operator selects the natural-language instruction that matches the prepared scene. The model receives the instruction, three current images, and the current bilateral state. It predicts 50 actions, of which the first 10 are consumed before a new observation is evaluated. The executor checks the returned targets and sends them to the two arms at the dataset-aligned control rate. A task terminates on completion, timeout, invalid observation, invalid action, protective stop, emergency stop, or manual intervention.
 
 \section{Engineering design analysis}
 
+\subsection{Relevant engineering fundamentals}
+
+The implemented system combines serial-manipulator kinematics, shared-workspace bimanual coordination, compliant contact, multi-view machine perception, imitation learning, packet-level data synchronization, and receding-horizon control. The learned policy produces high-level position targets. It does not replace the FR3 low-level servo controller, joint-limit enforcement, protective-stop behavior, or the external emergency-stop procedure.
+
+For one seven-degree-of-freedom arm with joint vector
+\[
+\mathbf q_t=[q_{1,t},\ldots,q_{7,t}]^{\mathsf T},
+\]
+the end-effector pose is
+\begin{equation}
+{}^{B}\mathbf T_{E,t}=f(\mathbf q_t),
+\label{eq:ch4-single-arm-fk}
+\end{equation}
+where \(B\) is the robot-base frame, \(E\) is the end-effector frame, and \(f(\cdot)\) is the forward-kinematics map. In the dual-arm system, the corresponding transforms are
+\begin{equation}
+{}^{B_L}\mathbf T_{E_L,t}=f_L(\mathbf q^L_t),
+\qquad
+{}^{B_R}\mathbf T_{E_R,t}=f_R(\mathbf q^R_t).
+\label{eq:ch4-dual-arm-fk}
+\end{equation}
+If both base poses are expressed in a common workcell frame \(W\), the relative end-effector transform can be written as
+\begin{equation}
+{}^{E_L}\mathbf T_{E_R,t}
+=
+\left({}^{W}\mathbf T_{B_L}\,{}^{B_L}\mathbf T_{E_L,t}\right)^{-1}
+{}^{W}\mathbf T_{B_R}\,{}^{B_R}\mathbf T_{E_R,t}.
+\label{eq:ch4-relative-ee}
+\end{equation}
+Equation~\ref{eq:ch4-relative-ee} explains why the two base installations and task fixtures must remain fixed: the learned policy observes images and joint states rather than an explicitly recalibrated relative pose at every episode.
+
+\subsection{Design assumptions and constraints}
+
+The system operates in a structured indoor workcell. Lighting, camera mounts, robot bases, and task fixtures remain sufficiently repeatable for the learned visual policy. Each trial begins within the demonstrated workspace. The can, handled ring, socket box, plug, motherboard, memory module, and yellow tray are treated as task-specific laboratory objects rather than arbitrary unseen industrial components.
+
+The current model uses RGB images and bilateral proprioception. Although the selected RealSense devices can provide depth, and the D435i includes inertial sensing, depth and inertial measurements are not included in the implemented $\pi_{0.5}$ feature contract. The chapter therefore uses manufacturer depth ranges and fields of view to justify camera placement, but it does not claim that the policy performs explicit metric depth reconstruction or six-degree-of-freedom pose estimation.
+
+The recorder relies on software packets assembled by an upstream ROS~2 bridge. No hardware trigger, exposure-level synchronization, device-time interpolation, or ROS approximate-time synchronization is performed by the recorder. The valid engineering claim is packet-level synchronization, not exact simultaneity of the three camera exposures.
+
+The design also assumes that deterministic safeguards remain outside the policy. The learned action is accepted only after dimensional, finite-value, joint, gripper, workspace, freshness, and communication checks. The socket task uses an electrically unpowered fixture. The system is a supervised research workcell and is not represented as a certified production cell.
+
+\subsection{FR3 parameters and bimanual kinematic suitability}
+
+Each FR3 provides seven degrees of freedom, a nominal payload of 3~kg, a maximum reach of 855~mm, and link-side torque sensing in all seven axes~\cite{fr3datasheet,fr3product,frankafci}. These values are suitable for the project because the manipulated objects are light, the task is performed on a tabletop, and the seventh joint gives redundancy for changing wrist orientation while avoiding fixtures and the other arm.
+
+\begin{table}[htbp]
+  \centering
+  \caption{FR3 parameters relevant to the selected bimanual workcell}
+  \label{tab:ch4-fr3-parameters}
+  \small
+  \begin{tabularx}{\textwidth}{p{0.28\textwidth}p{0.23\textwidth}X}
+    \toprule
+    \textbf{Parameter} & \textbf{Value} & \textbf{Design relevance} \\
+    \midrule
+    Degrees of freedom & 7 per arm & Provides redundant approach configurations and wrist orientation control. \\
+    Nominal payload & 3~kg & Exceeds the mass required for the project objects and custom fingers. \\
+    Maximum reach & 855~mm & Supports a shared central tabletop region when the two bases are arranged on opposite sides. \\
+    Joint sensing & Link-side torque sensing in all seven axes & Supports compliant low-level control, contact monitoring, and protective behavior. \\
+    Repeatability & Better than \(\pm0.1\)~mm in the current manufacturer specification & Robot repeatability is not the limiting claim for the learned end-to-end task; fixture, visual, demonstration, and contact errors also contribute. \\
+    Mounting interface & DIN ISO 9409-1-A50 & Provides a standardized mechanical interface for the gripper assembly. \\
+    Installation & Upright & Matches the tabletop workcell and the workspace drawings used during concept selection. \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+The nominal joint ranges are A1 and A3: \(-166^\circ\) to \(166^\circ\); A2: \(-105^\circ\) to \(105^\circ\); A4: \(-176^\circ\) to \(-7^\circ\); A5: \(-165^\circ\) to \(165^\circ\); A6: \(25^\circ\) to \(265^\circ\); and A7: \(-175^\circ\) to \(175^\circ\)~\cite{fr3datasheet}. These are hardware bounds rather than learned-policy targets. The practical task workspace is kept smaller so that action chunks do not intentionally approach mechanical or controller limits.
+
+Figure~\ref{fig:ch4-fr3-overview} records the arm geometry and principal link dimensions used during DR3. Figure~\ref{fig:ch4-fr3-workspace} shows the manufacturer workspace envelope. The 855~mm maximum reach is not treated as an invitation to place objects at the boundary: motion near maximum extension reduces available orientation freedom and can bring the arm closer to singular configurations.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.90\textwidth]{dr3-report/imgs/franka_fr3.png}
+  \caption{FR3 arm and principal kinematic dimensions retained from the DR3 hardware analysis.}
+  \label{fig:ch4-fr3-overview}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.92\textwidth]{dr3-report/imgs/fr3_param.png}
+  \caption{Side and top views of the FR3 workspace envelope. The shared task region is selected inside the overlap of the two practical arm workspaces rather than at the 855~mm reach boundary.}
+  \label{fig:ch4-fr3-workspace}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.92\textwidth]{dr3-report/imgs/fr3_config.png}
+  \caption{FR3 arm, joint limits, mounting, environmental, and controller-interface parameters documented during DR3.}
+  \label{fig:ch4-fr3-configuration}
+\end{figure}
+
 \subsection{Bimanual state and action representation}
 
-The recorded state and the policy action both use a 16-dimensional \texttt{float32} representation. The state is
+The actual state and action are both stored as 16-dimensional \texttt{float32} arrays. The state is
 \begin{equation}
 \mathbf{s}_t=
 \left[
@@ -46,11 +178,9 @@ q^{L}_{1,t},\ldots,q^{L}_{7,t},g^{L}_t,
 q^{R}_{1,t},\ldots,q^{R}_{7,t},g^{R}_t
 \right]^{\mathsf T}
 \in\mathbb{R}^{16},
-\label{eq:bimanual-state}
+\label{eq:ch4-bimanual-state}
 \end{equation}
-where \(q^{L}_{1,t},\ldots,q^{L}_{7,t}\) and \(q^{R}_{1,t},\ldots,q^{R}_{7,t}\) are the measured joint positions of the left and right FR3 arms, and \(g^{L}_t\) and \(g^{R}_t\) are the measured gripper opening widths in metres.
-
-The action has the same ordering:
+where \(g^{L}_t\) and \(g^{R}_t\) are measured gripper opening widths in metres. The action uses the same ordering:
 \begin{equation}
 \mathbf{a}_t=
 \left[
@@ -59,229 +189,605 @@ g^{L,\mathrm{target}}_t,
 q^{R,\mathrm{target}}_{1,t+1},\ldots,q^{R,\mathrm{target}}_{7,t+1},
 g^{R,\mathrm{target}}_t
 \right]^{\mathsf T}.
-\label{eq:bimanual-action}
+\label{eq:ch4-bimanual-action}
 \end{equation}
-The arm actions are absolute joint-position targets for the next control step, rather than delta actions. The gripper actions are absolute opening-width targets, \(\texttt{open\_width\_m}\), expressed in metres. Indices 0--6 correspond to the left arm, index~7 to the left gripper, indices 8--14 to the right arm, and index~15 to the right gripper. The configuration therefore uses \texttt{use\_relative\_actions=false} for both training and deployment.
 
-The $\pi_{0.5}$ implementation pads the state and action features to its maximum internal dimension of 32. Only the first 16 entries contain valid project data; the remaining entries are padding and are not sent as additional robot commands. This distinction is maintained in the dataset feature specification and robot action adapter.
+Indices 0--6 correspond to the left arm, index~7 to the left gripper, indices 8--14 to the right arm, and index~15 to the right gripper. Arm actions are absolute next-step joint targets, not joint increments. Gripper actions are absolute \texttt{open\_width\_m} commands. The implemented setting is therefore \texttt{use\_relative\_actions=false} in both training and deployment.
 
-\subsection{Temporal interface and action chunking}
+The $\pi_{0.5}$ implementation pads state and action features to an internal maximum of 32 dimensions. Only entries 0--15 contain project data. Entries 16--31 are padding and are never interpreted as additional robot commands. The robot adapter explicitly slices and validates the first 16 entries before decomposing them into left-arm, left-gripper, right-arm, and right-gripper targets.
 
-Data collection, policy observations, and robot control operate at 5~Hz, so one step represents 0.2~s. The model predicts a chunk of 50 future actions, corresponding to a nominal prediction horizon of
+\subsection{Shared workspace and role allocation}
+
+The two arms operate in a shared central region, so task role allocation is selected to reduce unnecessary crossing. In Task~1, the left arm pushes the can toward the centre while the right arm grasps and places the handled ring. In Task~2, the right arm pushes the socket box while the left arm grasps and inserts the plug. In Task~3, the left arm grips and pulls the motherboard while the right arm removes the memory module and places it in the yellow tray.
+
+These assignments separate the large preparation motion from the subsequent precision motion. They also preserve the view of the precision-side wrist camera: the wrist that performs the ring placement, plug insertion, or RAM extraction approaches the relevant contact region directly. Role allocation is encoded by the demonstrations and the fixed action indexing; it is not dynamically reassigned by a separate planner.
+
+The workcell dimensions and exact base-to-fixture transforms were not supplied as final measured values. Consequently, this report does not invent a dimensioned collision-free volume. The implemented engineering rule is that fixtures are placed in an experimentally verified overlap region, nominal trajectories stay away from the manufacturer reach boundary, and the robot-side workspace limits are tighter than the theoretical workspace shown in Figure~\ref{fig:ch4-fr3-workspace}. A production release would require the final base poses, fixture coordinates, swept-volume analysis, and inter-arm collision geometry to be documented numerically.
+
+\subsection{Contact, clearance, and insertion tolerance analysis}
+
+\subsubsection{Ring-over-can placement}
+
+The ring task contains three mechanically distinct phases: a planar push of the can, a grasp of the ring handle, and a vertical placement of the ring over the can. Successful placement requires the ring inner opening to remain clear of the can outer profile throughout descent. If \(D_r\) is the effective ring inner diameter and \(D_c\) is the effective can outer diameter, the ideal radial clearance is
+\begin{equation}
+c_r=\frac{D_r-D_c}{2}.
+\label{eq:ch4-ring-clearance}
+\end{equation}
+The allowable lateral placement error must be smaller than \(c_r\), with an additional margin for ring tilt, finger deformation, and uncertainty in the apparent object boundary. The actual \(D_r\) and \(D_c\) values were not provided, so Equation~\ref{eq:ch4-ring-clearance} defines the required measurement rather than claiming a numerical tolerance.
+
+The handle allows the right gripper to avoid pinching the ring circumference, but it introduces an offset between the grasp point and the ring centre. This offset creates a moment that can tilt the ring during transport. A near-vertical final approach and release after the ring is supported by the target reduce the sensitivity to that moment.
+
+\subsubsection{Plug insertion}
+
+Plug insertion is a constrained contact task. Lateral and angular misalignment can produce edge contact, jamming, incomplete seating, socket-box displacement, or excessive force. For an insertion depth \(L_i\) and effective lateral clearance \(c_i\), a first-order small-clearance angular bound is
+\begin{equation}
+\theta_{\max}\approx\tan^{-1}\left(\frac{c_i}{L_i}\right).
+\label{eq:ch4-angular-tolerance}
+\end{equation}
+The relation shows that angular tolerance decreases as insertion depth increases. The socket box is pushed into a repeatable central region before insertion so that the left arm can approach with sufficient remaining wrist orientation range. The right-arm push must end before the left-arm precision approach enters the same local region.
+
+The DR3 socket mock-up was electrically unpowered and had a recorded overall size of \(80\times80\times30~\mathrm{mm}\). The current task continues to use an unpowered socket fixture. The exact dimensions of the final socket box, pin clearance, insertion depth, and fixture compliance should be remeasured if the physical object differs from the DR3 mock-up. Until those values are recorded, success is defined functionally: the correct plug enters the correct socket, remains seated without manual assistance, and produces no visible damage.
+
+\subsubsection{Memory-module extraction}
+
+The motherboard task requires fixture stabilization, connector release, module extraction, and safe placement. The left gripper pulls the motherboard closer and holds or stabilizes it. The right gripper must approach the memory module without contacting nearby components, apply a controlled extraction motion consistent with the connector geometry, and transport the released module to the yellow tray.
+
+The mechanical tolerance is governed by the free space around the memory module, the width and compliance of the custom fingers, and the connector's extraction direction. Excess lateral motion can bend the module or load adjacent board components. Because connector retention force, neighbouring-component clearance, and module dimensions were not supplied, the report does not infer extraction force or a numerical clearance. These quantities remain required measurements for a complete contact-mechanics verification.
+
+\subsection{Custom gripper geometry and mechanical analysis}
+
+Each gripper assembly uses two identical TPU~64D fingers, and the dual-arm workcell therefore uses four fingers. For one finger,
 \[
-T_{\mathrm{chunk}}=\frac{50}{5}=10~\mathrm{s}.
+L=123.36~\mathrm{mm},\qquad
+T=25.80~\mathrm{mm},\qquad
+H=40.00~\mathrm{mm}.
 \]
-Deployment uses \texttt{n\_action\_steps=10}; therefore, ten actions, or approximately 2~s of robot motion, are consumed before a new policy query. Receding-horizon execution allows the next prediction to incorporate updated visual observations and bilateral robot state instead of executing the full ten-second prediction open loop.
+The principal geometric ratios are
+\begin{equation}
+\frac{L}{T}=\frac{123.36}{25.80}\approx4.78,
+\qquad
+\frac{L}{H}=\frac{123.36}{40.00}\approx3.08.
+\label{eq:ch4-finger-ratios}
+\end{equation}
+These ratios describe an elongated finger rather than a short rigid jaw. The repeated ribs reduce local bending stiffness along the contact region, the tapered outline improves access, and the thicker mounting end distributes screw load.
 
-\subsection{Perception and camera configuration}
+The same compliance has a trade-off. It accommodates object-shape and pose variation and can reduce concentrated contact pressure, but deformation can reduce grasp repeatability and make the effective fingertip pose load dependent. The task design therefore uses compliance for tolerance while retaining fixed camera identities, repeatable starts, and arm-side position control. No finite-element stress, fatigue-life, or calibrated force-deflection result is claimed because print orientation, infill, wall count, actual TPU properties, contact loads, and cycle count were not supplied.
 
-The final visual configuration contains three RGB cameras. One fixed Intel RealSense D435i provides an overhead view of the shared workcell, fixtures, and large object displacements. Two Intel RealSense D405 cameras provide left- and right-wrist views of grasping and contact regions. This division preserves global scene context while reducing the loss of local detail caused by occlusion during insertion, extraction, and placement.
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.96\textwidth]{dr3-report/imgs/soft_gripper_finger_three_views.png}
+  \caption{Orthographic views of one TPU~64D compliant gripper finger, including the overall \(123.36\times25.80\times40.00~\mathrm{mm}\) bounding-box dimensions.}
+  \label{fig:ch4-gripper-three-view}
+\end{figure}
 
-All three streams are recorded at \(424\times240\) pixels (width \(\times\) height). In the dataset, each image is represented in channel-first format as
+\subsection{Perception working distance, field of view, and camera selection}
+
+The overhead camera is an Intel RealSense D435i. Its specified ideal depth range is approximately 0.3--3~m and its depth field of view is approximately \(87^\circ\times58^\circ\)~\cite{realsensed435i}. This makes it suitable for observing the complete tabletop from a fixed elevated position. The overhead view supplies global information when either wrist view is occluded or too close to show the relationship between the object, fixture, and destination.
+
+Each wrist camera is an Intel RealSense D405. Its specified ideal depth range is approximately 7--50~cm, with an approximately \(87^\circ\times58^\circ\) depth field of view~\cite{realsensed405}. This range is better matched to a camera mounted near the end effector. The wrist views preserve local detail during ring descent, plug alignment, and memory-module extraction.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Camera configuration and selection basis}
+  \label{tab:ch4-camera-selection}
+  \small
+  \begin{tabularx}{\textwidth}{p{0.18\textwidth}p{0.14\textwidth}p{0.18\textwidth}p{0.17\textwidth}X}
+    \toprule
+    \textbf{Camera} & \textbf{Quantity} & \textbf{Nominal ideal range} & \textbf{Depth FOV} & \textbf{Project function} \\
+    \midrule
+    RealSense D435i & 1 & 0.3--3~m & \(87^\circ\times58^\circ\) & Fixed overhead context for the shared workcell, fixtures, destinations, and large object displacement. \\
+    RealSense D405 & 2 & 7--50~cm & \(87^\circ\times58^\circ\) & Left- and right-wrist close-range views for grasp, contact, insertion, extraction, and placement. \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+The hardware can operate at higher image and depth rates than the learning pipeline, but the project records RGB at \(424\times240\) and 5~Hz. The selected policy does not consume depth or D435i inertial data. Camera range and field of view therefore justify coverage and mounting, while the learned input remains three RGB images.
+
+\subsection{Image format and preprocessing}
+
+All three raw streams have width 424 and height 240. The LeRobot dataset stores each decoded RGB image in channel-first form:
 \[
 [C,H,W]=[3,240,424].
 \]
-Before an image is passed to $\pi_{0.5}$, it is converted to \(3\times224\times224\). Preprocessing preserves the original aspect ratio: the \(424\times240\) image is scaled to approximately \(224\times126\), and approximately 49 pixels of black padding are added above and below the resized image. The image is not stretched into a square. Pixel values are first represented in \([0,1]\) and are then normalized to \([-1,1]\) before entering the model. The deployed policy therefore receives three tensors of shape \(3\times224\times224\) at each observation step.
+Before an image is passed to $\pi_{0.5}$, it is converted to a \(3\times224\times224\) tensor. The conversion preserves aspect ratio. The \(424\times240\) image is scaled to approximately \(224\times126\), and the remaining square area is filled with approximately 49 black pixels above and below the resized image. The image is not stretched to \(224\times224\).
 
-Camera identity and preprocessing are part of the policy feature contract. Before recording or deployment, the system checks that the overhead, left-wrist, and right-wrist streams are present and mapped to the same logical feature names used during training. A missing, stale, or incorrectly mapped stream causes the run to stop rather than allowing the policy to act on an unintended camera ordering.
+Pixel values are represented in \([0,1]\) after decoding and are normalized to \([-1,1]\) before the model. This process is applied independently but identically to the overhead, left-wrist, and right-wrist images. Camera names and ordering are part of the feature contract. A swapped wrist-camera mapping can produce a dimensionally valid but semantically incorrect policy input, so identity is checked before recording and deployment.
+
+\subsection{GELLO hardware and leader--follower mapping}
+
+One GELLO--Franka leader provides seven arm degrees of freedom and one gripper-related channel. The DR3 build specifies seven DYNAMIXEL XL330-M288-T actuators for the arm joints and one XL330-M077-T actuator for the gripper-related joint, together with a ZNJ integrated control board, a 5~V 5~A switched-mode power supply, an FPX330-H101 structural kit, and 3D-printed leader and gripper-interface components.
+
+The dual-arm system uses two such leader assemblies. At the component level this corresponds to fourteen XL330-M288-T units, two XL330-M077-T units, two controller boards, and two power supplies. The XL330 series operates from 3.7--6~V, with 5~V recommended; one actuator is approximately \(20\times34\times26~\mathrm{mm}\) and approximately 18~g~\cite{dynamixelxl330}. The M288 and M077 variants trade speed and torque through different gear ratios. For this project, the leader devices provide position input rather than follower-scale actuation.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.50\textwidth]{dr3-report/imgs/gello.png}
+  \caption{GELLO--Franka leader device used as the basis of bilateral demonstration collection. The final system uses one leader assembly for each FR3 follower arm.}
+  \label{fig:ch4-gello}
+\end{figure}
+
+Leader motion must be mapped to follower joint order, sign convention, zero offset, and permitted range. An incorrect offset can generate a valid numeric command that is unsafe for the follower. The pre-collection procedure therefore verifies the leader zero, moves each channel through a small range, confirms the corresponding follower direction, and checks the gripper-width mapping before a task episode is recorded.
+
+\subsection{Data-collection pipeline}
+
+The implemented data path is
+\begin{multline}
+\text{two GELLO leaders}
+\rightarrow
+\text{two FR3 follower controllers}
+\rightarrow
+\text{ROS~2 bridge}
+\rightarrow
+\text{assembled packets}
+\notag\\
+\rightarrow
+\text{LeRobot recorder}
+\rightarrow
+\text{Parquet state/action data and three RGB video streams}.
+\label{eq:ch4-data-path}
+\end{multline}
+
+The follower-side system provides measured joint positions and current gripper widths. The command side provides absolute arm targets and absolute gripper-width commands. The recorder samples the assembled packet stream at 5~Hz, assigns frames to the active episode, and preserves the task identity. A complete episode contains a continuous visual and proprioceptive record from the initial condition to either task completion or termination.
+
+Collection and task review are intentionally separate operations. The recorder verifies schema and continuity, while the operator verifies whether the physical task was demonstrated correctly. A numerically complete episode can still be unsuitable for training if the operator intervened incorrectly, the object left the intended workspace, or the terminal state does not match the language instruction.
 
 \subsection{Packet synchronization and action-label alignment}
 
-The data stream is sampled at 5~Hz, corresponding to an interval of approximately 0.2~s. The recorder pairs adjacent assembled packets rather than interpolating raw device timestamps. For the saved sample at index \(t\),
+The stored cadence is 5~Hz, corresponding to approximately 0.2~s per step. The recorder pairs adjacent assembled packets. For the saved sample at index \(t\),
 \begin{align}
-\mathbf{o}^{\mathrm{visual}}_t &= \text{three images from packet }t, \\
-\mathbf{s}_t &= \text{bilateral state from packet }t, \\
-\mathbf{a}^{\mathrm{arm}}_t &= \mathbf{q}^{\mathrm{target}}_{t+1}\text{ from packet }t+1, \\
-\mathbf{a}^{\mathrm{gripper}}_t &= \mathbf{g}^{\mathrm{target}}_{t}\text{ from packet }t.
+\mathbf{o}^{\mathrm{visual}}_t
+  &=\text{three images from packet }t,\\
+\mathbf{s}_t
+  &=\text{bilateral measured state from packet }t,\\
+\mathbf{a}^{\mathrm{arm}}_t
+  &=\mathbf q^{\mathrm{target}}_{t+1}\text{ from packet }t+1,\\
+\mathbf{a}^{\mathrm{gripper}}_t
+  &=\mathbf g^{\mathrm{target}}_{t}\text{ from packet }t.
 \end{align}
-Thus, the three images and the measured robot state come from the same assembled packet. The supervised arm label is shifted forward by one packet so that the observation at \(t\) is paired with the next absolute joint target. The gripper label follows the existing same-packet convention and stores the absolute commanded opening width from packet \(t\).
+Images and measured state therefore come from the same current packet. The arm label is shifted forward by one packet so that the current observation is paired with the next absolute joint target. The gripper label follows the existing same-packet convention.
 
-This procedure establishes software-level synchronization within one packet. The recorder does not perform device-timestamp interpolation, ROS approximate-time message alignment, or hardware-triggered exposure synchronization. It relies on the upstream ROS~2 bridge to assemble the packet. Consequently, the dataset supports the claim that camera images and robot state share one software packet, but it does not by itself prove that the three camera exposures occurred at exactly the same physical instant.
+This procedure guarantees consistency of the saved software packet and label rule. It does not prove that all three camera exposures occurred at the same physical instant. The recorder does not interpolate device timestamps, perform ROS approximate-time alignment, or use a hardware trigger. It trusts the upstream bridge to provide an assembled packet. This limitation must be retained in the report because a nominal 5~Hz LeRobot timestamp alone cannot be used to reconstruct true camera skew or end-to-end latency.
 
-\subsection{Multi-task dataset construction}
+\subsection{Dataset construction and episode split}
 
-Each of the three tasks contains 80 episodes, for a total of 240 episodes and 119,650 frames. All tasks use random seed 1000 and the same held-out episode indices:
+The three task datasets contain 80 episodes each. All three use random seed 1000 and the same validation episode indices:
 \[
 \{17,35,58,65,66,72,74,75\}.
 \]
-The remaining 72 episodes from each task are used for training. The split is performed by complete episode, preventing frames from one physical trajectory from appearing in both the training and validation sets.
+The remaining 72 episodes per task are used for training. Splitting by episode prevents neighbouring frames from the same physical trajectory from appearing in both the training and validation sets.
 
-\begin{table}[!htbp]
-\centering
-\caption{Episode-level dataset split for the three bimanual tasks}
-\label{tab:pi05-dataset-split}
-\small
-\begin{tabularx}{\textwidth}{
-  l
-  >{\centering\arraybackslash}p{0.10\textwidth}
-  >{\centering\arraybackslash}p{0.12\textwidth}
-  X
-  X}
-\toprule
-\textbf{Task dataset} & \textbf{Episodes} & \textbf{Frames} &
-\textbf{Training split} & \textbf{Validation split} \\
-\midrule
-\texttt{dual\_ring}   & 80 & 46,326 & 72 episodes / 41,410 frames & 8 episodes / 4,916 frames \\
-\texttt{dual\_socket} & 80 & 38,511 & 72 episodes / 34,655 frames & 8 episodes / 3,856 frames \\
-\texttt{dual\_ram}    & 80 & 34,813 & 72 episodes / 31,675 frames & 8 episodes / 3,138 frames \\
-\midrule
-\textbf{Total} & \textbf{240} & \textbf{119,650} &
-\textbf{216 episodes / 107,740 frames} &
-\textbf{24 episodes / 11,910 frames} \\
-\bottomrule
-\end{tabularx}
+\begin{table}[htbp]
+  \centering
+  \caption{Episode-level dataset split for the three bimanual tasks}
+  \label{tab:ch4-dataset-split}
+  \small
+  \begin{tabularx}{\textwidth}{
+    l
+    >{\centering\arraybackslash}p{0.10\textwidth}
+    >{\centering\arraybackslash}p{0.12\textwidth}
+    X
+    X}
+    \toprule
+    \textbf{Task dataset} & \textbf{Episodes} & \textbf{Frames} &
+    \textbf{Training split} & \textbf{Validation split} \\
+    \midrule
+    \texttt{dual\_ring}   & 80 & 46,326 & 72 episodes / 41,410 frames & 8 episodes / 4,916 frames \\
+    \texttt{dual\_socket} & 80 & 38,511 & 72 episodes / 34,655 frames & 8 episodes / 3,856 frames \\
+    \texttt{dual\_ram}    & 80 & 34,813 & 72 episodes / 31,675 frames & 8 episodes / 3,138 frames \\
+    \midrule
+    \textbf{Total} & \textbf{240} & \textbf{119,650} &
+    \textbf{216 episodes / 107,740 frames} &
+    \textbf{24 episodes / 11,910 frames} \\
+    \bottomrule
+  \end{tabularx}
 \end{table}
 
-During joint training, tasks are sampled with equal probability. The sampler first selects the task and then selects training data from that task, so the larger number of frames in \texttt{dual\_ring} does not give it a larger task-level sampling probability. This preserves balanced supervision across the three language instructions despite their different trajectory lengths.
+The tasks are sampled with equal probability during training. Task selection occurs before sample selection, so \texttt{dual\_ring} does not receive a larger task-level probability merely because it contains more frames. This choice balances the three instructions and prevents the longest average trajectory from dominating the gradient updates.
 
-\subsection{LeRobot \texorpdfstring{$\pi_{0.5}$}{pi0.5} policy}
+\subsection{\texorpdfstring{$\pi_{0.5}$}{pi0.5} base model and software configuration}
 
-The final controller uses one jointly trained $\pi_{0.5}$ checkpoint. The base checkpoint is the official \texttt{pi05\_base} model, whose upstream parameters are identified by
-\nolinkurl{gs://openpi-assets/checkpoints/pi05_base/params}.
-Training reads the converted PyTorch weights from
+The final controller uses the official \texttt{pi05\_base} model. The upstream checkpoint is identified by
+\nolinkurl{gs://openpi-assets/checkpoints/pi05_base/params},
+and training reads the converted PyTorch parameters from
 \nolinkurl{real-exp/.hf-cache/pi05_base_pytorch/model.safetensors}.
-The base model combines a PaliGemma \texttt{gemma\_2b} vision-language component with a \texttt{gemma\_300m} action expert. Model weights use \texttt{bfloat16}.
+The base architecture combines a PaliGemma \texttt{gemma\_2b} vision-language component with a \texttt{gemma\_300m} action expert. The model weights use \texttt{bfloat16}.
 
-The implementation uses LeRobot~0.5.2 at commit
-\texttt{dc06dba9\allowbreak d6220ab9\allowbreak 9c94e83e\allowbreak c7f0d45a\allowbreak 35b44bed}, together with project-specific local modifications. Training is performed on physical GPU~1 of an NVIDIA RTX~A6000 with 48~GB of memory. The three tasks are trained jointly for 100,000 optimizer steps with batch size~4 and AdamW. The peak learning rate is \(2.5\times10^{-5}\). A 1,000-step warm-up is followed by cosine decay to \(2.5\times10^{-6}\). Validation is run every 5,000 steps.
+The project uses LeRobot~0.5.2 at commit
+\texttt{dc06dba9\allowbreak d6220ab9\allowbreak 9c94e83e\allowbreak c7f0d45a\allowbreak 35b44bed},
+together with local project modifications. The dataset format is LeRobot Dataset v3.0. Training is executed on physical GPU~1 of an NVIDIA RTX~A6000 with 48~GB of memory.
 
-Checkpoint selection uses a task-balanced validation quantity rather than a frame-weighted loss. For each task, the mean normalized flow-matching loss is first calculated over at most 64 validation batches. With batch size~4, this evaluates at most 256 validation samples per task at each validation point. The checkpoint-selection metric is
+\subsection{Training procedure}
+
+The three tasks are trained jointly for 100,000 optimizer steps. Batch size is 4 and the optimizer is AdamW. The peak learning rate is \(2.5\times10^{-5}\). A 1,000-step warm-up is followed by cosine decay to \(2.5\times10^{-6}\). Task-balanced validation is run every 5,000 steps.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Final $\pi_{0.5}$ training configuration}
+  \label{tab:ch4-pi05-training}
+  \small
+  \begin{tabularx}{\textwidth}{p{0.31\textwidth}X}
+    \toprule
+    \textbf{Parameter} & \textbf{Implemented value} \\
+    \midrule
+    Base model & Official \texttt{pi05\_base} \\
+    Model structure & PaliGemma \texttt{gemma\_2b} and action expert \texttt{gemma\_300m} \\
+    Weight precision & \texttt{bfloat16} \\
+    LeRobot version & 0.5.2, with local modifications \\
+    Dataset format & LeRobot Dataset v3.0 \\
+    Training hardware & NVIDIA RTX A6000 48~GB, physical GPU~1 \\
+    Batch size & 4 \\
+    Optimizer & AdamW \\
+    Training length & 100,000 joint-training steps \\
+    Learning-rate schedule & 1,000-step warm-up to \(2.5\times10^{-5}\), followed by cosine decay to \(2.5\times10^{-6}\) \\
+    Task sampling & Equal probability for \texttt{dual\_ring}, \texttt{dual\_socket}, and \texttt{dual\_ram} \\
+    Validation interval & Every 5,000 optimizer steps \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+The training configuration deliberately separates task balancing from frame count. The action and state normalizers are derived from the training data only. Validation episodes are not used to compute model updates. The same action representation and \texttt{use\_relative\_actions=false} setting are retained when the selected checkpoint is loaded for deployment.
+
+\subsection{Validation and checkpoint selection}
+
+For each task, validation first computes the mean normalized flow-matching loss over at most 64 batches. With batch size~4, this corresponds to at most 256 validation samples per task at one validation point. The checkpoint-selection quantity is the unweighted task macro-average
 \begin{equation}
-\mathcal{L}_{\mathrm{macro}}
+\mathcal L_{\mathrm{macro}}
 =
 \frac{
-\mathcal{L}_{\mathrm{ring}}
+\mathcal L_{\mathrm{ring}}
 +
-\mathcal{L}_{\mathrm{socket}}
+\mathcal L_{\mathrm{socket}}
 +
-\mathcal{L}_{\mathrm{ram}}
-}{3},
-\label{eq:macro-flow-matching-loss}
+\mathcal L_{\mathrm{ram}}
+}{3}.
+\label{eq:ch4-macro-flow-loss}
 \end{equation}
-where each term is the corresponding task's mean normalized flow-matching loss. The best checkpoint is the validation point with the lowest \(\mathcal{L}_{\mathrm{macro}}\). The unweighted arithmetic mean prevents the longer \texttt{dual\_ring} trajectories from dominating checkpoint selection.
+The best checkpoint is the validation point with the lowest \(\mathcal L_{\mathrm{macro}}\).
 
-\begin{table}[!htbp]
-\centering
-\caption{Final $\pi_{0.5}$ training and deployment configuration}
-\label{tab:pi05-configuration}
-\small
-\begin{tabularx}{\textwidth}{p{0.31\textwidth}X}
-\toprule
-\textbf{Parameter} & \textbf{Implemented value} \\
-\midrule
-Base model & Official \texttt{pi05\_base} \\
-Model structure & PaliGemma \texttt{gemma\_2b} + action expert \texttt{gemma\_300m} \\
-Weight precision & \texttt{bfloat16} \\
-LeRobot version & 0.5.2 \\
-LeRobot commit & \texttt{dc06dba9\allowbreak d6220ab9\allowbreak 9c94e83e\allowbreak c7f0d45a\allowbreak 35b44bed}, with local modifications \\
-Dataset format & LeRobot Dataset v3.0 \\
-Training hardware & NVIDIA RTX A6000 48~GB, physical GPU~1 \\
-Batch size & 4 \\
-Optimizer & AdamW \\
-Training length & 100,000 steps across three jointly sampled tasks \\
-Learning-rate schedule & 1,000-step warm-up to \(2.5\times10^{-5}\), cosine decay to \(2.5\times10^{-6}\) \\
-Validation interval & Every 5,000 steps \\
-Checkpoint-selection metric & Lowest macro-average normalized flow-matching loss across the three tasks; at most 64 batches per task \\
-Action chunk & 50 predicted steps \\
-Executed segment & \texttt{n\_action\_steps=10}, approximately 2~s at 5~Hz \\
-Action representation & Absolute joint and gripper-width targets; \texttt{use\_relative\_actions=false} \\
-\bottomrule
-\end{tabularx}
-\end{table}
+This metric is intentionally not weighted by the number of validation frames. It gives each task equal influence, just as the training sampler gives each task equal selection probability. The loss supports checkpoint comparison, but it is not a physical success rate, insertion-depth measurement, contact-force measurement, or calibrated pose error. Real-robot performance is evaluated separately in Chapter~5.
 
-\subsection{Control, computation, and safety}
+\subsection{Action chunking and temporal interface}
 
-The learned model provides high-level bilateral targets, while the robot-side interface and FR3 controllers remain responsible for admissibility checks and low-level execution. Before motion is enabled, a dry run verifies the three camera streams, the 16-dimensional state and action mapping, finite policy outputs, checkpoint and dataset statistics, language instruction, communication status, joint limits, workspace bounds, gripper limits, and emergency-stop access.
+Collection and execution use 5~Hz, so one action step represents 0.2~s. The model predicts a 50-step chunk:
+\begin{equation}
+T_{\mathrm{predicted}}=\frac{50}{5}=10~\mathrm{s}.
+\end{equation}
+Deployment uses \texttt{n\_action\_steps=10}, so the executor consumes approximately
+\begin{equation}
+T_{\mathrm{executed}}=\frac{10}{5}=2~\mathrm{s}
+\end{equation}
+before requesting a new policy result from updated observations.
 
-During execution, a missing observation, stale state, non-finite output, communication timeout, excessive joint target, workspace violation, protective stop, or manual emergency stop terminates the run. The power socket remains electrically unpowered. Reset is performed only after policy execution has stopped and the shared workspace is clear. These controls prevent the VLA policy from bypassing deterministic safety constraints.
+This is a receding-horizon interface. The 50-step prediction gives the action expert a longer temporal target, while executing only 10 steps limits the amount of open-loop motion. The exact policy-query interval may also include capture, preprocessing, inference, transfer, and queue overhead; therefore, the nominal two-second value describes the consumed action segment rather than a measured end-to-end latency.
+
+\subsection{Deployment pipeline}
+
+Deployment begins by loading the selected unified checkpoint and its associated normalization statistics. The system verifies the three camera feature names, checks the 16-dimensional state, and confirms the language instruction. The current observation is preprocessed and passed to the policy server. The returned action chunk is denormalized, sliced to the 16 valid robot dimensions, checked for finite values and limits, and divided into left-arm, left-gripper, right-arm, and right-gripper targets.
+
+The robot adapter sends absolute joint targets and absolute gripper widths. It does not reinterpret them as deltas. After the configured ten-step segment, new images and state are acquired and a new action chunk is requested. This loop continues until the terminal task condition or a stop condition is reached.
+
+\subsection{Control, computation, and safety boundary}
+
+The policy is not the safety controller. Before motion is enabled, a dry run verifies camera freshness and ordering, state/action dimensions, normalization statistics, checkpoint identity, language instruction, finite model outputs, network communication, joint and gripper limits, workspace bounds, and emergency-stop access.
+
+During motion, the run stops on a missing image, stale state, malformed packet, non-finite output, excessive target, workspace violation, communication timeout, robot protective stop, emergency stop, or manual stop. Reset is performed only after policy execution has stopped and the shared workspace is clear. The power socket remains unpowered. These checks maintain a deterministic boundary around the probabilistic learned policy.
 
 \section{Detailed system design}
 
+\subsection{Workcell layout}
+
+The two FR3 arms are mounted upright on opposite sides of a shared tabletop region. Task fixtures are placed inside the verified overlap of the two practical workspaces. The D435i is fixed above the shared region. One D405 is attached to each wrist. Each arm carries one custom gripper. The two GELLO leaders remain outside the follower workcell and are used by the operator during demonstration collection.
+
+The lower row of Figure~\ref{fig:ch4-dr3-architecture} records the selected physical arrangement: dual FR3 arms, a top view, wrist views, and custom grippers. The final setup extends the depicted single GELLO symbol to two leader assemblies. Exact base spacing, camera height, camera pitch, and fixture coordinates were not included in the supplied implementation record; these values should be added to a future dimensioned workcell drawing rather than inferred from the conceptual image.
+
 \subsection{Dual-arm robotic platform}
 
-The workcell uses one FR3 arm on each side of the shared workspace. Both arms provide seven joint-position channels and one gripper-width channel to the learned policy. The bimanual arrangement enables one arm to prepare or stabilize the scene while the other performs grasping, insertion, extraction, or placement. The recorded demonstrations determine the coordinated timing between the arms.
+Both arms use the same 16-value bilateral ordering defined in Equations~\ref{eq:ch4-bimanual-state} and~\ref{eq:ch4-bimanual-action}. The left and right controllers remain independent low-level systems, but they are driven from one policy output and one episode timeline. Each arm can perform a large scene-preparation motion or a precise manipulation motion, depending on the demonstrated task role.
 
-\subsection{Task-compatible gripper}
+The redundant seventh joint is important in the shared workcell because end-effector pose alone does not determine a unique arm posture. Demonstrations implicitly select postures that provide camera visibility, avoid fixtures, and reduce inter-arm interference. The low-level controller remains responsible for executing the admissible targets; the learned model does not directly output torque.
 
-The final workcell uses the custom gripper developed during DR3. The compliant TPU fingers are particularly useful for the plug body and handled ring because they tolerate small shape and pose variations. For memory-module removal, the same gripper concept must maintain sufficient geometric access to the module while avoiding contact with neighboring motherboard components. The gripper is inspected before each run for finger damage, loose screws, excessive deformation, and insufficient opening range.
+\subsection{GELLO leader assemblies}
+
+Each GELLO leader contains the following hardware groups:
+\begin{enumerate}
+  \item seven XL330-M288-T actuator modules for the arm joints;
+  \item one XL330-M077-T module for the gripper-related channel;
+  \item one ZNJ integrated control board;
+  \item one 5~V, 5~A switched-mode power supply;
+  \item one FPX330-H101 structural kit; and
+  \item the required 3D-printed leader links, brackets, base, and Franka-compatible gripper interface.
+\end{enumerate}
+
+The control board reads the leader joint configuration and publishes targets to the follower-side interface. The operator does not bear follower-arm load through the leader; the leader is a measurement and command device. Mechanical looseness, servo zero error, cable interference, or incorrect joint signs can degrade demonstration quality, so the two leader assemblies are inspected and checked independently before bilateral collection.
+
+\subsection{End-effector and mechanical components}
+
+Each gripper uses two screw-mounted compliant fingers. The mounting screws must be tightened consistently, and the fingers must be installed with matching orientation. Before a run, the operator checks for tearing at rib roots, permanent bending, loose mounting holes, surface contamination, and insufficient opening range.
+
+The task fixtures prevent uncontrolled object drift while retaining the manipulation required by the task. The can and socket box must still be pushable into the intended central region. The motherboard must be graspable and movable by the left gripper but sufficiently supported to allow the right gripper to extract the memory module. The tray must remain fixed so that successful placement is not confused with tray motion.
+
+\subsection{Vision and sensing system}
+
+The D435i mount is fixed relative to the workcell and is positioned to keep all source and destination regions in view. The two D405 mounts move with the wrists and are oriented so that the gripper contact region appears in the close-range image during approach. Cables are routed to avoid entering the gripper opening or restricting wrist motion.
+
+The logical camera mapping is fixed:
+\[
+\texttt{overhead}\equiv\text{D435i},\qquad
+\texttt{left\_wrist}\equiv\text{left D405},\qquad
+\texttt{right\_wrist}\equiv\text{right D405}.
+\]
+The recorder and policy use these identities consistently. The three cameras provide RGB to the model; their depth and inertial capabilities are not part of the current learned observation.
+
+\subsection{Demonstration data-collection system}
+
+The collection system starts the two robot interfaces, both gripper interfaces, three camera publishers, the ROS~2 bridge, and the LeRobot recorder. The bridge assembles the latest required fields into a packet. The recorder begins a named task episode only after all required fields are available.
+
+The operator executes the complete instruction and then ends the episode. The episode is retained only if the three image streams decode correctly, state and action arrays have the required width, and the demonstration matches the intended task. Manual workcell reset is performed between episodes. The same task instruction is used during collection and later deployment so that language conditioning does not depend on an undocumented paraphrase.
+
+\subsection{Data processing pipeline}
+
+Processing has separate visual and numeric branches. The visual branch decodes the three RGB streams, converts them to channel-first tensors, preserves aspect ratio during resizing, pads to \(224\times224\), and normalizes to \([-1,1]\). The numeric branch reads the 16-dimensional state and action, applies the training statistics, and pads the model-side representation to 32 dimensions.
+
+Episode metadata determines the task and split. The eight validation episode indices are excluded from training for every task. During data loading, the task-balanced sampler chooses among the three task datasets with equal probability. The language instruction, three images, state, and supervised action target are then passed to the policy training step.
+
+\subsection{Policy-training system}
+
+The training system loads \texttt{pi05\_base}, the converted PyTorch weights, and the LeRobot v3.0 datasets. It uses batch size~4 on the RTX A6000. Optimizer state, learning-rate schedule, model state, step index, and validation quantities are saved at the configured checkpoints.
+
+Validation runs every 5,000 steps. Each task is evaluated separately before the unweighted macro-average is calculated. This preserves per-task traceability and prevents a low loss on the largest dataset from concealing a poor result on another task.
+
+\subsection{Robot control and deployment system}
+
+The deployment system loads one checkpoint for all three instructions. The selected instruction and current observation are sent to $\pi_{0.5}$. A 50-step action chunk is returned, and the executor uses the first ten steps. The target ordering, absolute-action interpretation, 5~Hz cadence, and camera mapping are identical to training.
+
+The left and right arm targets are separated only after policy output validation. The gripper commands are expressed as absolute opening widths in metres. After each executed segment, the queue is not blindly extended with the rest of the old 50-step chunk; the policy is queried again using updated images and state.
 
 \subsection{Hardware--software interfaces}
 
-\begin{table}[!htbp]
-\centering
-\caption{Principal interfaces in the final dual-arm VLA system}
-\label{tab:final-interfaces}
+\begingroup
 \small
-\begin{tabularx}{\textwidth}{p{0.22\textwidth}p{0.25\textwidth}X}
-\toprule
-\textbf{Interface} & \textbf{Connected modules} & \textbf{Transferred information} \\
-\midrule
-Teleoperation interface & GELLO leaders to two FR3 arms & Bilateral joint and gripper targets for demonstration collection \\
-Visual interface & D435i overhead and two D405 wrist cameras to LeRobot & Three synchronized RGB observations \\
-Robot-state interface & Two FR3 controllers and grippers to LeRobot & Sixteen valid state values in the fixed left-to-right ordering \\
-Dataset interface & Recorder to LeRobot Dataset v3.0 & Images, state, absolute action, task instruction, episode index, and dataset statistics \\
-Policy interface & LeRobot dataset and language input to $\pi_{0.5}$ & Three-task balanced training input and 50-step action prediction \\
-Execution interface & $\pi_{0.5}$ to robot-side adapter & First ten absolute bilateral targets from each predicted action chunk \\
-Safety interface & Robot-side checks and FR3 protections & Joint, gripper, workspace, freshness, finite-value, timeout, and stop conditions \\
-\bottomrule
-\end{tabularx}
-\end{table}
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.08}
+\begin{longtable}{
+  >{\raggedright\arraybackslash}p{0.17\textwidth}
+  >{\raggedright\arraybackslash}p{0.20\textwidth}
+  >{\raggedright\arraybackslash}p{0.20\textwidth}
+  >{\raggedright\arraybackslash}p{0.35\textwidth}}
+  \caption{Detailed hardware--software interfaces in the final system}
+  \label{tab:ch4-detailed-interfaces}\\
+  \toprule
+  \textbf{Information} & \textbf{Source} & \textbf{Destination} & \textbf{Implemented contract} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Information} & \textbf{Source} & \textbf{Destination} & \textbf{Implemented contract} \\
+  \midrule
+  \endhead
+  Left leader joints & Left GELLO & Left follower interface & Seven leader positions mapped to left FR3 joint order, signs, offsets, and permitted range. \\
+  Left leader gripper & Left GELLO & Left gripper interface & One leader channel mapped to absolute gripper opening width. \\
+  Right leader joints & Right GELLO & Right follower interface & Seven leader positions mapped to right FR3 joint order, signs, offsets, and permitted range. \\
+  Right leader gripper & Right GELLO & Right gripper interface & One leader channel mapped to absolute gripper opening width. \\
+  Left measured joints & Left FR3 controller & ROS~2 bridge / recorder / executor & Seven current joint positions in state indices 0--6. \\
+  Left measured gripper & Left gripper & ROS~2 bridge / recorder / executor & Current opening width in metres at state index~7. \\
+  Right measured joints & Right FR3 controller & ROS~2 bridge / recorder / executor & Seven current joint positions in state indices 8--14. \\
+  Right measured gripper & Right gripper & ROS~2 bridge / recorder / executor & Current opening width in metres at state index~15. \\
+  Overhead RGB & RealSense D435i & Bridge / recorder / policy & RGB \(424\times240\) at 5~Hz; stored as \(3\times240\times424\), then resized and padded to \(3\times224\times224\). \\
+  Left-wrist RGB & Left RealSense D405 & Bridge / recorder / policy & Same tensor contract under the fixed left-wrist feature name. \\
+  Right-wrist RGB & Right RealSense D405 & Bridge / recorder / policy & Same tensor contract under the fixed right-wrist feature name. \\
+  Assembled packet & ROS~2 bridge & LeRobot recorder & Same-packet images and measured state; adjacent-packet arm action label. \\
+  Episode record & LeRobot recorder & Dataset v3.0 & Three videos, state, absolute action, task instruction, episode and frame indexing. \\
+  Training sample & Dataset and sampler & $\pi_{0.5}$ trainer & Equal-probability task sampling; training episodes only. \\
+  Language instruction & Task interface & $\pi_{0.5}$ policy & One of the three documented task instructions matching the prepared scene. \\
+  Policy observation & Preprocessor & $\pi_{0.5}$ policy & Three normalized \(3\times224\times224\) images and a padded numeric state whose first 16 entries are valid. \\
+  Predicted action & $\pi_{0.5}$ policy & Robot adapter & 50-step chunk; first 10 steps consumed per query. \\
+  Left arm command & Robot adapter & Left FR3 controller & Absolute joint targets from action indices 0--6. \\
+  Left gripper command & Robot adapter & Left gripper & Absolute opening width from action index~7. \\
+  Right arm command & Robot adapter & Right FR3 controller & Absolute joint targets from action indices 8--14. \\
+  Right gripper command & Robot adapter & Right gripper & Absolute opening width from action index~15. \\
+  Stop conditions & Cameras, bridge, adapter, robot controllers, operator & Both robot command paths & Stop on stale/missing data, invalid action, timeout, workspace or joint violation, protective stop, emergency stop, or manual stop. \\
+  \bottomrule
+\end{longtable}
+\endgroup
 
 \subsection{Task definitions and bilateral role allocation}
 
-Table~\ref{tab:pi05-tasks} records the exact task-level language instructions, the demonstrated allocation of work between the arms, and the terminal completion conditions.
-
-\begin{table}[!htbp]
-\centering
-\caption{Language instructions, bilateral roles, and completion conditions}
-\label{tab:pi05-tasks}
-\small
-\begin{tabularx}{\textwidth}{
-  >{\centering\arraybackslash}p{0.05\textwidth}
-  >{\raggedright\arraybackslash}p{0.42\textwidth}
-  >{\raggedright\arraybackslash}p{0.22\textwidth}
-  X}
-\toprule
-\textbf{Task} & \textbf{Language instruction} & \textbf{Demonstrated arm roles} & \textbf{Terminal completion condition} \\
-\midrule
-T1 &
-First, push the can to the middle, then pick up the black ring with the handle, put it over the can, and set it down. &
-Left arm pushes the can; right arm grasps the handled ring and places it. &
-The can is repositioned, and the released ring remains stably over the can. \\
-\addlinespace
-T2 &
-Push the box with the power socket to the middle, then pick up the plug and insert it into the socket. &
-Right arm pushes the socket box; left arm grasps and inserts the plug. &
-The socket box is repositioned, and the plug remains inserted without manual assistance. \\
-\addlinespace
-T3 &
-Pull the computer motherboard closer, then remove the memory module and place it in the yellow tray. &
-Left arm grips and pulls the motherboard; right arm removes and places the memory module. &
-The module is fully removed and remains inside the yellow tray. \\
-\bottomrule
-\end{tabularx}
+\begin{table}[htbp]
+  \centering
+  \caption{Language instructions, bilateral roles, and terminal conditions}
+  \label{tab:ch4-task-definitions}
+  \footnotesize
+  \begin{tabularx}{\textwidth}{
+    >{\centering\arraybackslash}p{0.05\textwidth}
+    >{\raggedright\arraybackslash}p{0.42\textwidth}
+    >{\raggedright\arraybackslash}p{0.22\textwidth}
+    X}
+    \toprule
+    \textbf{Task} & \textbf{Language instruction} & \textbf{Demonstrated arm roles} & \textbf{Terminal completion condition} \\
+    \midrule
+    T1 &
+    First, push the can to the middle, then pick up the black ring with the handle, put it over the can, and set it down. &
+    Left arm pushes the can; right arm grasps the handled ring and places it. &
+    The can is repositioned and the released ring remains stably over the can. \\
+    \addlinespace
+    T2 &
+    Push the box with the power socket to the middle, then pick up the plug and insert it into the socket. &
+    Right arm pushes the socket box; left arm grasps and inserts the plug. &
+    The socket box is repositioned and the plug remains inserted without manual assistance. \\
+    \addlinespace
+    T3 &
+    Pull the computer motherboard closer, then remove the memory module and place it in the yellow tray. &
+    Left arm grips and pulls the motherboard; right arm removes and places the memory module. &
+    The memory module is fully removed and remains inside the yellow tray. \\
+    \bottomrule
+  \end{tabularx}
 \end{table}
 
-\section{Manufacturing and implementation}
+\subsection{System operation}
 
-\subsection{Implementation workflow}
+\subsubsection{Pre-run checks}
 
-Implementation proceeded through five linked stages. First, the dual-FR3 workcell, custom grippers, fixtures, cameras, and safety controls were commissioned. Second, the dual GELLO interfaces and robot bridges were used to record 80 demonstrations for each language instruction. Third, the episodes were checked, divided by episode into the fixed training and validation sets, and converted to LeRobot Dataset v3.0. Fourth, the official \texttt{pi05\_base} weights were converted and fine-tuned through one balanced 100,000-step training run. Finally, the resulting checkpoint was connected to the three-camera, 16-dimensional state, and bilateral absolute-action interfaces and tested through dry runs before physical execution was enabled.
+The operator confirms the checkpoint, instruction, object arrangement, camera mapping, gripper condition, network status, and robot status. Both arms are returned to the approved start region. The socket is verified to be unpowered. The shared workspace is cleared of unrelated objects, and the emergency stop remains accessible.
 
-\subsection{Deployment procedure}
+\subsubsection{Collection run}
 
-Each deployment uses the following sequence:
+The leader offsets and channel directions are checked. Recording begins only after all three cameras and all bilateral state/action fields are present. The operator executes the complete task through the two GELLO leaders. The episode is stopped, reviewed, accepted or rejected, and then the scene is reset.
+
+\subsubsection{Policy dry run}
+
+The policy is first queried without enabling robot motion. The returned shape, finite values, absolute-action interpretation, camera ordering, and initial target relative to the current robot state are inspected. A dry run that fails any check is not promoted to physical execution.
+
+\subsubsection{Autonomous run}
+
+The executor enables the approved command path, consumes ten actions from each predicted chunk, and re-observes the workcell. The operator does not manually assist a counted trial. The trial ends when the documented terminal condition is met or a stop condition occurs. Outcome, stop reason, checkpoint, instruction, and video record are retained for Chapter~5 evaluation.
+
+\subsection{Parts and components}
+
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{2.5pt}
+\renewcommand{\arraystretch}{1.08}
+\begin{longtable}{
+  >{\centering\arraybackslash}p{0.045\textwidth}
+  >{\raggedright\arraybackslash}p{0.22\textwidth}
+  >{\raggedright\arraybackslash}p{0.31\textwidth}
+  >{\centering\arraybackslash}p{0.09\textwidth}
+  >{\raggedright\arraybackslash}p{0.25\textwidth}}
+  \caption{Parts and components for the final bimanual system}
+  \label{tab:ch4-parts-components}\\
+  \toprule
+  \textbf{No.} & \textbf{Part or component} & \textbf{Specification} & \textbf{Qty.} & \textbf{Purpose} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{No.} & \textbf{Part or component} & \textbf{Specification} & \textbf{Qty.} & \textbf{Purpose} \\
+  \midrule
+  \endhead
+  1 & Franka Research~3 arm & 7-DoF, 3~kg nominal payload, 855~mm maximum reach, joint torque sensing & 2 & Left and right follower manipulation \\
+  2 & FR3 controller and robot interface & Manufacturer controller, network interface, low-level protection, FCI/ROS~2 integration & 2 sets & State feedback and admissible joint-target execution \\
+  3 & Custom gripper assembly & Project gripper with two screw-mounted compliant fingers & 2 & One end effector per arm \\
+  4 & Compliant finger & TPU~64D, \(123.36\times25.80\times40.00~\mathrm{mm}\), tapered and ribbed & 4 & Object contact with passive geometric tolerance \\
+  5 & Wrist camera & Intel RealSense D405, short-range RGB/depth device; RGB used by policy & 2 & Left- and right-wrist close-range observation \\
+  6 & Overhead camera & Intel RealSense D435i; RGB used by policy & 1 & Global shared-workspace observation \\
+  7 & GELLO leader assembly & 7 arm channels plus 1 gripper channel & 2 & Bilateral human demonstration input \\
+  8 & DYNAMIXEL XL330-M288-T & 3.7--6~V actuator module; 5~V recommended & 14 & Seven arm joints per GELLO leader \\
+  9 & DYNAMIXEL XL330-M077-T & 3.7--6~V actuator module; 5~V recommended & 2 & Gripper-related channel on each GELLO leader \\
+  10 & GELLO control board & ZNJ integrated control board & 2 & Read and communicate leader joint positions \\
+  11 & GELLO power supply & 5~V, 5~A switched-mode supply & 2 & Leader-device electrical supply \\
+  12 & GELLO structural kit & FPX330-H101 with project 3D-printed links and brackets & 2 sets & Leader mechanism and mounting \\
+  13 & Camera mounts and cable routing & Fixed overhead mount and two wrist mounts & 1 set & Preserve camera identity, pose, and cable clearance \\
+  14 & Training workstation & NVIDIA RTX A6000, 48~GB; physical GPU~1 used & 1 & Joint $\pi_{0.5}$ fine-tuning and validation \\
+  15 & Network and ROS~2 bridge host & Project-configured communication and packet-assembly system & 1 set & Connect robots, grippers, cameras, recorder, and policy \\
+  16 & LeRobot software environment & LeRobot~0.5.2 with local changes; Dataset v3.0 & 1 config. & Recording, preprocessing, training, and deployment \\
+  17 & Can and handled ring & Task~1 objects & 1 set & Repositioning, grasp, and ring placement \\
+  18 & Socket box and plug & Electrically unpowered insertion task fixture and matching plug & 1 set & Repositioning and constrained insertion \\
+  19 & Motherboard, memory module, and tray & Task~3 objects; yellow destination tray & 1 set & Stabilization, extraction, transport, and placement \\
+  20 & Task fixtures and reset references & Printed or manually assembled positioning aids & 3 sets & Repeatable task initialization and terminal-state inspection \\
+  21 & Safety equipment & Physical emergency stop, manufacturer protective functions, supervised operation & 1 set & Deterministic stop and operator protection \\
+  22 & Data storage & Storage for 119,650 frames, three-view video, checkpoints, and logs & 1 set & Dataset and experiment traceability \\
+  \bottomrule
+\end{longtable}
+\endgroup
+
+\section{Manufacturing and implementation plan}
+
+\subsection{Implementation scope}
+
+The project reuses laboratory robot arms, controllers, cameras, computing resources, and network infrastructure. Custom manufacturing is concentrated in the compliant fingers, GELLO structural parts, camera mounts, and task fixtures. Software implementation covers collection, packet assembly, LeRobot conversion, preprocessing, multi-task sampling, $\pi_{0.5}$ training, validation, inference, action adaptation, and run logging.
+
+The full economic value of the workcell is not equal to the incremental cash expenditure. The FR3 arms, cameras, GPU, and safety equipment are in-kind laboratory resources. The DR3 budget recorded no additional out-of-pocket expense for the proof of concept. The expanded budget below preserves that statement while separating unpriced in-kind assets from incremental fabrication cost.
+
+\subsection{Materials and manufacturing processes}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Materials, manufacturing processes, and critical considerations}
+  \label{tab:ch4-manufacturing-processes}
+  \footnotesize
+  \begin{tabularx}{\textwidth}{p{0.04\textwidth}p{0.19\textwidth}p{0.17\textwidth}p{0.22\textwidth}X}
+    \toprule
+    \textbf{No.} & \textbf{Part or resource} & \textbf{Material or source} & \textbf{Process or tool} & \textbf{Critical consideration} \\
+    \midrule
+    1 & FR3 arms and controllers & Laboratory equipment & Upright installation and interface configuration & Base rigidity, shared workspace, controller limits, network isolation, emergency stop \\
+    2 & Compliant fingers & TPU~64D & Fused-filament 3D printing, support removal, inspection & Print orientation, rib integrity, screw-hole quality, paired geometry, permanent deformation \\
+    3 & Gripper attachment & Existing gripper and printed/adapted interfaces & Mechanical assembly with screws & Alignment, thread engagement, consistent tightening, opening clearance \\
+    4 & GELLO structures & FPX330-H101 and printed parts & Additive manufacturing and modular assembly & Joint-axis alignment, low friction, cable strain relief, repeatable zero offsets \\
+    5 & Camera mounts & Laboratory or printed brackets & Rigid mounting and cable routing & Working distance, FOV, gripper visibility, occlusion, cable interference \\
+    6 & Task fixtures & Printed or manually assembled fixture parts & Additive manufacturing and bench assembly & Repeatable initial pose, pushability where required, no mains power, stable destination \\
+    7 & Software environment & LeRobot, PyTorch, ROS~2, project modifications & Version-controlled configuration and scripted execution & Commit traceability, feature names, absolute-action setting, dataset/model compatibility \\
+    8 & Dataset and checkpoints & Recorded demonstrations and training outputs & Validation, indexing, backup, and integrity checks & Episode-level split, three-view completeness, task balance, reproducible checkpoint selection \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\subsection{Gripper fabrication and inspection}
+
+The finger CAD is prepared for TPU~64D printing with the mounting face and rib structure preserved. The selected print orientation must avoid weak inter-layer loading at the mounting holes and rib roots. After printing, supports and stringing are removed without cutting the compliant ribs. The overall envelope, paired symmetry, hole condition, and free deformation are inspected before assembly.
+
+The two fingers on one gripper are installed with matching orientation and adequate clearance through the commanded opening range. A manual opening-and-closing check verifies that neither finger contacts the camera mount or wrist cable. The assembly is rejected if a rib is torn, the base is permanently warped, a screw cannot retain the finger, or the two contact surfaces are visibly mismatched.
+
+\subsection{GELLO assembly and calibration}
+
+Each leader is assembled from the FPX330-H101 structure, printed links and brackets, seven M288 actuators, one M077 actuator, controller board, and 5~V power supply. Joint axes are checked for free movement before wiring. Cables are routed so that the full demonstrated range does not pull on connectors or bias the leader posture.
+
+After electrical assembly, servo identifiers, zero positions, directions, and range mappings are verified one channel at a time. The left and right leaders are calibrated independently because a mirrored workcell does not imply identical signs and offsets. The final mapping is stored with the collection configuration so that later episodes can be traced to the leader calibration used.
+
+\subsection{Camera and fixture implementation}
+
+The overhead mount is installed so that the complete source, interaction, and destination regions remain visible. Each D405 is mounted within its intended 7--50~cm close-range operating envelope during manipulation. The wrist view is checked at approach, contact, and retreat postures, not only at the robot start pose.
+
+Task fixtures are placed in the verified shared workspace. The can, socket box, and motherboard must permit the instructed preparation motion, while their target regions remain visible. The yellow tray is fixed against accidental displacement. The socket fixture is electrically isolated and unpowered. Reference markings or stops are used where necessary to make scene reset repeatable.
+
+\subsection{Software implementation}
+
+The software stack is configured in independent stages:
 \begin{enumerate}
-  \item secure the fixtures and task objects and clear the shared workspace;
-  \item verify the two FR3 arms, custom grippers, emergency-stop devices, and three camera streams;
-  \item load the unified checkpoint, dataset statistics, feature mapping, and action adapter;
-  \item confirm the 16-dimensional bilateral state and action ordering;
-  \item provide the language instruction that matches the prepared task;
-  \item run policy inference with physical motion disabled and inspect the first action segment;
-  \item enable the robot-side executor and begin the counted trial; and
-  \item stop on success, timeout, invalid observation or action, protective stop, emergency stop, or manual intervention.
+  \item robot, gripper, camera, and GELLO device interfaces;
+  \item ROS~2 state and command topics;
+  \item bridge packet assembly and freshness checks;
+  \item LeRobot Dataset v3.0 episode recording;
+  \item image preprocessing and 16-to-32-dimensional model padding;
+  \item episode-level split and equal-probability task sampling;
+  \item $\pi_{0.5}$ fine-tuning and macro-loss validation;
+  \item unified-checkpoint policy inference; and
+  \item bilateral absolute-action adaptation and safety checks.
 \end{enumerate}
 
-\subsection{Current implementation status}
+The configuration records LeRobot version 0.5.2, the project commit, local modifications, base-checkpoint source, training steps, learning-rate schedule, camera feature names, \texttt{use\_relative\_actions=false}, action chunk size, and \texttt{n\_action\_steps}. These values are treated as part of the reproducible implementation rather than left as implicit code defaults.
 
-The current implementation uses one LeRobot $\pi_{0.5}$ checkpoint with two FR3 arms and has completed the end-to-end integration path for the ring-over-can, plug-in-socket, and memory-module-removal tasks. This establishes that the language input, three visual streams, bilateral state and action interfaces, policy inference, receding-horizon execution, and robot controllers can operate together on the physical workcell. It is an implementation claim; quantitative performance claims require the repeated-trial counts, execution times, failure inventory, and uncertainty estimates reported in Chapter~\ref{chap:validation}.
+\subsection{System integration sequence}
+
+Integration proceeds from independent hardware checks to full learned control. First, each arm and gripper is checked without the policy. Second, all three cameras are checked under their final logical names. Third, each GELLO leader is mapped to its follower. Fourth, bilateral teleoperation is tested at low speed with an empty workspace. Fifth, complete episodes are recorded and decoded. Sixth, a training batch is inspected for camera order, numeric order, and action alignment. Seventh, the policy is run without opening the robot command path. Finally, supervised physical trials are enabled.
+
+This sequence isolates failures. A camera-identity error should be found before training; a leader offset should be found before collecting a large dataset; a state/action index error should be found before robot execution; and a policy-output error should be found during the dry run.
+
+\subsection{Budget}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Expanded implementation budget and resource status}
+  \label{tab:ch4-budget}
+  \footnotesize
+  \begin{tabularx}{\textwidth}{p{0.04\textwidth}p{0.23\textwidth}p{0.18\textwidth}p{0.10\textwidth}p{0.16\textwidth}X}
+    \toprule
+    \textbf{No.} & \textbf{Component or service} & \textbf{Provider} & \textbf{Qty.} & \textbf{Cash cost} & \textbf{Status and accounting note} \\
+    \midrule
+    1 & Two FR3 arms, controllers, and safety equipment & Laboratory & 2 sets & CNY~0 incremental & Existing in-kind assets; acquisition value not supplied \\
+    2 & D435i and two D405 cameras with mounts & Laboratory & 3 & CNY~0 incremental & Existing in-kind assets; mount material not separately recorded \\
+    3 & RTX A6000 training workstation and storage & Laboratory & 1 set & CNY~0 incremental & Existing shared compute; energy and depreciation not allocated \\
+    4 & Two GELLO leader assemblies & Laboratory / project resources & 2 & CNY~0 incremental & DR3 records availability; itemized acquisition value not supplied \\
+    5 & TPU~64D compliant fingers & Student Innovation Center & 4 & CNY~0 incremental & Fabricated through available resources; material mass and print time not recorded \\
+    6 & Task objects and fixtures & Laboratory / Student Innovation Center & 3 sets & CNY~0 incremental & Available; final fixture-material value not supplied \\
+    7 & Software stack & Open source and project code & 1 config. & CNY~0 licence cost & LeRobot, ROS~2, PyTorch, and project modifications \\
+    \midrule
+    \multicolumn{4}{r}{\textbf{Reported additional out-of-pocket cost}} & \textbf{CNY~0} & Excludes in-kind asset value, labour, energy, and depreciation \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+The CNY~0 value is therefore an incremental cash figure, not the total system value. A full economic budget would require the purchase or replacement value of two FR3 systems, two GELLO assemblies, three cameras, the GPU workstation, storage, safety hardware, print material, print time, labour, and energy. Those values were not included in the supplied DR3 or final implementation record and should be added only from invoices or the laboratory asset register.
+
+\subsection{Current implementation status and remaining documentation}
+
+The final implementation now includes dual-arm state and action handling, three RGB inputs, LeRobot Dataset v3.0 data, one jointly trained $\pi_{0.5}$ checkpoint, equal-probability three-task sampling, the defined episode-level validation split, macro flow-matching checkpoint selection, and a 5~Hz absolute-action deployment interface. The selected DR3 hardware modules and engineering drawings have been retained in this chapter.
+
+Several quantities remain documentation gaps rather than model-design gaps: measured FR3 base poses, camera extrinsics and mounting distances, dimensioned fixture locations, ring and can clearances, final socket insertion clearance and depth, motherboard and memory-module clearances, measured gripper force--deflection behavior, TPU print settings, print mass and time, full in-kind asset value, and measured end-to-end latency. These values should be added if the report is expected to make production-level tolerance, structural, timing, or economic claims.
