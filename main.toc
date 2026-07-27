@@ -83,7 +83,7 @@
 \contentsline {subsection}{\numberline {4.4.5}Camera and fixture implementation}{43}{subsection.4.4.5}%
 \contentsline {subsection}{\numberline {4.4.6}Software implementation}{44}{subsection.4.4.6}%
 \contentsline {subsection}{\numberline {4.4.7}System integration sequence}{44}{subsection.4.4.7}%
-\contentsline {subsection}{\numberline {4.4.8}Budget}{46}{subsection.4.4.8}%
+\contentsline {subsection}{\numberline {4.4.8}Budget}{44}{subsection.4.4.8}%
 \contentsline {subsection}{\numberline {4.4.9}Current implementation status and remaining documentation}{46}{subsection.4.4.9}%
 \contentsline {chapter}{\numberline {Chapter 5}Validation results}{47}{chapter.5}%
 \contentsline {section}{\numberline {5.1}Validation overview}{47}{section.5.1}%
@@ -92,8 +92,8 @@
 \contentsline {chapter}{\numberline {Chapter 6}Discussion and conclusions}{48}{chapter.6}%
 \contentsline {section}{\numberline {6.1}Discussion}{48}{section.6.1}%
 \contentsline {section}{\numberline {6.2}Conclusions}{48}{section.6.2}%
-\contentsline {chapter}{References}{50}{chapter*.26}%
-\contentsline {chapter}{Appendix I.\ Documentation of Generated Concepts}{52}{chapter*.28}%
-\contentsline {chapter}{Appendix II.\ Bill of materials}{55}{chapter*.39}%
-\contentsline {chapter}{Research\ Projects\ and\ Publications\ during\ Undergraduate\ Period}{56}{section*.41}%
-\contentsline {chapter}{Acknowledgements}{57}{section*.43}%
+\contentsline {chapter}{References}{50}{chapter*.25}%
+\contentsline {chapter}{Appendix I.\ Documentation of Generated Concepts}{52}{chapter*.27}%
+\contentsline {chapter}{Appendix II.\ Bill of materials}{55}{chapter*.38}%
+\contentsline {chapter}{Research\ Projects\ and\ Publications\ during\ Undergraduate\ Period}{56}{section*.40}%
+\contentsline {chapter}{Acknowledgements}{57}{section*.42}%
