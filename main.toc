@@ -1,0 +1,46 @@
+\contentsline {chapter}{摘 \hskip 1em\relax 要}{I}{chapter*.4}%
+\contentsline {chapter}{ABSTRACT}{II}{chapter*.5}%
+\contentsline {chapter}{\numberline {Chapter 1}Introduction}{1}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Background and significance}{1}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Design problem}{2}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Project objectives and scope}{2}{section.1.3}%
+\contentsline {section}{\numberline {1.4}Main contributions}{3}{section.1.4}%
+\contentsline {section}{\numberline {1.5}Organization of this thesis}{3}{section.1.5}%
+\contentsline {chapter}{\numberline {Chapter 2}Design specification}{5}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Customer requirements}{5}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Engineering specifications}{6}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Quality function deployment}{6}{section.2.3}%
+\contentsline {chapter}{\numberline {Chapter 3}Concept generation and selection}{8}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Concept generation}{8}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}Functional decomposition}{8}{subsection.3.1.1}%
+\contentsline {subsection}{\numberline {3.1.2}Structured brainstorming}{8}{subsection.3.1.2}%
+\contentsline {subsection}{\numberline {3.1.3}Morphological chart and generated module concepts}{9}{subsection.3.1.3}%
+\contentsline {section}{\numberline {3.2}Concept selection}{10}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}Selection method and QFD-derived criteria}{10}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}Scoring of the five selected module concepts}{10}{subsection.3.2.2}%
+\contentsline {subsection}{\numberline {3.2.3}Comparative evaluation and selected concept}{11}{subsection.3.2.3}%
+\contentsline {chapter}{\numberline {Chapter 4}Final design and implementation}{14}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Final design}{14}{section.4.1}%
+\contentsline {subsection}{\numberline {4.1.1}Design evolution from the DR3 baseline}{14}{subsection.4.1.1}%
+\contentsline {subsection}{\numberline {4.1.2}Overall system architecture}{14}{subsection.4.1.2}%
+\contentsline {section}{\numberline {4.2}Design details}{15}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}Dual-arm robotic workcell}{15}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.2.2}Demonstration collection and LeRobot dataset}{15}{subsection.4.2.2}%
+\contentsline {subsection}{\numberline {4.2.3}LeRobot $\pi _{0.5}$ policy}{16}{subsection.4.2.3}%
+\contentsline {subsection}{\numberline {4.2.4}Demonstrated task set}{16}{subsection.4.2.4}%
+\contentsline {subsection}{\numberline {4.2.5}Safety and termination conditions}{17}{subsection.4.2.5}%
+\contentsline {section}{\numberline {4.3}Implementation and integration}{17}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}Implementation workflow}{17}{subsection.4.3.1}%
+\contentsline {subsection}{\numberline {4.3.2}Current implementation status}{18}{subsection.4.3.2}%
+\contentsline {chapter}{\numberline {Chapter 5}Validation results}{19}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Validation overview}{19}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Key data}{19}{section.5.2}%
+\contentsline {section}{\numberline {5.3}Validation summary}{19}{section.5.3}%
+\contentsline {chapter}{\numberline {Chapter 6}Discussion and conclusions}{20}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Discussion}{20}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Conclusions}{20}{section.6.2}%
+\contentsline {chapter}{References}{22}{chapter*.14}%
+\contentsline {chapter}{Appendix I.\ Documentation of Generated Concepts}{24}{chapter*.16}%
+\contentsline {chapter}{Appendix II.\ Bill of materials}{27}{chapter*.27}%
+\contentsline {chapter}{Research\ Projects\ and\ Publications\ during\ Undergraduate\ Period}{28}{section*.29}%
+\contentsline {chapter}{Acknowledgements}{29}{section*.31}%
