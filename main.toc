@@ -27,16 +27,20 @@
 \contentsline {subsection}{\numberline {4.2.3}Comparative evaluation and selected concept}{15}{subsection.4.2.3}%
 \contentsline {chapter}{\numberline {Chapter 5}Final design and implementation plan}{18}{chapter.5}%
 \contentsline {section}{\numberline {5.1}Final design}{18}{section.5.1}%
-\contentsline {section}{\numberline {5.2}Implementation plan}{18}{section.5.2}%
-\contentsline {chapter}{\numberline {Chapter 6}Validation results}{19}{chapter.6}%
-\contentsline {chapter}{\numberline {Chapter 7}Discussion and conclusions}{20}{chapter.7}%
-\contentsline {section}{\numberline {7.1}Discussion}{20}{section.7.1}%
-\contentsline {section}{\numberline {7.2}Conclusions}{20}{section.7.2}%
-\contentsline {chapter}{\numberline {Chapter 8}Discussion and conclusions}{21}{chapter.8}%
-\contentsline {section}{\numberline {8.1}Discussion}{21}{section.8.1}%
-\contentsline {section}{\numberline {8.2}Conclusions}{21}{section.8.2}%
-\contentsline {chapter}{References}{22}{chapter*.13}%
-\contentsline {chapter}{Appendix I.\ Engineering changes notice}{23}{chapter*.15}%
-\contentsline {chapter}{Appendix II.\ Bill of materials}{24}{chapter*.17}%
-\contentsline {chapter}{Research\ Projects\ and\ Publications\ during\ Undergraduate\ Period}{25}{section*.19}%
-\contentsline {chapter}{Acknowledgements}{26}{section*.21}%
+\contentsline {section}{\numberline {5.2}Design details}{19}{section.5.2}%
+\contentsline {section}{\numberline {5.3}Implementation plan}{19}{section.5.3}%
+\contentsline {chapter}{\numberline {Chapter 6}Validation results}{20}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Validation overview}{20}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Key data}{20}{section.6.2}%
+\contentsline {section}{\numberline {6.3}Validation summary}{20}{section.6.3}%
+\contentsline {chapter}{\numberline {Chapter 7}Discussion and conclusions}{21}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Discussion}{21}{section.7.1}%
+\contentsline {section}{\numberline {7.2}Conclusions}{21}{section.7.2}%
+\contentsline {chapter}{\numberline {Chapter 8}Discussion and conclusions}{22}{chapter.8}%
+\contentsline {section}{\numberline {8.1}Discussion}{22}{section.8.1}%
+\contentsline {section}{\numberline {8.2}Conclusions}{22}{section.8.2}%
+\contentsline {chapter}{References}{24}{chapter*.13}%
+\contentsline {chapter}{Appendix I.\ Engineering changes notice}{25}{chapter*.15}%
+\contentsline {chapter}{Appendix II.\ Bill of materials}{26}{chapter*.17}%
+\contentsline {chapter}{Research\ Projects\ and\ Publications\ during\ Undergraduate\ Period}{27}{section*.19}%
+\contentsline {chapter}{Acknowledgements}{28}{section*.21}%
