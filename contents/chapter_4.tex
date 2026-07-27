@@ -1,27 +1,97 @@
 % !TEX root = ../main.tex
 
-\chapter{Final design and implementation plan}\label{chap:final-design}
+\chapter{Final design and implementation}\label{chap:final-design}
 
 \section{Final design}
-……
 
-The final design follows the selected concept combination identified in Chapter~\ref{chap:concept}. The system is built around a dual-Franka Research~3 workcell, a GELLO-based teleoperation interface, synchronized multi-camera sensing, task-compatible end effectors and fixtures, and an ACT policy deployed through the LeRobot workflow~\cite{gello,act,lerobot}. This architecture connects the mechanical platform, data path, policy model, and validation procedure into one end-to-end manipulation system.
+\subsection{Design evolution from the DR3 baseline}
 
-The dual-FR3 platform provides the mechanical foundation for the completed bimanual manipulation task. The two arms operate in a shared, bounded workspace so that coordinated manipulation can be executed under controlled laboratory conditions. Low-level robot limits, controller protections, and workspace constraints remain active during execution. This arrangement satisfies the project need for bimanual manipulation while keeping the prototype within the defined proof-of-concept scope.
+The final implementation retains the modular system architecture established during Design Review~3 (DR3), but updates the learned policy and the demonstrated task scope. The DR3 design used task-specific Action Chunking with Transformers (ACT) checkpoints as the deployable baseline and treated language-conditioned bimanual control as future work. During subsequent development, the policy was replaced by the LeRobot implementation of $\pi_{0.5}$, and the workcell was extended to coordinated operation with two Franka Research~3 (FR3) robot arms. ACT is therefore retained in this thesis as an important development baseline rather than the final deployed controller.
 
-The demonstration and learning pipeline follows the data flow described in the DR3 report. Human demonstrations are collected through the GELLO leader device and converted into synchronized records containing camera observations, robot proprioceptive state, gripper state, and commanded actions. The top camera preserves global workspace context, while wrist or side camera views provide local visual information near contact regions. Episodes are screened for synchronization and task completion before being converted to the training format.
+The resulting system is a language-conditioned bimanual manipulation platform. It combines a dual-FR3 workcell, GELLO-based demonstration collection, synchronized multi-view visual observations, robot and gripper state acquisition, a LeRobot-compatible dataset, a fine-tuned $\pi_{0.5}$ policy, and robot-side execution and safety interfaces. The $\pi_{0.5}$ model is a vision-language-action policy designed to combine visual observations, natural-language task descriptions, robot state, and action generation~\cite{pi05}. The implementation used in this project follows the policy integration provided by LeRobot, which adapts the open-source $\pi_{0.5}$ implementation for the LeRobot training and deployment workflow~\cite{lerobot,lerobotpi05,openpi}.
 
-The policy module uses ACT as the current deployable controller. ACT predicts action chunks from visual observations and robot state, which provides a practical temporal-control mechanism for real-robot execution~\cite{act}. The implemented system therefore establishes a working bimanual imitation-learning baseline while preserving a route toward future language-conditioned policy selection and multi-task VLA deployment.
+\subsection{Overall system architecture}
+
+The complete system is organized as a closed perception--language--action loop. At the beginning of an episode, the two FR3 arms and the task objects are returned to a documented initial condition. The camera subsystem provides complementary global and local views of the shared workspace, while the robot interfaces provide synchronized arm and gripper states. A natural-language instruction identifies the required task and is supplied to the policy together with the current visual and proprioceptive observations. The policy predicts robot actions, which are decoded by the LeRobot and robot-side interfaces and executed subject to the FR3 controller protections, joint limits, workspace limits, and emergency-stop procedure~\cite{frankafci}.
+
+For a bimanual observation at time \(t\), the policy interface can be summarized as
+\begin{equation}
+\mathbf{a}_{t:t+H-1}
+=
+\pi_{\theta}
+\left(
+\mathbf{o}^{\mathrm{visual}}_t,
+\mathbf{s}^{\mathrm{left}}_t,
+\mathbf{s}^{\mathrm{right}}_t,
+\ell
+\right),
+\label{eq:pi05-bimanual-policy}
+\end{equation}
+where \(\mathbf{o}^{\mathrm{visual}}_t\) denotes the synchronized camera observations, \(\mathbf{s}^{\mathrm{left}}_t\) and \(\mathbf{s}^{\mathrm{right}}_t\) denote the two arm and gripper states, \(\ell\) is the natural-language instruction, and \(\mathbf{a}_{t:t+H-1}\) is the predicted bimanual action sequence. This interface preserves a separation between the learned policy and the deterministic robot-side safety layer.
 
 \section{Design details}
 
+\subsection{Dual-arm robotic workcell}
 
-\section{Implementation plan}
-……
+The mechanical platform consists of two FR3 robot arms operating in a shared, bounded workspace. Each arm provides seven degrees of freedom and retains the low-level protection mechanisms of the Franka control system. The dual-arm arrangement allows a task to combine workspace preparation, object stabilization, grasping, transport, alignment, insertion, and placement. The exact division of work between the left and right arms is learned from the demonstrations rather than prescribed as a fixed symbolic sequence.
 
-Implementation was organized around the same module boundaries used in concept generation. The hardware stage established the dual-FR3 workcell, mounted the task-compatible end effectors, and verified the available sensing layout. The teleoperation stage connected the GELLO interface to the robot-side data pipeline so that operator demonstrations could be recorded with consistent state and action channels. The data stage synchronized camera observations with robot state, gripper state, and actions, then converted accepted episodes into the learning dataset format.
+Task-compatible grippers and fixtures are used to make the three demonstrations repeatable while preserving the contact-rich character of the operations. The power-socket fixture remains electrically unpowered during development and validation. Before an autonomous run, the operator verifies the fixtures, camera streams, arm states, gripper states, communication links, workspace clearance, and emergency-stop access.
 
-The learning stage trained ACT checkpoints from the collected demonstrations and integrated the selected checkpoint into the real-robot execution loop. The deployment stage connected policy inference to the robot controller under bounded workspace and safety assumptions. The final integration stage completed the bimanual manipulation task at the system level, confirming that the hardware, sensing, teleoperation, dataset conversion, policy inference, and robot execution components can operate together in one closed-loop workflow.
+\subsection{Demonstration collection and LeRobot dataset}
 
-Validation was planned as a staged process rather than a single final trial. Early checks focused on individual hardware communication, camera availability, state logging, and replay consistency. Later checks evaluated complete policy execution on the physical bimanual setup. This staged implementation reduces integration risk because failures can be traced to a specific module: robot control, teleoperation mapping, sensing, dataset preparation, model inference, or execution safety.
+The data-collection path follows the DR3 design. GELLO leader devices provide an intuitive interface for recording robot demonstrations~\cite{gello}. During collection, the system records synchronized multi-view RGB observations, the measured state of both robot arms, both gripper states, and the commanded actions. The task instruction is stored with each episode so that the policy can associate language with the corresponding visual and action trajectory.
+
+The accepted episodes are converted to the LeRobot dataset representation. Episode-level screening removes incomplete demonstrations and checks that the required observation streams, state dimensions, action dimensions, task instruction, and video records are present. Splitting data by complete episode prevents neighboring frames from one demonstration from being distributed across both training and validation sets. Dataset normalization and the mapping between camera names, state features, action features, and the two robot arms are stored as part of the policy configuration.
+
+\subsection{LeRobot $\pi_{0.5}$ policy}
+
+The final controller uses $\pi_{0.5}$ rather than the ACT baseline described in DR3. $\pi_{0.5}$ extends the $\pi_0$ family with heterogeneous co-training and semantic knowledge transfer intended to improve generalization across tasks, objects, and environments~\cite{pi0,pi05}. In the present project, the model is adapted through LeRobot to the dual-FR3 observation and action interface. The language instruction distinguishes the requested task, while the visual observations and robot states provide the current physical context.
+
+The use of a VLA policy changes the role of language from a report-level task label to an input to the deployed controller. However, the model output is not sent directly to the actuators without checks. The robot-side interface validates the action representation and enforces the admissible command range before issuing commands to the two FR3 controllers. Missing observations, stale state, non-finite actions, communication timeout, or a command outside the configured limits causes the execution loop to stop.
+
+\subsection{Demonstrated task set}
+
+The final system has been integrated for the three long-horizon tasks in Table~\ref{tab:pi05-tasks}. Each task combines scene rearrangement with grasping and a terminal contact or placement operation.
+
+\begin{table}[!htbp]
+\centering
+\caption{Language-conditioned tasks implemented with the dual-arm $\pi_{0.5}$ system}
+\label{tab:pi05-tasks}
+\small
+\begin{tabularx}{\textwidth}{c>{\raggedright\arraybackslash}p{0.55\textwidth}X}
+\toprule
+\textbf{Task} & \textbf{Language instruction} & \textbf{Terminal completion condition} \\
+\midrule
+T1 &
+First, push the can to the middle, then pick up the black ring with the handle, put it over the can, and set it down. &
+The can is repositioned, and the released black ring remains stably over the can. \\
+\addlinespace
+T2 &
+Push the box with the power socket to the middle, then pick up the plug and insert it into the socket. &
+The socket box is repositioned, and the plug remains inserted in the socket without manual assistance. \\
+\addlinespace
+T3 &
+Pull the computer motherboard closer, then remove the memory module and place it in the yellow tray. &
+The memory module is fully removed from the motherboard and remains inside the yellow tray. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The three instructions are retained verbatim as the task-level language inputs so that the relationship between the requested behavior and the recorded demonstrations remains traceable. Quantitative success rates and failure statistics are reported separately in the validation chapter; completion of system integration alone is not treated as evidence that a numerical acceptance threshold has been satisfied.
+
+\subsection{Safety and termination conditions}
+
+The policy is deployed only in a bounded laboratory workspace. A run is terminated when the task completion condition is reached, the configured time limit is exceeded, an observation or communication failure occurs, a robot protective stop is triggered, manual intervention becomes necessary, or the safety observer activates the emergency stop. A collision, dropped component, incomplete insertion or placement, movement outside the workspace, protective stop, or manual assistance is recorded as a failed trial rather than a successful recovery.
+
+\section{Implementation and integration}
+
+\subsection{Implementation workflow}
+
+Implementation proceeded through five linked stages. First, the dual-FR3 workcell, grippers, fixtures, cameras, and safety controls were commissioned. Second, the GELLO interfaces and robot bridges were used to record bimanual demonstrations for the three language instructions. Third, the recorded episodes were checked and converted into the LeRobot representation. Fourth, the $\pi_{0.5}$ policy was adapted to the project observation, language, state, and action interfaces. Finally, policy inference was connected to the two robot controllers and tested through dry runs before physical execution was enabled.
+
+The integration sequence for each deployment is: verify the workcell and sensors; load the frozen policy and dataset statistics; confirm the two-arm feature mapping; provide the task instruction; run inference without robot motion; inspect the initial commands; enable the robot-side executor; and conduct the counted physical trial. This sequence makes interface errors easier to distinguish from policy errors and preserves a reproducible path from demonstrations to deployment.
+
+\subsection{Current implementation status}
+
+The current implementation uses the LeRobot $\pi_{0.5}$ policy with two FR3 arms and has completed the end-to-end integration path for the ring-over-can, plug-in-socket, and memory-module-removal tasks. This establishes that the language input, visual observations, bimanual state and action interfaces, policy inference, and robot execution components can operate together on the physical platform. The result is an implementation claim; statistical performance claims require the repeated-trial evidence presented in Chapter~\ref{chap:validation}.
 

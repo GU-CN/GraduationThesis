@@ -1,12 +1,63 @@
 % !TEX root = ../main.tex
 
-\appchapter{Engineering changes notice}\label{chap:ecn}
-\addcontentsline{toc}{chapter}{Appendix I.\ Engineering changes notice}
+\appchapter{Documentation of Generated Concepts}\label{chap:generated-concepts}
+\addcontentsline{toc}{chapter}{Appendix I.\ Documentation of Generated Concepts}
 
-……
-% !TEX root = ../main.tex
+\section*{Purpose and design evolution}
 
-\appchapter{Engineering changes notice}\label{chap:ecn}
-\addcontentsline{toc}{chapter}{Appendix I.\ Engineering changes notice}
+This appendix preserves the alternatives generated during the DR3 concept-development process and records the implementation-stage change from an ACT baseline to the LeRobot $\pi_{0.5}$ policy. The alternatives were retained because they expose the principal engineering trade-offs in platform selection, teleoperation, sensing, end-effector design, and learned control. The update to $\pi_{0.5}$ does not invalidate the earlier concept generation; it documents how implementation evidence and the requirement for language-conditioned multi-task control changed the final policy decision.
 
-……
+\begin{table}[!htbp]
+\centering
+\caption{Evolution from the DR3 baseline to the final implementation}
+\label{tab:design-evolution}
+\small
+\begin{tabularx}{\textwidth}{p{0.22\textwidth}XX}
+\toprule
+\textbf{Design aspect} & \textbf{DR3 baseline} & \textbf{Final implementation} \\
+\midrule
+Robot platform & Dual FR3 selected; single-arm evidence used for staged risk reduction & Dual FR3 physical execution \\
+Policy & ACT in LeRobot; task-specific checkpoint selection & $\pi_{0.5}$ in LeRobot with language-conditioned task input \\
+Task scope & Ring placement and plug insertion used as staged cases & Ring over can, plug insertion, and memory-module removal \\
+Language & Future extension & Runtime task instruction supplied to the VLA policy \\
+Control scope & Vision--action imitation-learning baseline & Vision--language--action bimanual control \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section*{Module alternatives retained after concept generation}
+
+\subsection*{C1: Robot-platform alternatives}
+
+The selected platform is the dual-FR3 workcell because it provides a direct controller path within the available laboratory ecosystem and supports coordinated bimanual manipulation. A dual Flexiv platform remains attractive for force-aware contact tasks, but it would require a different controller, teleoperation interface, and data-integration path. An ALOHA-style platform offers a lower-cost bimanual research route, but its mechanical capability and software ecosystem are less directly aligned with the existing FR3 workcell. The selected platform accepts higher integration effort in exchange for continuity with the available hardware and a direct route to the final dual-arm system.
+
+\subsection*{C2: Teleoperation alternatives}
+
+GELLO was selected because its leader-arm structure provides an intuitive relationship between operator motion and the robot state/action trajectories recorded for learning~\cite{gello}. PICO~4 Ultra offers an XR-controller and hand-tracking route, but would add motion-mapping and calibration work~\cite{pico4ultra}. The Universal Manipulation Interface (UMI) provides a portable hand-held demonstration approach~\cite{umi}; it remains a useful research comparator but is less directly coupled to the fixed dual-FR3 joint-state pipeline.
+
+\subsection*{C3: Data-collection alternatives}
+
+The selected concept uses synchronized multi-view RGB observations together with the state and action channels of both arms and grippers. The global view provides workspace and fixture context, while wrist or side views preserve information around grasping and contact regions. A reduced one-wrist-plus-global configuration lowers storage, calibration, and synchronization burden, whereas a proprioception-only configuration removes visual synchronization entirely. Both alternatives reduce the information available for language-grounded object selection, occlusion handling, and contact-region observation.
+
+\subsection*{C4: End-effector alternatives}
+
+The standard Franka parallel gripper provides a direct robot interface and repeatable parallel-jaw motion, but offers limited passive adaptation to object geometry. A rigid 3D-printed gripper can be tailored to one component and can provide accurate locating features. The compliant finger concept retained from DR3 offers greater tolerance to small geometric and pose variation and can reduce concentrated contact forces during grasping and insertion. Because the final system contains three materially different tasks, the deployed end-effector configuration must be documented per task rather than assuming that one finger geometry is optimal for the ring handle, plug body, and memory module.
+
+\subsection*{C5: Policy alternatives}
+
+ACT was the deployable DR3 baseline because it was integrated with the existing LeRobot demonstration workflow and could predict temporally structured actions from images and robot state~\cite{act}. Diffusion Policy remains a credible visuomotor baseline for contact-rich manipulation~\cite{diffusionpolicy}. Neither model natively provides the same language-conditioned task interface required by the final three-task system.
+
+The final implementation therefore uses $\pi_{0.5}$ through LeRobot~\cite{pi05,lerobotpi05}. Compared with the ACT baseline, the selected VLA policy accepts a natural-language task description in addition to visual and proprioceptive observations. This supports a common interface for the three demonstrated tasks and aligns the deployed controller with the original VLA objective. The selection is an implementation decision; superiority over ACT or Diffusion Policy should only be claimed if controlled comparative trials are reported.
+
+\section*{Generated task concepts}
+
+The final demonstrations instantiate three task concepts from the common bimanual VLA architecture:
+
+\begin{enumerate}
+  \item workspace preparation followed by ring grasping and placement over a can;
+  \item workspace preparation followed by grasping, alignment, and plug insertion;
+  \item motherboard repositioning followed by memory-module removal and placement in a tray.
+\end{enumerate}
+
+These tasks were retained because they collectively exercise object repositioning, language-grounded object selection, bimanual coordination, grasping, transport, constrained insertion, component extraction, and terminal placement. Their exact language instructions and completion conditions are listed in Table~\ref{tab:pi05-tasks}.
+
