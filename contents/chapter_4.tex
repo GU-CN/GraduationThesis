@@ -1,5 +1,6 @@
 % !TEX root = ../main.tex
 % Expanded from the DR3 engineering baseline and updated for the final dual-arm pi0.5 implementation.
+\setlength{\emergencystretch}{2em}
 
 \chapter{Final design and implementation}\label{chap:final-design}
 
@@ -7,11 +8,11 @@
 
 \subsection{Design evolution from the DR3 baseline}
 
-The final implementation retains the modular physical architecture selected in Design Review~3 (DR3), but the learning system and the demonstrated scope have changed substantially. DR3 proposed a dual-Franka Research~3 (FR3) workcell, GELLO-based demonstration collection, two wrist cameras and one overhead camera, custom compliant fingers, a LeRobot dataset, and an imitation-learning policy. At that stage, Action Chunking with Transformers (ACT) and task-specific checkpoints were the deployable baseline, while language-conditioned bimanual control was a future objective.
+The final implementation retains the modular physical architecture selected in Design Review~3 (DR3), but the learning system and demonstrated scope have changed substantially. DR3 proposed a dual-Franka Research~3 (FR3) workcell, GELLO demonstration collection, two wrist cameras and one overhead camera, custom compliant fingers, a LeRobot dataset, and an imitation-learning policy. At that stage, Action Chunking with Transformers (ACT) and task-specific checkpoints were the deployable baseline. Language-conditioned bimanual control was a future objective.
 
 The completed system replaces the task-specific ACT controller with the LeRobot implementation of $\pi_{0.5}$. It uses two FR3 arms, two grippers, three RGB views, a 16-dimensional bilateral state and action interface, and one jointly trained multi-task checkpoint. The three tasks are selected by natural-language instructions rather than by manually loading three independent policy files. ACT therefore remains part of the design history and concept-selection evidence, but it is not presented as the final controller.
 
-The mechanical elements selected in DR3 remain directly relevant. The two FR3 arms provide a common kinematic and controller interface; the two GELLO leaders provide matched bilateral demonstration inputs; the wrist and overhead cameras provide complementary local and global views; and the 3D-printed compliant fingers provide a task-compatible contact interface. The later policy update changes how these modules are connected and trained, but does not remove the need for their original engineering analysis.
+The mechanical elements selected in DR3 remain directly relevant. The two FR3 arms provide a common kinematic and controller interface, and the two GELLO leaders provide matched bilateral demonstration inputs. The wrist and overhead cameras provide complementary local and global views. The 3D-printed compliant fingers provide a task-compatible contact interface. The later policy update changes how these modules are connected and trained, but does not remove the need for their original engineering analysis.
 
 \subsection{Overall system architecture}
 
@@ -23,7 +24,7 @@ The final system is organized as four connected layers:
   \item the deployment layer, consisting of language-conditioned policy inference, action-chunk handling, the bilateral robot adapter, and deterministic safety checks.
 \end{enumerate}
 
-During demonstration collection, the operator moves the two GELLO leaders. The follower-side system commands the two FR3 arms and records three RGB images, the measured bilateral state, the bilateral arm targets, the gripper commands, the episode index, and the task instruction. Accepted episodes are stored in LeRobot Dataset v3.0 format. During training, the three task datasets are sampled with equal task probability and used to update one $\pi_{0.5}$ model. During deployment, one of the three language instructions and the current three-view observation are supplied to the same checkpoint. The policy returns an action chunk, and the robot-side adapter sends the admissible absolute targets to the two FR3 controllers.
+During demonstration collection, the operator moves the two GELLO leaders. The follower-side system commands the two FR3 arms. It records three RGB images, the measured bilateral state, the bilateral arm targets, the gripper commands, the episode index, and the task instruction. Accepted episodes are stored in LeRobot Dataset v3.0 format. During training, the three task datasets are sampled with equal task probability and used to update one $\pi_{0.5}$ model. During deployment, one of the three language instructions and the current three-view observation are supplied to the same checkpoint. The policy returns an action chunk, and the robot-side adapter sends the admissible absolute targets to the two FR3 controllers.
 
 Figure~\ref{fig:ch4-dr3-architecture} is retained from DR3 because it records the selected modular architecture and the intended connection between demonstration collection, learning, and closed-loop execution. Two parts of the diagram are historical: the ACT block has been replaced by $\pi_{0.5}$, and the task-specific checkpoint block has been replaced by one unified checkpoint. The three-camera workcell, GELLO collection concept, LeRobot dataset, action-chunk interface, dual-FR3 controller, and deterministic failure-handling boundary remain consistent with the final system.
 
@@ -116,7 +117,7 @@ The system operates in a structured indoor workcell. Lighting, camera mounts, ro
 
 The current model uses RGB images and bilateral proprioception. Although the selected RealSense devices can provide depth, and the D435i includes inertial sensing, depth and inertial measurements are not included in the implemented $\pi_{0.5}$ feature contract. The chapter therefore uses manufacturer depth ranges and fields of view to justify camera placement, but it does not claim that the policy performs explicit metric depth reconstruction or six-degree-of-freedom pose estimation.
 
-The recorder relies on software packets assembled by an upstream ROS~2 bridge. No hardware trigger, exposure-level synchronization, device-time interpolation, or ROS approximate-time synchronization is performed by the recorder. The valid engineering claim is packet-level synchronization, not exact simultaneity of the three camera exposures.
+The recorder relies on software packets assembled by an upstream ROS~2 bridge. It does not use a hardware trigger or exposure-level synchronization. It also does not perform device-time interpolation or ROS approximate-time alignment. The valid engineering claim is packet-level synchronization, not exact simultaneity of the three camera exposures.
 
 The design also assumes that deterministic safeguards remain outside the policy. The learned action is accepted only after dimensional, finite-value, joint, gripper, workspace, freshness, and communication checks. The socket task uses an electrically unpowered fixture. The system is a supervised research workcell and is not represented as a certified production cell.
 
@@ -318,13 +319,14 @@ The implemented data path is
 \text{two FR3 follower controllers}
 \rightarrow
 \text{ROS~2 bridge}
+\notag\\
 \rightarrow
 \text{assembled packets}
 \notag\\
 \rightarrow
 \text{LeRobot recorder}
 \rightarrow
-\text{Parquet state/action data and three RGB video streams}.
+\text{Parquet records and three RGB videos}.
 \label{eq:ch4-data-path}
 \end{multline}
 
@@ -426,7 +428,9 @@ The three tasks are trained jointly for 100,000 optimizer steps. Batch size is 4
   \end{tabularx}
 \end{table}
 
-The training configuration deliberately separates task balancing from frame count. The action and state normalizers are derived from the training data only. Validation episodes are not used to compute model updates. The same action representation and \texttt{use\_relative\_actions=false} setting are retained when the selected checkpoint is loaded for deployment.
+The training configuration deliberately separates task balancing from frame count. The action and state normalizers are derived from the training data only. Validation episodes are not used to compute model updates. The same action representation and
+\texttt{use\_relative\_actions\allowbreak=false}
+setting are retained when the selected checkpoint is loaded for deployment.
 
 \subsection{Validation and checkpoint selection}
 
@@ -512,11 +516,11 @@ The task fixtures prevent uncontrolled object drift while retaining the manipula
 The D435i mount is fixed relative to the workcell and is positioned to keep all source and destination regions in view. The two D405 mounts move with the wrists and are oriented so that the gripper contact region appears in the close-range image during approach. Cables are routed to avoid entering the gripper opening or restricting wrist motion.
 
 The logical camera mapping is fixed:
-\[
-\texttt{overhead}\equiv\text{D435i},\qquad
-\texttt{left\_wrist}\equiv\text{left D405},\qquad
-\texttt{right\_wrist}\equiv\text{right D405}.
-\]
+\begin{align*}
+\texttt{overhead}&\equiv\text{D435i},\\
+\texttt{left\_wrist}&\equiv\text{left D405},&
+\texttt{right\_wrist}&\equiv\text{right D405}.
+\end{align*}
 The recorder and policy use these identities consistently. The three cameras provide RGB to the model; their depth and inertial capabilities are not part of the current learned observation.
 
 \subsection{Demonstration data-collection system}
@@ -596,6 +600,7 @@ The left and right arm targets are separated only after policy output validation
   \centering
   \caption{Language instructions, bilateral roles, and terminal conditions}
   \label{tab:ch4-task-definitions}
+  \label{tab:pi05-tasks}
   \footnotesize
   \begin{tabularx}{\textwidth}{
     >{\centering\arraybackslash}p{0.05\textwidth}
@@ -792,3 +797,5 @@ The CNY~0 value is therefore an incremental cash figure, not the total system va
 The final implementation now includes dual-arm state and action handling, three RGB inputs, LeRobot Dataset v3.0 data, one jointly trained $\pi_{0.5}$ checkpoint, equal-probability three-task sampling, the defined episode-level validation split, macro flow-matching checkpoint selection, and a 5~Hz absolute-action deployment interface. The selected DR3 hardware modules and engineering drawings have been retained in this chapter.
 
 Several quantities remain documentation gaps rather than model-design gaps: measured FR3 base poses, camera extrinsics and mounting distances, dimensioned fixture locations, ring and can clearances, final socket insertion clearance and depth, motherboard and memory-module clearances, measured gripper force--deflection behavior, TPU print settings, print mass and time, full in-kind asset value, and measured end-to-end latency. These values should be added if the report is expected to make production-level tolerance, structural, timing, or economic claims.
+
+\setlength{\emergencystretch}{0pt}
