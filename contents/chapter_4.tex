@@ -5,5 +5,23 @@
 \section{Final design}
 ……
 
+The final design follows the selected concept combination identified in Chapter~\ref{chap:concept}. The system is built around a dual-Franka Research~3 workcell, a GELLO-based teleoperation interface, synchronized multi-camera sensing, task-compatible end effectors and fixtures, and an ACT policy deployed through the LeRobot workflow~\cite{gello,act,lerobot}. This architecture connects the mechanical platform, data path, policy model, and validation procedure into one end-to-end manipulation system.
+
+The dual-FR3 platform provides the mechanical foundation for the completed bimanual manipulation task. The two arms operate in a shared, bounded workspace so that coordinated manipulation can be executed under controlled laboratory conditions. Low-level robot limits, controller protections, and workspace constraints remain active during execution. This arrangement satisfies the project need for bimanual manipulation while keeping the prototype within the defined proof-of-concept scope.
+
+The demonstration and learning pipeline follows the data flow described in the DR3 report. Human demonstrations are collected through the GELLO leader device and converted into synchronized records containing camera observations, robot proprioceptive state, gripper state, and commanded actions. The top camera preserves global workspace context, while wrist or side camera views provide local visual information near contact regions. Episodes are screened for synchronization and task completion before being converted to the training format.
+
+The policy module uses ACT as the current deployable controller. ACT predicts action chunks from visual observations and robot state, which provides a practical temporal-control mechanism for real-robot execution~\cite{act}. The implemented system therefore establishes a working bimanual imitation-learning baseline while preserving a route toward future language-conditioned policy selection and multi-task VLA deployment.
+
+\section{Design details}
+
+
 \section{Implementation plan}
 ……
+
+Implementation was organized around the same module boundaries used in concept generation. The hardware stage established the dual-FR3 workcell, mounted the task-compatible end effectors, and verified the available sensing layout. The teleoperation stage connected the GELLO interface to the robot-side data pipeline so that operator demonstrations could be recorded with consistent state and action channels. The data stage synchronized camera observations with robot state, gripper state, and actions, then converted accepted episodes into the learning dataset format.
+
+The learning stage trained ACT checkpoints from the collected demonstrations and integrated the selected checkpoint into the real-robot execution loop. The deployment stage connected policy inference to the robot controller under bounded workspace and safety assumptions. The final integration stage completed the bimanual manipulation task at the system level, confirming that the hardware, sensing, teleoperation, dataset conversion, policy inference, and robot execution components can operate together in one closed-loop workflow.
+
+Validation was planned as a staged process rather than a single final trial. Early checks focused on individual hardware communication, camera availability, state logging, and replay consistency. Later checks evaluated complete policy execution on the physical bimanual setup. This staged implementation reduces integration risk because failures can be traced to a specific module: robot control, teleoperation mapping, sensing, dataset preparation, model inference, or execution safety.
+
