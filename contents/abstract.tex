@@ -2,8 +2,9 @@
 
 \begin{abstract}[zh]
 \addcontentsline{toc}{chapter}{摘 \quad 要}
-  学位论文是本科生从事科研工作的成果的主要表现，集中表明了作者在研究工作中获得的新的发明、理论或见解，也是科研领域中的重要文献资料和社会的宝贵财富。
- \par 为了提高本科生学位论文的质量，做到学位论文在内容和格式上的规范化与统一化，特制作本模板。
+现代 3C 电子装配线需要处理小型元器件、高产品多样性和富接触操作，这些任务仍难以用传统固定程序机器人实现自动化。本项目针对这一缺口，面向双臂工业操作开发视觉-语言-动作（Vision-Language-Action, VLA）系统。该系统拟运行于双臂 Franka 平台，并覆盖典型 PC 关键部件任务，具体包括内存条插入、CPU 放置以及电源线连接。
+\par
+当前实现基于 LeRobot 框架中的 Action Chunking with Transformers（ACT）策略，通过遥操作采集分阶段、任务相关的演示数据，并按目标任务部署对应检查点。现阶段验证聚焦于视觉-动作模仿学习基线；语言条件推理与统一多任务控制将作为后续扩展。最终概念验证目标为：规划成功率高于 90\%，任务执行成功率高于 70\%，部件检测精度高于 90\%，位姿估计误差低于 20\,mm，故障检测率高于 90\%，恢复率高于 70\%。
 \end{abstract}
 
 {
@@ -11,8 +12,20 @@
 \ctexset{chapter/format+={\arial}}
 \begin{abstract}[en]
 \addcontentsline{toc}{chapter}{ABSTRACT}
-As a primary means of demonstrating research findings for undergraduate students, dissertation is a systematic and standardized record of the new inventions, theories or insights obtained by the author in the research work. It can not only function as an important reference when students pursue further studies, but also contribute to scientific research and social development.
-\par This template is therefore made to improve the quality of undergraduates’ dissertation and to further standardize it both in content and in format.
-
+Modern 3C electronics assembly lines deal with small components, high product variety, and
+contact-rich operations that remain difficult to automate with conventional fixed-program
+robots. Our project targets this gap by developing a Vision-Language-Action (VLA) system
+for bimanual industrial manipulation. The system is designed to run on a dual-arm Franka
+platform and to handle representative PC key-component tasks---specifically RAM insertion,
+CPU placement, and power-cable connection.
+\par
+The current implementation uses the Action Chunking with Transformers (ACT) policy in
+the LeRobot framework. It collects staged, task-specific demonstrations through teleoperation
+and deploys the checkpoint selected for the requested task. The present validation
+focuses on a vision--action imitation-learning baseline; language-conditioned inference and
+unified multi-task control remain later extensions. The final proof-of-concept targets are a
+planning success rate above 90\%, a task execution success rate above 70\%, component
+detection accuracy above 90\%, pose estimation error below 20\,mm, failure detection rate above
+90\%, and recovery rate above 70\%.
 \end{abstract}
 }
