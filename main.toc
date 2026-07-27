@@ -1,33 +1,33 @@
 \contentsline {chapter}{摘 \hskip 1em\relax 要}{I}{chapter*.4}%
 \contentsline {chapter}{ABSTRACT}{II}{chapter*.5}%
 \contentsline {chapter}{\numberline {Chapter 1}Introduction}{1}{chapter.1}%
-\contentsline {section}{\numberline {1.1}Background and significance}{1}{section.1.1}%
-\contentsline {subsection}{\numberline {1.1.1}Problem statement in 3C production lines}{1}{subsection.1.1.1}%
+\contentsline {section}{\numberline {1.1}Background and motivation}{1}{section.1.1}%
 \contentsline {section}{\numberline {1.2}Project objectives and scope}{2}{section.1.2}%
-\contentsline {section}{\numberline {1.3}Organization of this thesis}{2}{section.1.3}%
-\contentsline {chapter}{\numberline {Chapter 2}Design specification}{3}{chapter.2}%
-\contentsline {section}{\numberline {2.1}Customer requirements}{3}{section.2.1}%
-\contentsline {section}{\numberline {2.2}Engineering specifications}{4}{section.2.2}%
-\contentsline {section}{\numberline {2.3}Quality function deployment}{4}{section.2.3}%
-\contentsline {chapter}{\numberline {Chapter 3}Concept generation and selection}{6}{chapter.3}%
-\contentsline {section}{\numberline {3.1}Concept generation}{6}{section.3.1}%
-\contentsline {subsection}{\numberline {3.1.1}Functional decomposition}{6}{subsection.3.1.1}%
-\contentsline {subsection}{\numberline {3.1.2}Structured brainstorming}{6}{subsection.3.1.2}%
-\contentsline {subsection}{\numberline {3.1.3}Morphological chart and generated module concepts}{7}{subsection.3.1.3}%
-\contentsline {section}{\numberline {3.2}Concept selection}{8}{section.3.2}%
-\contentsline {subsection}{\numberline {3.2.1}Selection method and QFD-derived criteria}{8}{subsection.3.2.1}%
-\contentsline {subsection}{\numberline {3.2.2}Scoring of the five selected module concepts}{8}{subsection.3.2.2}%
-\contentsline {subsection}{\numberline {3.2.3}Comparative evaluation and selected concept}{9}{subsection.3.2.3}%
-\contentsline {chapter}{\numberline {Chapter 4}Final design and implementation plan}{12}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Final design}{12}{section.4.1}%
-\contentsline {section}{\numberline {4.2}Implementation plan}{12}{section.4.2}%
-\contentsline {chapter}{\numberline {Chapter 5}Validation results}{13}{chapter.5}%
-\contentsline {chapter}{\numberline {Chapter 6}Discussion and conclusions}{14}{chapter.6}%
-\contentsline {section}{\numberline {6.1}Discussion}{14}{section.6.1}%
-\contentsline {section}{\numberline {6.2}Conclusions}{14}{section.6.2}%
-\contentsline {section}{\numberline {6.3}Future works}{14}{section.6.3}%
-\contentsline {chapter}{References}{15}{chapter*.13}%
-\contentsline {chapter}{Appendix I.\ Engineering changes notice}{16}{chapter*.15}%
-\contentsline {chapter}{Appendix II.\ Bill of materials}{17}{chapter*.17}%
-\contentsline {chapter}{Research\ Projects\ and\ Publications\ during\ Undergraduate\ Period}{18}{section*.19}%
-\contentsline {chapter}{Acknowledgements}{19}{section*.21}%
+\contentsline {section}{\numberline {1.3}Main contributions}{3}{section.1.3}%
+\contentsline {section}{\numberline {1.4}Organization of this thesis}{3}{section.1.4}%
+\contentsline {chapter}{\numberline {Chapter 2}Design specification}{4}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Customer requirements}{4}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Engineering specifications}{5}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Quality function deployment}{5}{section.2.3}%
+\contentsline {chapter}{\numberline {Chapter 3}Concept generation and selection}{7}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Concept generation}{7}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}Functional decomposition}{7}{subsection.3.1.1}%
+\contentsline {subsection}{\numberline {3.1.2}Structured brainstorming}{7}{subsection.3.1.2}%
+\contentsline {subsection}{\numberline {3.1.3}Morphological chart and generated module concepts}{8}{subsection.3.1.3}%
+\contentsline {section}{\numberline {3.2}Concept selection}{9}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}Selection method and QFD-derived criteria}{9}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}Scoring of the five selected module concepts}{9}{subsection.3.2.2}%
+\contentsline {subsection}{\numberline {3.2.3}Comparative evaluation and selected concept}{10}{subsection.3.2.3}%
+\contentsline {chapter}{\numberline {Chapter 4}Final design and implementation plan}{13}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Final design}{13}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Implementation plan}{13}{section.4.2}%
+\contentsline {chapter}{\numberline {Chapter 5}Validation results}{14}{chapter.5}%
+\contentsline {chapter}{\numberline {Chapter 6}Discussion and conclusions}{15}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Discussion}{15}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Conclusions}{15}{section.6.2}%
+\contentsline {section}{\numberline {6.3}Future works}{15}{section.6.3}%
+\contentsline {chapter}{References}{16}{chapter*.13}%
+\contentsline {chapter}{Appendix I.\ Engineering changes notice}{17}{chapter*.15}%
+\contentsline {chapter}{Appendix II.\ Bill of materials}{18}{chapter*.17}%
+\contentsline {chapter}{Research\ Projects\ and\ Publications\ during\ Undergraduate\ Period}{19}{section*.19}%
+\contentsline {chapter}{Acknowledgements}{20}{section*.21}%

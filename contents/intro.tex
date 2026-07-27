@@ -2,28 +2,155 @@
 
 \chapter{Introduction}\label{chap:intro}
 
-\section{Background and significance}
+\section{Background and motivation}
 
-The 3C (Computer, Communication, Consumer electronics) manufacturing industry increasingly demands flexible robotic systems that can cope with short product life-cycles, diverse part geometries, and frequent line changeovers. Traditional hard-coded automation approaches exhibit significant limitations in such scenarios, as each product variant typically necessitates reprogramming and system reconfiguration, thereby increasing development and maintenance costs. In contrast, human operators can rapidly comprehend novel tasks from natural language instructions and adapt to new operating conditions with minimal prior programming. This highlights the importance of advancing industrial robotic systems toward human-aligned capabilities, particularly in terms of semantic understanding of instructions and few-shot generalization to unseen tasks under limited demonstrations.
+The 3C industry---computer, communication, and consumer electronics---is characterized by short product life cycles, frequent model changes, small components, and contact-rich assembly operations. Conventional industrial robots perform well in high-volume production when the workspace, component geometry, and motion sequence remain fixed. However, each product change can require new fixtures, manually programmed trajectories, and repeated commissioning. These requirements increase the cost of automating low-volume and high-mix production, particularly for tasks such as component placement and connector insertion, where success depends on both visual understanding and precise physical interaction.
 
-Recent advances in Vision-Language-Action (VLA) models offer a promising direction. By jointly learning from visual observations, language instructions, and robot action data, VLA models can, in principle, generalize across tasks without per-task engineering. Several landmark works, including RT-2~\cite{rt2}, OpenVLA~\cite{openvla}, RDT-1B~\cite{rdt1b}, and the $\pi$ series~\cite{pi0}, have demonstrated encouraging results on tabletop manipulation benchmarks. However, most of these demonstrations focus on single-arm, short-horizon tasks with relatively forgiving tolerances.
-Earlier work on visual and language-conditioned manipulation established complementary design patterns: Transporter Networks use spatially grounded pick-and-place representations, CLIPort combines semantic and spatial pathways, and PerAct couples language goals to structured visual observations~\cite{transporter,cliport,peract}. In parallel, BridgeData~V2, Open~X-Embodiment, DROID, and LIBERO have made dataset scale, embodiment diversity, and reproducible task evaluation central considerations in robot-learning system design~\cite{bridgev2,openx,droid,libero}.
+Learning from demonstration provides a different route to robot programming. Instead of specifying every motion analytically, an operator demonstrates the task and a policy learns to map visual observations and robot proprioceptive states to actions. Action Chunking with Transformers (ACT) and Diffusion Policy have shown that imitation-learning policies can represent temporally coordinated manipulation behaviors from demonstration data~\cite{act,diffusionpolicy}. Nevertheless, a task-specific visuomotor policy normally has no direct mechanism for interpreting natural-language instructions, and a separate checkpoint is often required for each task.
 
-\subsection{Problem statement in 3C production lines}
-
-PC key-component assembly is representative of the broader 3C challenge: the parts are small, the insertion and seating tolerances are tight, and the contact events are difficult to encode as fixed trajectories. Representative operations considered in this project include RAM insertion, CPU placement, and power-cable connection. These tasks remain difficult for conventional fixed-program robots because each product variant and fixture change tends to require reprogramming, recalibration, or both. The central engineering question is therefore how to couple visual observations and robot proprioceptive state to learned actions that can execute such contact-rich steps with measurable success, pose accuracy, and failure-handling targets.
+Vision-Language-Action (VLA) models extend this approach by conditioning robot actions on images, language, and robot state within a unified model. Systems such as RT-2, OpenVLA, RDT-1B, and the $\pi$ family illustrate the potential of transferring semantic knowledge from large vision-language models to physical control~\cite{rt2,openvla,rdt1b,pi0,pi05}. This capability is attractive for flexible manufacturing because one policy can, in principle, distinguish among multiple tasks from an instruction instead of relying on manually selected programs. However, adapting a VLA model to an industrial workcell remains a system-level engineering problem. Reliable deployment requires synchronized multi-view observations, consistent teleoperation data, an action representation compatible with the robot, safe real-time execution, and quantitative evaluation under repeatable physical conditions.
 
 \section{Project objectives and scope}
 
-The project aims to prototype a dual-arm industrial manipulation platform that couples camera observations and robot proprioceptive state to learned task actions for a scoped set of PC assembly operations. The robot platform consists of two Franka Research~3 (FR3) arms with complementary top and wrist/side camera views. At the present stage, task-specific ACT checkpoints are selected by the operator rather than inferred from a language command. The expected outcome is a measurable real-robot demonstration of the scoped assembly step, including task success, pose-estimation, and failure-handling evaluation.
+This project develops and evaluates a language-conditioned manipulation system for a dual-arm Franka Research~3 (FR3) workcell. The hardware platform combines two robot arms, complementary global and wrist-camera views, task-compatible end effectors and fixtures, and a GELLO-based teleoperation interface. Demonstrations are recorded as synchronized camera observations, robot proprioceptive states, and joint-space actions. The resulting pipeline covers the complete process from physical demonstration and dataset preparation to model fine-tuning, inference, and real-robot execution.
 
-The current implementation uses the Action Chunking with Transformers (ACT) policy in the LeRobot framework~\cite{act,lerobot}. It collects staged, task-specific demonstrations through teleoperation and deploys the checkpoint selected for the requested task. Language-conditioned inference and unified multi-task control remain later extensions toward the intended VLA capability.
+The modeling route progresses from visuomotor baselines to a VLA policy. ACT and Diffusion Policy are retained as baselines for evaluating task-specific imitation learning, with ACT providing the more stable initial real-robot deployment. The final system adopts $\pi_{0.5}$, which combines a PaliGemma-initialized vision-language backbone with a flow-matching action expert~\cite{pi05}. During project-specific fine-tuning, the pretrained vision-language backbone is frozen while the action expert and associated projection layers are optimized on the collected demonstrations. The deployed policy receives a natural-language task instruction, three camera observations, and a 16-dimensional dual-arm state, and produces continuous action chunks for robot execution. Training and deployment cover three bounded task families: ring placement, plug-and-socket insertion, and RAM manipulation. These tasks provide controlled test cases for object localization, grasping, placement, insertion, and language-conditioned task selection.
+
+The scope of this thesis is a laboratory proof of concept rather than a production-ready assembly cell. Experiments are conducted with fixed robot hardware, bounded workspaces, defined initial conditions, and task-specific fixtures. The engineering targets---including task success, component detection, pose error, failure detection, and recovery---serve as acceptance criteria for the validation procedure and are not treated as achieved results unless supported by physical trials. The project does not claim unrestricted open-world generalization, autonomous factory deployment, or guaranteed safe recovery from every failure mode. Instead, it investigates whether a complete bimanual data and control pipeline can support reproducible, language-conditioned manipulation across a small but representative set of 3C assembly tasks.
+
+\section{Main contributions}
+
+The main contributions of this thesis are as follows:
+
+\begin{enumerate}
+  \item An integrated dual-FR3 manipulation platform is established with GELLO teleoperation, synchronized three-camera sensing, robot-state and action recording, and task-compatible end effectors and fixtures.
+  \item A reproducible learning pipeline is developed to convert teleoperated demonstrations into datasets for ACT, Diffusion Policy, and $\pi_{0.5}$ training and real-robot deployment.
+  \item A pretrained VLA is adapted to the project workcell by fine-tuning its action-generation components, enabling one deployed policy to execute multiple bounded manipulation tasks from natural-language instructions.
+  \item A traceable engineering process links customer requirements and quality function deployment to concept selection, implementation decisions, and quantitative validation criteria.
+\end{enumerate}
 
 \section{Organization of this thesis}
 
 The remainder of this thesis is organized as follows.
-Chapter~\ref{chap:design-spec} presents the customer requirements, engineering specifications, and quality function deployment.
-Chapter~\ref{chap:concept} describes concept generation and concept selection for the major system modules.
-Chapter~\ref{chap:final-design} details the final design and the manufacturing or implementation plan for the prototype.
-Chapter~\ref{chap:validation} reports the validation methods and results.
-Chapter~\ref{chap:discussion} discusses the strengths and limitations of the design and concludes with recommendations for future work.
+Chapter~\ref{chap:design-spec} translates customer requirements into measurable engineering specifications and presents the quality function deployment.
+Chapter~\ref{chap:concept} describes functional decomposition, concept generation, and the selection of the major hardware, sensing, teleoperation, and policy modules.
+Chapter~\ref{chap:final-design} details the final system design, data and control architecture, model-training procedure, and implementation plan.
+Chapter~\ref{chap:validation} presents the physical validation methods and experimental results.
+Chapter~\ref{chap:discussion} discusses the strengths and limitations of the system, summarizes the conclusions, and identifies directions for future work.
+% !TEX root = ../main.tex
+
+\chapter{Introduction}\label{chap:intro}
+
+\section{Background and motivation}
+
+The 3C industry---computer, communication, and consumer electronics---is characterized by short product life cycles, frequent model changes, small components, and contact-rich assembly operations. Conventional industrial robots perform well in high-volume production when the workspace, component geometry, and motion sequence remain fixed. However, each product change can require new fixtures, manually programmed trajectories, and repeated commissioning. These requirements increase the cost of automating low-volume and high-mix production, particularly for tasks such as component placement and connector insertion, where success depends on both visual understanding and precise physical interaction.
+
+Learning from demonstration provides a different route to robot programming. Instead of specifying every motion analytically, an operator demonstrates the task and a policy learns to map visual observations and robot proprioceptive states to actions. Action Chunking with Transformers (ACT) and Diffusion Policy have shown that imitation-learning policies can represent temporally coordinated manipulation behaviors from demonstration data~\cite{act,diffusionpolicy}. Nevertheless, a task-specific visuomotor policy normally has no direct mechanism for interpreting natural-language instructions, and a separate checkpoint is often required for each task.
+
+Vision-Language-Action (VLA) models extend this approach by conditioning robot actions on images, language, and robot state within a unified model. Systems such as RT-2, OpenVLA, RDT-1B, and the $\pi$ family illustrate the potential of transferring semantic knowledge from large vision-language models to physical control~\cite{rt2,openvla,rdt1b,pi0,pi05}. This capability is attractive for flexible manufacturing because one policy can, in principle, distinguish among multiple tasks from an instruction instead of relying on manually selected programs. However, adapting a VLA model to an industrial workcell remains a system-level engineering problem. Reliable deployment requires synchronized multi-view observations, consistent teleoperation data, an action representation compatible with the robot, safe real-time execution, and quantitative evaluation under repeatable physical conditions.
+
+\section{Project objectives and scope}
+
+This project develops and evaluates a language-conditioned manipulation system for a dual-arm Franka Research~3 (FR3) workcell. The hardware platform combines two robot arms, complementary global and wrist-camera views, task-compatible end effectors and fixtures, and a GELLO-based teleoperation interface. Demonstrations are recorded as synchronized camera observations, robot proprioceptive states, and joint-space actions. The resulting pipeline covers the complete process from physical demonstration and dataset preparation to model fine-tuning, inference, and real-robot execution.
+
+The modeling route progresses from visuomotor baselines to a VLA policy. ACT and Diffusion Policy are retained as baselines for evaluating task-specific imitation learning, with ACT providing the more stable initial real-robot deployment. The final system adopts $\pi_{0.5}$, which combines a PaliGemma-initialized vision-language backbone with a flow-matching action expert~\cite{pi05}. During project-specific fine-tuning, the pretrained vision-language backbone is frozen while the action expert and associated projection layers are optimized on the collected demonstrations. The deployed policy receives a natural-language task instruction, three camera observations, and a 16-dimensional dual-arm state, and produces continuous action chunks for robot execution. Training and deployment cover three bounded task families: ring placement, plug-and-socket insertion, and RAM manipulation. These tasks provide controlled test cases for object localization, grasping, placement, insertion, and language-conditioned task selection.
+
+The scope of this thesis is a laboratory proof of concept rather than a production-ready assembly cell. Experiments are conducted with fixed robot hardware, bounded workspaces, defined initial conditions, and task-specific fixtures. The engineering targets---including task success, component detection, pose error, failure detection, and recovery---serve as acceptance criteria for the validation procedure and are not treated as achieved results unless supported by physical trials. The project does not claim unrestricted open-world generalization, autonomous factory deployment, or guaranteed safe recovery from every failure mode. Instead, it investigates whether a complete bimanual data and control pipeline can support reproducible, language-conditioned manipulation across a small but representative set of 3C assembly tasks.
+
+\section{Main contributions}
+
+The main contributions of this thesis are as follows:
+
+\begin{enumerate}
+  \item An integrated dual-FR3 manipulation platform is established with GELLO teleoperation, synchronized three-camera sensing, robot-state and action recording, and task-compatible end effectors and fixtures.
+  \item A reproducible learning pipeline is developed to convert teleoperated demonstrations into datasets for ACT, Diffusion Policy, and $\pi_{0.5}$ training and real-robot deployment.
+  \item A pretrained VLA is adapted to the project workcell by fine-tuning its action-generation components, enabling one deployed policy to execute multiple bounded manipulation tasks from natural-language instructions.
+  \item A traceable engineering process links customer requirements and quality function deployment to concept selection, implementation decisions, and quantitative validation criteria.
+\end{enumerate}
+
+\section{Organization of this thesis}
+
+The remainder of this thesis is organized as follows.
+Chapter~\ref{chap:design-spec} translates customer requirements into measurable engineering specifications and presents the quality function deployment.
+Chapter~\ref{chap:concept} describes functional decomposition, concept generation, and the selection of the major hardware, sensing, teleoperation, and policy modules.
+Chapter~\ref{chap:final-design} details the final system design, data and control architecture, model-training procedure, and implementation plan.
+Chapter~\ref{chap:validation} presents the physical validation methods and experimental results.
+Chapter~\ref{chap:discussion} discusses the strengths and limitations of the system, summarizes the conclusions, and identifies directions for future work.
+% !TEX root = ../main.tex
+
+\chapter{Introduction}\label{chap:intro}
+
+\section{Background and motivation}
+
+The 3C industry---computer, communication, and consumer electronics---is characterized by short product life cycles, frequent model changes, small components, and contact-rich assembly operations. Conventional industrial robots perform well in high-volume production when the workspace, component geometry, and motion sequence remain fixed. However, each product change can require new fixtures, manually programmed trajectories, and repeated commissioning. These requirements increase the cost of automating low-volume and high-mix production, particularly for tasks such as component placement and connector insertion, where success depends on both visual understanding and precise physical interaction.
+
+Learning from demonstration provides a different route to robot programming. Instead of specifying every motion analytically, an operator demonstrates the task and a policy learns to map visual observations and robot proprioceptive states to actions. Action Chunking with Transformers (ACT) and Diffusion Policy have shown that imitation-learning policies can represent temporally coordinated manipulation behaviors from demonstration data~\cite{act,diffusionpolicy}. Nevertheless, a task-specific visuomotor policy normally has no direct mechanism for interpreting natural-language instructions, and a separate checkpoint is often required for each task.
+
+Vision-Language-Action (VLA) models extend this approach by conditioning robot actions on images, language, and robot state within a unified model. Systems such as RT-2, OpenVLA, RDT-1B, and the $\pi$ family illustrate the potential of transferring semantic knowledge from large vision-language models to physical control~\cite{rt2,openvla,rdt1b,pi0,pi05}. This capability is attractive for flexible manufacturing because one policy can, in principle, distinguish among multiple tasks from an instruction instead of relying on manually selected programs. However, adapting a VLA model to an industrial workcell remains a system-level engineering problem. Reliable deployment requires synchronized multi-view observations, consistent teleoperation data, an action representation compatible with the robot, safe real-time execution, and quantitative evaluation under repeatable physical conditions.
+
+\section{Project objectives and scope}
+
+This project develops and evaluates a language-conditioned manipulation system for a dual-arm Franka Research~3 (FR3) workcell. The hardware platform combines two robot arms, complementary global and wrist-camera views, task-compatible end effectors and fixtures, and a GELLO-based teleoperation interface. Demonstrations are recorded as synchronized camera observations, robot proprioceptive states, and joint-space actions. The resulting pipeline covers the complete process from physical demonstration and dataset preparation to model fine-tuning, inference, and real-robot execution.
+
+The modeling route progresses from visuomotor baselines to a VLA policy. ACT and Diffusion Policy are retained as baselines for evaluating task-specific imitation learning, with ACT providing the more stable initial real-robot deployment. The final system adopts $\pi_{0.5}$, which combines a PaliGemma-initialized vision-language backbone with a flow-matching action expert~\cite{pi05}. During project-specific fine-tuning, the pretrained vision-language backbone is frozen while the action expert and associated projection layers are optimized on the collected demonstrations. The deployed policy receives a natural-language task instruction, three camera observations, and a 16-dimensional dual-arm state, and produces continuous action chunks for robot execution. Training and deployment cover three bounded task families: ring placement, plug-and-socket insertion, and RAM manipulation. These tasks provide controlled test cases for object localization, grasping, placement, insertion, and language-conditioned task selection.
+
+The scope of this thesis is a laboratory proof of concept rather than a production-ready assembly cell. Experiments are conducted with fixed robot hardware, bounded workspaces, defined initial conditions, and task-specific fixtures. The engineering targets---including task success, component detection, pose error, failure detection, and recovery---serve as acceptance criteria for the validation procedure and are not treated as achieved results unless supported by physical trials. The project does not claim unrestricted open-world generalization, autonomous factory deployment, or guaranteed safe recovery from every failure mode. Instead, it investigates whether a complete bimanual data and control pipeline can support reproducible, language-conditioned manipulation across a small but representative set of 3C assembly tasks.
+
+\section{Main contributions}
+
+The main contributions of this thesis are as follows:
+
+\begin{enumerate}
+  \item An integrated dual-FR3 manipulation platform is established with GELLO teleoperation, synchronized three-camera sensing, robot-state and action recording, and task-compatible end effectors and fixtures.
+  \item A reproducible learning pipeline is developed to convert teleoperated demonstrations into datasets for ACT, Diffusion Policy, and $\pi_{0.5}$ training and real-robot deployment.
+  \item A pretrained VLA is adapted to the project workcell by fine-tuning its action-generation components, enabling one deployed policy to execute multiple bounded manipulation tasks from natural-language instructions.
+  \item A traceable engineering process links customer requirements and quality function deployment to concept selection, implementation decisions, and quantitative validation criteria.
+\end{enumerate}
+
+\section{Organization of this thesis}
+
+The remainder of this thesis is organized as follows.
+Chapter~\ref{chap:design-spec} translates customer requirements into measurable engineering specifications and presents the quality function deployment.
+Chapter~\ref{chap:concept} describes functional decomposition, concept generation, and the selection of the major hardware, sensing, teleoperation, and policy modules.
+Chapter~\ref{chap:final-design} details the final system design, data and control architecture, model-training procedure, and implementation plan.
+Chapter~\ref{chap:validation} presents the physical validation methods and experimental results.
+Chapter~\ref{chap:discussion} discusses the strengths and limitations of the system, summarizes the conclusions, and identifies directions for future work.
+% !TEX root = ../main.tex
+
+\chapter{Introduction}\label{chap:intro}
+
+\section{Background and motivation}
+
+The 3C industry---computer, communication, and consumer electronics---is characterized by short product life cycles, frequent model changes, small components, and contact-rich assembly operations. Conventional industrial robots perform well in high-volume production when the workspace, component geometry, and motion sequence remain fixed. However, each product change can require new fixtures, manually programmed trajectories, and repeated commissioning. These requirements increase the cost of automating low-volume and high-mix production, particularly for tasks such as component placement and connector insertion, where success depends on both visual understanding and precise physical interaction.
+
+Learning from demonstration provides a different route to robot programming. Instead of specifying every motion analytically, an operator demonstrates the task and a policy learns to map visual observations and robot proprioceptive states to actions. Action Chunking with Transformers (ACT) and Diffusion Policy have shown that imitation-learning policies can represent temporally coordinated manipulation behaviors from demonstration data~\cite{act,diffusionpolicy}. Nevertheless, a task-specific visuomotor policy normally has no direct mechanism for interpreting natural-language instructions, and a separate checkpoint is often required for each task.
+
+Vision-Language-Action (VLA) models extend this approach by conditioning robot actions on images, language, and robot state within a unified model. Systems such as RT-2, OpenVLA, RDT-1B, and the $\pi$ family illustrate the potential of transferring semantic knowledge from large vision-language models to physical control~\cite{rt2,openvla,rdt1b,pi0,pi05}. This capability is attractive for flexible manufacturing because one policy can, in principle, distinguish among multiple tasks from an instruction instead of relying on manually selected programs. However, adapting a VLA model to an industrial workcell remains a system-level engineering problem. Reliable deployment requires synchronized multi-view observations, consistent teleoperation data, an action representation compatible with the robot, safe real-time execution, and quantitative evaluation under repeatable physical conditions.
+
+\section{Project objectives and scope}
+
+This project develops and evaluates a language-conditioned manipulation system for a dual-arm Franka Research~3 (FR3) workcell. The hardware platform combines two robot arms, complementary global and wrist-camera views, task-compatible end effectors and fixtures, and a GELLO-based teleoperation interface. Demonstrations are recorded as synchronized camera observations, robot proprioceptive states, and joint-space actions. The resulting pipeline covers the complete process from physical demonstration and dataset preparation to model fine-tuning, inference, and real-robot execution.
+
+The modeling route progresses from visuomotor baselines to a VLA policy. ACT and Diffusion Policy are retained as baselines for evaluating task-specific imitation learning, with ACT providing the more stable initial real-robot deployment. The final system adopts $\pi_{0.5}$, which combines a PaliGemma-initialized vision-language backbone with a flow-matching action expert~\cite{pi05}. During project-specific fine-tuning, the pretrained vision-language backbone is frozen while the action expert and associated projection layers are optimized on the collected demonstrations. The deployed policy receives a natural-language task instruction, three camera observations, and a 16-dimensional dual-arm state, and produces continuous action chunks for robot execution. Training and deployment cover three bounded task families: ring placement, plug-and-socket insertion, and RAM manipulation. These tasks provide controlled test cases for object localization, grasping, placement, insertion, and language-conditioned task selection.
+
+The scope of this thesis is a laboratory proof of concept rather than a production-ready assembly cell. Experiments are conducted with fixed robot hardware, bounded workspaces, defined initial conditions, and task-specific fixtures. The engineering targets---including task success, component detection, pose error, failure detection, and recovery---serve as acceptance criteria for the validation procedure and are not treated as achieved results unless supported by physical trials. The project does not claim unrestricted open-world generalization, autonomous factory deployment, or guaranteed safe recovery from every failure mode. Instead, it investigates whether a complete bimanual data and control pipeline can support reproducible, language-conditioned manipulation across a small but representative set of 3C assembly tasks.
+
+\section{Main contributions}
+
+The main contributions of this thesis are as follows:
+
+\begin{enumerate}
+  \item An integrated dual-FR3 manipulation platform is established with GELLO teleoperation, synchronized three-camera sensing, robot-state and action recording, and task-compatible end effectors and fixtures.
+  \item A reproducible learning pipeline is developed to convert teleoperated demonstrations into datasets for ACT, Diffusion Policy, and $\pi_{0.5}$ training and real-robot deployment.
+  \item A pretrained VLA is adapted to the project workcell by fine-tuning its action-generation components, enabling one deployed policy to execute multiple bounded manipulation tasks from natural-language instructions.
+  \item A traceable engineering process links customer requirements and quality function deployment to concept selection, implementation decisions, and quantitative validation criteria.
+\end{enumerate}
+
+\section{Organization of this thesis}
+
+The remainder of this thesis is organized as follows.
+Chapter~\ref{chap:design-spec} translates customer requirements into measurable engineering specifications and presents the quality function deployment.
+Chapter~\ref{chap:concept} describes functional decomposition, concept generation, and the selection of the major hardware, sensing, teleoperation, and policy modules.
+Chapter~\ref{chap:final-design} details the final system design, data and control architecture, model-training procedure, and implementation plan.
+Chapter~\ref{chap:validation} presents the physical validation methods and experimental results.
+Chapter~\ref{chap:discussion} discusses the strengths and limitations of the system, summarizes the conclusions, and identifies directions for future work.

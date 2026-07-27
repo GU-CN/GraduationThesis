@@ -1,5 +1,4 @@
 % !TEX root = ../main.tex
-
 \begin{abstract}[zh]
 \addcontentsline{toc}{chapter}{摘 \quad 要}
 现代 3C 电子装配线需要处理小型元器件、高产品多样性和富接触操作，这些任务仍难以用传统固定程序机器人实现自动化。本项目针对这一缺口，面向双臂工业操作开发视觉-语言-动作（Vision-Language-Action, VLA）系统。该系统拟运行于双臂 Franka 平台，并覆盖典型 PC 关键部件任务，具体包括内存条插入、CPU 放置以及电源线连接。
@@ -8,7 +7,12 @@
 \end{abstract}
 
 {
-\newfontface{\arial}{Arial}[Scale=0.94]
+  \newfontfamily{\arial}{Arial}[
+    Scale=0.94,
+    BoldFont={Arial Bold},
+    ItalicFont={Arial Italic},
+    BoldItalicFont={Arial Bold Italic},
+  ]
 \ctexset{chapter/format+={\arial}}
 \begin{abstract}[en]
 \addcontentsline{toc}{chapter}{ABSTRACT}

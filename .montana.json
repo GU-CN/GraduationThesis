@@ -6,8 +6,14 @@
   "githubBranch": "cursor/five-authors-cover-a987",
   "mainFile": "main.tex",
   "createdAt": "2026-07-27T09:42:12.184Z",
-  "updatedAt": "2026-07-27T11:19:52.910Z",
-  "lastPullAt": "2026-07-27T10:38:00.753Z",
+  "updatedAt": "2026-07-27T13:47:02.678Z",
+  "lastPullAt": "2026-07-27T11:20:02.253Z",
   "lastPushAt": null,
-  "lastSyncError": "GitHub Push 被拒绝（403）：当前 Token 对 GU-CN/GraduationThesis 没有写权限。请在账户设置更换有 repo 写权限的 Token"
+  "collaborators": [
+    {
+      "userId": "1267f7cb-9287-4d6a-be0f-649794775ffd",
+      "role": "write",
+      "addedAt": "2026-07-27T13:22:46.461Z"
+    }
+  ]
 }
