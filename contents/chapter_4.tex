@@ -94,9 +94,9 @@ The data stream is sampled at 5~Hz, corresponding to an interval of approximatel
 \mathbf{a}^{\mathrm{arm}}_t &= \mathbf{q}^{\mathrm{target}}_{t+1}\text{ from packet }t+1, \\
 \mathbf{a}^{\mathrm{gripper}}_t &= \mathbf{g}^{\mathrm{target}}_{t}\text{ from packet }t.
 \end{align}
-Thus, the three images and the measured robot state come from the same \texttt{current\_packet}. The supervised arm label is shifted forward by one packet so that the observation at \(t\) is paired with the next absolute joint target. The gripper label follows the existing same-packet convention and stores the absolute commanded opening width from packet \(t\).
+Thus, the three images and the measured robot state come from the same assembled packet. The supervised arm label is shifted forward by one packet so that the observation at \(t\) is paired with the next absolute joint target. The gripper label follows the existing same-packet convention and stores the absolute commanded opening width from packet \(t\).
 
-This procedure establishes software-level synchronization within one packet. The recorder does not perform device-timestamp interpolation, ROS ApproximateTime alignment, or hardware-triggered exposure synchronization. It relies on the upstream ROS~2 bridge to assemble the packet. Consequently, the dataset supports the claim that camera images and robot state share one software packet, but it does not by itself prove that the three camera exposures occurred at exactly the same physical instant.
+This procedure establishes software-level synchronization within one packet. The recorder does not perform device-timestamp interpolation, ROS approximate-time message alignment, or hardware-triggered exposure synchronization. It relies on the upstream ROS~2 bridge to assemble the packet. Consequently, the dataset supports the claim that camera images and robot state share one software packet, but it does not by itself prove that the three camera exposures occurred at exactly the same physical instant.
 
 \subsection{Multi-task dataset construction}
 
@@ -134,7 +134,7 @@ The remaining 72 episodes from each task are used for training. The split is per
 
 During joint training, tasks are sampled with equal probability. The sampler first selects the task and then selects training data from that task, so the larger number of frames in \texttt{dual\_ring} does not give it a larger task-level sampling probability. This preserves balanced supervision across the three language instructions despite their different trajectory lengths.
 
-\subsection{LeRobot $\pi_{0.5}$ policy}
+\subsection{LeRobot \texorpdfstring{$\pi_{0.5}$}{pi0.5} policy}
 
 The final controller uses one jointly trained $\pi_{0.5}$ checkpoint. The base checkpoint is the official \texttt{pi05\_base} model, whose upstream parameters are identified by
 \nolinkurl{gs://openpi-assets/checkpoints/pi05_base/params}.
@@ -143,7 +143,7 @@ Training reads the converted PyTorch weights from
 The base model combines a PaliGemma \texttt{gemma\_2b} vision-language component with a \texttt{gemma\_300m} action expert. Model weights use \texttt{bfloat16}.
 
 The implementation uses LeRobot~0.5.2 at commit
-\texttt{dc06dba9d6220ab99c94e83ec7f0d45a35b44bed}, together with project-specific local modifications. Training is performed on physical GPU~1 of an NVIDIA RTX~A6000 with 48~GB of memory. The three tasks are trained jointly for 100,000 optimizer steps with batch size~4 and AdamW. The peak learning rate is \(2.5\times10^{-5}\). A 1,000-step warm-up is followed by cosine decay to \(2.5\times10^{-6}\). Validation is run every 5,000 steps.
+\texttt{dc06dba9\allowbreak d6220ab9\allowbreak 9c94e83e\allowbreak c7f0d45a\allowbreak 35b44bed}, together with project-specific local modifications. Training is performed on physical GPU~1 of an NVIDIA RTX~A6000 with 48~GB of memory. The three tasks are trained jointly for 100,000 optimizer steps with batch size~4 and AdamW. The peak learning rate is \(2.5\times10^{-5}\). A 1,000-step warm-up is followed by cosine decay to \(2.5\times10^{-6}\). Validation is run every 5,000 steps.
 
 Checkpoint selection uses a task-balanced validation quantity rather than a frame-weighted loss. For each task, the mean normalized flow-matching loss is first calculated over at most 64 validation batches. With batch size~4, this evaluates at most 256 validation samples per task at each validation point. The checkpoint-selection metric is
 \begin{equation}
@@ -173,7 +173,7 @@ Base model & Official \texttt{pi05\_base} \\
 Model structure & PaliGemma \texttt{gemma\_2b} + action expert \texttt{gemma\_300m} \\
 Weight precision & \texttt{bfloat16} \\
 LeRobot version & 0.5.2 \\
-LeRobot commit & \texttt{dc06dba9d6220ab99c94e83ec7f0d45a35b44bed}, with local modifications \\
+LeRobot commit & \texttt{dc06dba9\allowbreak d6220ab9\allowbreak 9c94e83e\allowbreak c7f0d45a\allowbreak 35b44bed}, with local modifications \\
 Dataset format & LeRobot Dataset v3.0 \\
 Training hardware & NVIDIA RTX A6000 48~GB, physical GPU~1 \\
 Batch size & 4 \\
