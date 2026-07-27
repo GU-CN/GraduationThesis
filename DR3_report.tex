@@ -1,0 +1,1830 @@
+\documentclass[12pt, letterpaper]{article}
+
+% ---- Packages ----
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\usepackage{parskip}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{multirow}
+\usepackage{colortbl}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{siunitx}
+\usepackage{makecell}
+\usepackage{pdflscape}
+\usepackage{amsmath}
+
+% ---- Page style ----
+\setlength{\headheight}{14.5pt}
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Design Review \#3}
+\lhead{Group 10 --- VLA for Bimanual Manipulation}
+\cfoot{\thepage}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!60!black,
+    citecolor=blue!60!black,
+    urlcolor=blue!60!black,
+}
+
+\titleformat{\section}{\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries}{\thesubsubsection}{1em}{}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+% ---- DR3 revision marking ----
+% Text retained unchanged from DR1 should appear in gray.
+\newcommand{\drone}[1]{{\color{gray}#1}}
+
+% Text written in response to Judge Panel comments can use this command.
+% Example: \judgecomment{Revised paragraph.}{DR2-C1}
+\newcommand{\judgecomment}[2]{{\color{blue!70!black}#1}\footnote{Response to Judge Panel comment: #2}}
+
+% Parameters awaiting confirmation from the laboratory should remain visible.
+\newcommand{\todo}[1]{{\color{red}\textbf{[TBD: #1]}}}
+
+% Blank image frame that keeps the template compilable when an image is absent.
+\newcommand{\safeimage}[3]{%
+    \IfFileExists{#1}{%
+        \includegraphics[width=#2]{#1}%
+    }{%
+        \fbox{\parbox[c][#3][c]{#2}{\centering}}%
+    }%
+}
+\newcommand{\pistyle}{$\pi$-style}
+
+% ==========================================================
+\begin{document}
+
+% ==================== TITLE PAGE ==========================
+\begin{titlepage}
+\centering
+\vspace*{0.8cm}
+
+{\LARGE \textbf{Vision-Language-Action for\\[6pt] Bimanual Industrial Manipulations}}
+
+\vspace{1.2cm}
+
+{\large Capstone Design --- SJTU Global College Summer 2026}
+
+\vspace{0.8cm}
+
+{\large \textbf{Design Review \#3 Written Report}}
+
+\vspace{1.6cm}
+
+\begin{tabular}{ll}
+\textbf{Project Sponsor:} & Yutong Ban, SIRIUS Lab \\[4pt]
+\textbf{Section Instructor:} & Peisen Huang \\
+\end{tabular}
+
+\vspace{1cm}
+
+\textbf{Group 10}
+
+\textbf{Team Members}
+
+\vspace{0.2cm}
+
+\begin{tabular}{lll}
+Haoran Yang & Team Leader \& Evaluation & yhr-73@sjtu.edu.cn \\
+Lv Wu & Data Pipeline & wulan\_1@sjtu.edu.cn \\
+Yixin Wu & Simulation / Robot Setup & wyx517sjtu@sjtu.edu.cn \\
+Tianzong Cheng & Policy Learning & chengtianzong@sjtu.edu.cn \\
+Yiming Gu & Model Training & gym20040816@sjtu.edu.cn \\
+\end{tabular}
+
+\vspace{0.8cm}
+
+\safeimage{imgs/cover.png}{0.7\textwidth}{5cm}
+
+\vspace{0.2cm}
+
+{\small\textit{Bimanual robotic manipulation platform used for the proposed VLA-based assembly system.}}
+
+\vfill
+
+{\small \today}
+\end{titlepage}
+
+% ==================== ABSTRACT ============================
+\newpage
+\section*{Abstract}
+\addcontentsline{toc}{section}{Abstract}
+
+\drone{Modern 3C electronics assembly lines deal with small components, high product variety, and contact-rich operations that remain difficult to automate with conventional fixed-program robots. Our project targets this gap by developing a Vision-Language-Action (VLA) system for bimanual industrial manipulation. The system is designed to run on a dual-arm Franka platform and to handle representative PC key-component tasks---specifically RAM insertion, CPU placement, and power-cable connection.}
+
+The deployed system selects the corresponding ACT checkpoint, receives synchronized visual
+  observations and robot state, and outputs robot and gripper actions during closed-loop execution.
+  Current evidence is limited to dry runs and bounded validation activities; the report does not claim
+  demonstrated language-conditioned inference, unified multi-task control, autonomous planning,
+  failure detection, recovery, or bimanual manipulation. These functions remain long-term extensions
+  toward the intended Vision-Language-Action (VLA) and dual-arm system.
+
+  The engineering acceptance targets are planning success above 90\%, task execution success above 70\%, component detection accuracy above 90\%, pose error below 20\,mm, failure-detection rate above
+  90\%, and recovery success above 70\%. These values define validation thresholds rather than
+  demonstrated performance results.
+
+
+% ==================== TOC =================================
+\newpage
+\tableofcontents
+\newpage
+
+% ==================== INTRODUCTION ========================
+\section{Introduction}
+
+\subsection{Background and Significance}
+
+\drone{The 3C (Computer, Communication, Consumer electronics) manufacturing industry increasingly demands flexible robotic systems that can cope with short product life-cycles, diverse part geometries, and frequent line changeovers. Traditional hard-coded automation approaches exhibit significant limitations in such scenarios, as each product variant typically necessitates reprogramming and system reconfiguration, thereby increasing development and maintenance costs. In contrast, human operators can rapidly comprehend novel tasks from natural language instructions and adapt to new operating conditions with minimal prior programming. This highlights the importance of advancing industrial robotic systems toward human-aligned capabilities, particularly in terms of semantic understanding of instructions and few-shot generalization to unseen tasks under limited demonstrations.}
+
+\drone{Recent advances in Vision-Language-Action (VLA) models offer a promising direction. By jointly learning from visual observations, language instructions, and robot action data, VLA models can, in principle, generalize across tasks without per-task engineering. Several landmark works, including RT-2 \cite{rt2}, OpenVLA \cite{openvla}, RDT-1B \cite{rdt1b}, and the $\pi$ series \cite{pi0}, have demonstrated encouraging results on tabletop manipulation benchmarks. However, most of these demonstrations focus on single-arm, short-horizon tasks with relatively forgiving tolerances.}
+Earlier work on visual and language-conditioned manipulation established complementary design patterns: Transporter Networks use spatially grounded pick-and-place representations, CLIPort combines semantic and spatial pathways, and PerAct couples language goals to structured visual observations \cite{transporter,cliport,peract}. In parallel, BridgeData V2, Open X-Embodiment, DROID, and LIBERO have made dataset scale, embodiment diversity, and reproducible task evaluation central considerations in robot-learning system design \cite{bridgev2,openx,droid,libero}.
+
+\subsection{Design Problem}
+
+The project aims to prototype a dual-arm industrial manipulation platform that couples camera observations and robot proprioceptive state to learned task actions for a scoped set of PC assembly operations. The robot platform consists of two Franka Research 3 (FR3) arms with complementary top and wrist/side camera views. At the present stage, task-specific ACT checkpoints are selected by the operator rather than inferred from a language command. The expected Design Expo outcome is a measurable real-robot demonstration of the scoped assembly step, including task success, pose-estimation, and failure-handling evaluation.
+
+
+
+% =============== ENGINEERING SPECIFICATIONS ==============
+\section{Engineering Specifications}
+
+\subsection{Customer Requirements}
+
+\drone{Through discussions with our project sponsor and analysis of the target application, we identified eight customer requirements and assigned importance weights reflecting the sponsor's priorities. The requirements capture both functional goals and non-functional concerns, including robustness, safety, generalizability, cost, and reliability.}
+
+\begin{table}[H]
+\centering
+\caption{Customer Requirements and Importance Weights}
+\label{tab:cr}
+\color{gray}
+\begin{tabular}{clc}
+\toprule
+\textbf{No.} & \textbf{Customer Requirement} & \textbf{Weight} \\
+\midrule
+CR1 & Complete assembly task successfully & 0.18 \\
+CR2 & High assembly precision & 0.16 \\
+CR3 & Robust to environment and disturbances & 0.15 \\
+CR4 & Safe and collision-free operation & 0.14 \\
+CR5 & Fast task execution & 0.12 \\
+CR6 & Easy to use and generalize & 0.10 \\
+CR7 & Cost-effective system & 0.08 \\
+CR8 & System reliable and recovery capable & 0.07 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+  {\color{blue!70!black}
+  The customer requirements were translated into engineering specifications through the QFD process
+  rather than by assigning targets independently. For each customer requirement $i$ and engineering
+  specification $j$, the team assigned a relationship value $r_{ij}\in\{0,1,3,9\}$ (none, weak,
+  moderate, or strong) and calculated the unnormalized engineering priority as $I_j=\sum_i w_i
+  r_{ij}$, where $w_i$ is the customer-importance weight in Table~\ref{tab:cr}. The priorities were
+  then normalized to identify the technical characteristics that most directly protect the high-weight
+  needs. CR1 and CR5 primarily drive ES1 and ES2; CR2 drives ES3 and ES4; CR3, CR4, and CR8 drive ES5
+  and ES6; and CR6--CR7 constrain the selected implementation to a usable, feasible, and maintainable
+  route. This translation produces an auditable chain from the sponsor's language to acceptance tests
+  and explains why the later concept search is organized around platform, teleoperation, data
+  collection, gripper, and policy modules. The report now also includes 25 references, with 14 newly
+  added peer-reviewed papers supporting the background, concept-generation, and validation
+  discussions.
+  }
+  \footnote{Response to Judge Panel comment DR1-C1: CR-to-ES translation missing.}
+  \footnote{Response to Judge Panel comment DR1-C2: Insufficient citations. Sufficient and professional references have been added.}
+
+\subsection{Engineering Targets and Measurement Definitions}
+
+The customer requirements were converted into six measurable engineering specifications. The targets in Table~\ref{tab:es} are the final acceptance thresholds for the present proof-of-concept, rather than performance claims. Each rate is calculated over independently initialized physical trials of the relevant task. A trial is counted once only; an unsuccessful recovery is not reclassified as an independent execution attempt. This convention prevents recovery behavior from artificially inflating the reported task-execution success rate.
+
+\begin{table}[H]
+\centering
+\caption{Final Engineering Specifications and Acceptance Thresholds}
+\label{tab:es}
+\small
+ \begin{tabularx}{\textwidth}{
+  >{\centering\arraybackslash}p{0.06\textwidth}
+  p{0.18\textwidth}
+  >{\centering\arraybackslash}p{0.10\textwidth}
+  X}
+\toprule
+\textbf{No.} & \textbf{Engineering Specification} & \textbf{Target} & \textbf{Operational Definition} \\
+\midrule
+ES1 & Planning success rate & $>90\%$ & Fraction of trials in which the selected task policy and initialized scene form a valid executable plan. \\
+ES2 & Task execution success rate & $>70\%$ & Fraction of trials in which the prescribed assembly operation reaches its task-specific completion condition. \\
+ES3 & Component detection accuracy & $>90\%$ & Fraction of evaluated observations in which the required component is correctly detected for the active task. \\
+ES4 & Pose estimation error & $<20$\,mm & Euclidean position error between the estimated and reference component pose. \\
+ES5 & Failure detection rate & $>90\%$ & Fraction of induced or naturally occurring execution failures that are identified before further unsafe action is issued. \\
+ES6 & Recovery rate & $>70\%$ & Fraction of detected failures for which the defined recovery procedure restores a valid task state. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{QFD Development and Interpretation}
+
+Figure~\ref{fig:qfd} records the resulting House of Quality. Its 9--3--1 relationship scale makes the engineering priorities interpretable rather than decorative: task completion, component localization, pose estimation, and failure handling carry influence across multiple high-weight customer requirements. The roof is used as a design-control device. For example, additional visual coverage can strengthen ES3 and ES4, but it increases calibration, synchronization, and data-management burden; similarly, recovery logic can improve ES5--ES6 while adding controller integration work. These QFD trade-offs define the subsequent concept space. The platform and gripper must enable precise contact motion for ES1--ES2 and ES4; the teleoperator and data pipeline must produce usable demonstrations and observable scenes; and the policy must convert those observations into safe executable actions while leaving explicit hooks for failure monitoring and recovery.
+
+\begin{figure}[H]
+\centering
+\safeimage{imgs/qfd.png}{0.95\textwidth}{10cm}
+\caption{QFD House of Quality for the VLA bimanual manipulation system.}
+\label{fig:qfd}
+\end{figure}
+\fancyfoot[L]{}
+
+% ================= CONCEPT GENERATION =====================
+\section{Concept Generation}
+
+\subsection{Functional Decomposition}
+
+The target assembly system was first decomposed into solution-neutral functions: establish the workspace state; create a stable robot--operator interface for demonstrations; record synchronized visual, proprioceptive, and action data; grasp and constrain the component during contact; map the current observation to coordinated motion; and detect or recover from an invalid execution state. The decomposition converts the QFD priorities into five design modules. The robot platform provides repeatable bimanual motion for ES1, ES2, and ES4; the teleoperation module enables usable demonstrations; the data-collection module supports ES3--ES4 and learning reproducibility; the gripper realizes component contact; and the policy maps observations and state to actions. Failure monitoring and recovery remain cross-cutting functions because they act across the collection and deployment loop.
+
+\subsection{Structured Brainstorming}
+
+The team used structured brainstorming to generate alternatives for each module before choosing a configuration. Candidate ideas were retained when they addressed at least one QFD-linked specification and did not violate laboratory safety, hardware access, or the Design Expo schedule. The session considered the available FR3 ecosystem alongside Flexiv and ALOHA-style platforms; direct joint-master, XR, and hand-held teleoperation; progressively richer observation schemas; compliant and rigid end-effectors; and policy families ranging from Diffusion Policy to ACT and future VLA models. This procedure deliberately separates the choice of a data-collection interface from the choice of a learning algorithm, since neither can be justified independently of the sensing and robot-control path.
+The generated alternatives were also informed by established research directions rather than by ad hoc feature lists. Robomimic and MimicGen motivate treating demonstration quality and dataset construction as system-level design variables \cite{robomimic,mimicgen}; RVT, 3D Diffusion Policy, and R3M respectively motivate the retained alternatives for multi-view geometry, 3D visuomotor control, and reusable robot visual representations \cite{rvt,dp3,r3m}. These references define the external concept space, while the selected configuration remains constrained by the laboratory hardware, the QFD priorities, and the project schedule.
+
+\subsection{Morphological Chart}
+
+Table~\ref{tab:morphological-chart} records the resulting concept space. A row represents one functional module, and a column entry represents one candidate realization. The bold entry in each row is the selected module concept; the table is not a claim that the unselected entries were all built or experimentally benchmarked.
+
+\begin{table}[H]
+\centering
+\caption{Morphological Chart for the Five Functional Modules}
+\label{tab:morphological-chart}
+\small
+\begin{tabularx}{\textwidth}{p{0.20\textwidth}XXX}
+\toprule
+\textbf{Concept} & \textbf{Candidate A} & \textbf{Candidate B} & \textbf{Candidate C} \\
+\midrule
+C1: Platform & \textbf{Dual Franka FR3} & Dual Flexiv platform & ALOHA-style bimanual platform \\
+C2: Teleoperator & \textbf{GELLO joint-master} & PICO 4 Ultra XR & UMI hand-held \\
+C3: Data collection & \textbf{Two wrist + one top camera + robot state/action} & One wrist + one top camera + robot state/action & Robot state/action only \\
+C4: Gripper & Franka parallel gripper & 3D-printed hard gripper & \textbf{3D-printed soft gripper} \\
+C5: Policy & \textbf{ACT in LeRobot} & $\pi$-style VLA policy & Diffusion policy \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Generated Module Concepts}
+
+The morphological chart produces five leading module concepts, denoted C1--C5. C1 is a dual-FR3 platform; C2 is GELLO-based teleoperation; C3 is a synchronized three-camera, robot-state, and action pipeline; C4 is a 3D-printed soft gripper; and C5 is an ACT policy integrated through LeRobot. Together they form one integrated system concept, rather than five competing end-to-end robot systems. Their alternatives are retained because each exposes a real engineering trade-off: platform precision against integration cost, operator intuitiveness against mapping complexity, observation coverage against synchronization burden, compliance against geometric repeatability, and policy capability against data and deployment maturity. Detailed descriptions of the unselected alternatives are provided in Appendix~A.
+
+% ============== CONCEPT SELECTION PROCESS ================
+\section{Concept Selection Process}
+
+\subsection{Selection Method and QFD-Derived Criteria}
+
+Selection was conducted in two stages. First, an absolute screen removed a candidate if it could not be made safe in the laboratory, could not interface with the selected robot and data path, or could not be obtained and integrated within the project schedule. Second, the surviving alternatives were scored on a five-point ordinal scale, where 1 denotes a weak fit and 5 denotes a strong fit. Ratings were assigned from the QFD relationship to ES1--ES6, laboratory availability and interface knowledge, the existing collection workflow, and the cited primary or official sources; no rating is presented as an unreported benchmark result. Consistent with the functional decomposition, the ``top five concepts'' in this report are the five selected module concepts C1--C5. Their combination forms the single system concept described in Section~5.1. For candidate $a$ in module $m$, the decision score is
+\begin{equation}
+S_{m,a}=\sum_{k=1}^{4} w_k r_{m,a,k},
+\label{eq:module-selection-score}
+\end{equation}
+where $r_{m,a,k}$ is the rating for criterion $k$ and $w_k$ is its QFD-derived weight. Scores are used only to compare alternatives within the same module; they are recorded design judgments, not measured task-performance results.
+
+\begin{table}[H]
+\centering
+\caption{QFD-Derived Criteria for Module Selection}
+\label{tab:selection-criteria}
+\small
+\begin{tabularx}{\textwidth}{cXcX}
+\toprule
+\textbf{No.} & \textbf{Criterion} & \textbf{Weight} & \textbf{QFD Link} \\
+\midrule
+SC1 & Contribution to task performance and precision & 0.30 & ES1, ES2, ES3, ES4 \\
+SC2 & Data, control, and software integration compatibility & 0.25 & ES1, ES2, ES3 \\
+SC3 & Safety, robustness, and recovery support & 0.20 & ES5, ES6; CR3--CR4 \\
+SC4 & Availability, manufacturability, and schedule feasibility & 0.25 & CR6--CR7 and project plan \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Scoring of the Five Selected Module Concepts}
+
+Table~\ref{tab:module-selection-matrix} provides the detailed selection record for the five leading module concepts. The same criterion definitions and weights are applied in every module so that the scoring logic remains traceable to the QFD; however, the totals are interpreted only within a module because a robot platform, a gripper, and a policy make different contributions to the integrated system.
+
+\begin{longtable}{p{0.14\textwidth}p{0.27\textwidth}ccccp{0.15\textwidth}}
+\caption{Module-Level Concept Selection Matrix (1 = weak fit; 5 = strong fit)}\label{tab:module-selection-matrix}\\
+\toprule
+\textbf{Module} & \textbf{Candidate} & \textbf{SC1} & \textbf{SC2} & \textbf{SC3} & \textbf{SC4} & \textbf{Weighted score} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Module} & \textbf{Candidate} & \textbf{SC1} & \textbf{SC2} & \textbf{SC3} & \textbf{SC4} & \textbf{Weighted score} \\
+\midrule
+\endhead
+C1 Platform & Dual Franka FR3 & 5 & 5 & 4 & 3 & \textbf{4.30 } \\
+ & Dual Flexiv & 4 & 3 & 4 & 2 & 3.30 \\
+ & ALOHA-style bimanual & 3 & 4 & 3 & 5 & 3.85 \\
+\midrule
+C2 Teleoperator & GELLO joint-master & 4 & 5 & 4 & 5 & \textbf{4.50} \\
+ & PICO 4 Ultra XR & 3 & 3 & 3 & 4 & 3.25 \\
+ & UMI hand-held & 3 & 3 & 3 & 4 & 3.25 \\
+\midrule
+C3 Data collection & Two wrist + top camera + state/action & 5 & 5 & 4 & 3 & \textbf{4.35} \\
+ & One wrist + top camera + state/action & 4 & 4 & 4 & 5 & 4.20 \\
+ & Robot state/action only & 2 & 3 & 3 & 5 & 3.25 \\
+\midrule
+C4 Gripper & 3D-printed soft gripper & 4 & 4 & 4 & 5 & \textbf{4.20} \\
+ & Franka parallel gripper & 3 & 5 & 4 & 3 & 3.70 \\
+ & 3D-printed hard gripper & 4 & 5 & 3 & 4 & 4.05 \\
+\midrule
+C5 Policy & ACT in LeRobot & 4 & 5 & 4 & 5 & \textbf{4.50} \\
+ & Diffusion Policy & 4 & 3 & 4 & 4 & 3.75 \\
+ & $\pi$-style VLA policy (future route) & 5 & 2 & 3 & 1 & 2.75 \\
+\bottomrule
+\end{longtable}
+
+\subsection{Comparative Evaluation and Integrated Design Justification}
+
+\noindent\textbf{C1: Dual Franka FR3 Platform.}
+  The dual Franka FR3 platform was selected as the mechanical foundation of the final system because it provides
+  repeatable 7-DoF control, a direct connection to the available laboratory control ecosystem, and a credible path
+  toward coordinated bimanual manipulation. Its principal disadvantage is the substantial integration effort required
+  for workspace coordination, collision avoidance, commissioning, and bilateral control. Nevertheless, these costs are
+  justified by the project objective: lower-cost alternatives may reduce initial hardware burden, but they would
+  introduce a different control ecosystem or provide a weaker fit to the required assembly precision. The current
+  single-arm data should be interpreted only as staged validation evidence and not as proof of learned bimanual
+  performance.
+
+  \noindent\textbf{C2: GELLO Teleoperation.}
+  GELLO was selected as the planned demonstration-collection interface because it offers a direct and intuitive
+  connection between operator motion and the robot-state/action records required by the learning pipeline~\cite{gello}.
+  Its main limitations are the need for reliable leader--follower mapping, calibration, and consistent operator
+  execution. The detailed GELLO can be found in Appendix~C. Despite these implementation details, GELLO remains preferable to immersive or hand-held alternatives
+  for the present system because it provides the most direct route from teleoperated demonstrations to the joint-space
+  data representation used by the FR3 and LeRobot workflow.
+
+  \noindent\textbf{C3: Three-Camera Data Pipeline.}
+  The selected sensing configuration uses one Intel RealSense D435 overhead camera and two Intel RealSense D405 wrist-
+  mounted cameras, together with synchronized robot state, gripper state, and action records. The D435 provides a stable
+  global view of the shared workspace, fixtures, and object locations, while the two D405 cameras are intended to
+  preserve local visual information near the two end-effectors and contact regions. This complementary arrangement
+  reduces visual blind spots and directly supports the component-detection and pose-estimation requirements in ES3--ES4.
+  The configuration increases synchronization, calibration, storage, and training-data management effort relative to a
+  reduced camera layout. However, the additional sensing burden is justified because a two-camera or proprioception-only
+  configuration provides less visual redundancy during contact-rich manipulation. Current staged recordings contain only
+  two image streams and should not be interpreted as completed three-camera data collection.
+
+  \noindent\textbf{C4: 3D-Printed Soft Gripper.}
+  The selected end-effector is a 3D-printed soft gripper derived from the open-source gripper design in the referenced
+  UMI material; the project adopts only the \textit{Gripper Finger} component rather than reproducing the complete UMI
+  hardware system~\cite{umi}. The soft-finger design was selected because compliant contact and rapid geometry iteration
+  are valuable for handling assembly components with small geometric variation. Its principal limitation is that
+  deformation may reduce pose repeatability compared with a rigid locating gripper. The selected concept remains
+  reasonable because the compliance can reduce concentrated contact forces while additive manufacturing permits the
+  finger geometry to be refined for the target parts. The material, geometry, stiffness, actuation method, attachment
+  interface, and allowable component range can be found in Appendix~C.
+
+  \noindent\textbf{C5: ACT Policy in LeRobot.}
+  ACT was selected as the current policy because it is integrated with the LeRobot workflow and supports task-specific
+  training and checkpoint deployment from synchronized visual observations and robot-state inputs~\cite{act,lerobot}.
+  Action chunking provides a practical temporal-control mechanism for the present imitation-learning pipeline. Its
+  limitation is that deployment remains task-specific and operator-selected: the policy does not yet infer tasks from
+  natural-language input or demonstrate unified multi-task control. This limitation is accepted because ACT provides a
+  deployable and traceable baseline for the current project stage, whereas Diffusion Policy remains an earlier baseline
+  and $\pi$-style VLA models remain a future extension requiring broader data, language conditioning, and further system
+  integration.
+
+The selected architecture is the combination of the highest-scoring surviving candidate in each module, not a claim that every selected part individually maximizes every engineering specification. C1 and C4 establish the physical capability for controlled contact; C2 and C3 make demonstrations and visual evidence available to the learner; and C5 provides the deployable policy path. This combined decision is objectively preferable with respect to the QFD because it covers the full ES1--ES6 chain while retaining a feasible implementation route. The closest trade-offs are informative. A two-camera pipeline is easier to deploy but leaves less protection against occlusion, and a 3D-printed hard gripper offers geometric repeatability but less compliance. Diffusion Policy remained a credible early baseline; the choice of ACT reflects the existing LeRobot integration and exploratory real-robot observations from the same collection route, not a statistically powered superiority claim. The remaining candidate evidence and scoring notes are retained in Appendix~B.
+
+% ============== SELECTED CONCEPT DESCRIPTION =============
+\section{Selected Concept Description}
+
+\subsection{Selected Concept Overview}
+
+\subsubsection{Overall System Architecture}
+
+The project follows a closed pipeline that connects demonstration collection, policy training, real-robot deployment,
+  and task-level validation. For each selected assembly task, the workcell is initialized to a documented starting
+  condition and demonstrations are collected through the GELLO interface. The collection process records synchronized
+  robot state, gripper state, commanded actions, two wrist-camera RGB streams, and one overhead RGB stream. The overhead
+  Intel RealSense D435 provides global workspace context, while the two wrist-mounted Intel RealSense D405 cameras are
+  intended to capture local visual information near the manipulation and contact regions. Accepted episodes are screened
+  for synchronization, completeness, and task validity before they enter the learning dataset.
+
+  The accepted demonstrations are organized in the LeRobot format and used to train a task-specific ACT checkpoint.
+  During real-robot deployment, the operator selects the checkpoint corresponding to the requested task; the runtime
+  receives current multi-view observations and robot proprioception, predicts an action chunk, and sends the admissible
+  command to the FR3 control interface. Visual feedback, robot-state feedback, failure monitoring, and the documented
+  recovery procedure close the execution loop. Finally, the system is evaluated through repeatedly initialized physical
+  trials using the engineering specifications in Table~\ref{tab:es}, including task execution, perception accuracy, pose
+  error, failure detection, and recovery. This pipeline supports incremental task expansion while preserving a clear
+  distinction between the final dual-arm three-camera architecture and the currently available staged validation data.
+
+The software path uses LeRobot to associate synchronized video observations with robot state and action, train task-specific ACT checkpoints, and deploy the checkpoint selected by the operator. The final architecture should not be conflated with the current evidence base. The available staged validation records use a single arm, an eight-dimensional state/action schema, and two RGB streams at $424\times240$ pixels and 5~Hz; they validate the collection-to-policy path but do not represent synchronized bimanual three-camera trajectories. This distinction preserves the final-system design decision while keeping the present implementation claim bounded.
+
+\subsubsection{Selected Module Concepts}
+
+\paragraph{C1 -- Dual Franka FR3 robot platform.} The dual-FR3 layout is the selected mechanical foundation because it creates a consistent controller and kinematic environment for the final bimanual workcell. It is intended to support complementary roles such as stabilizing a part with one arm while positioning or inserting it with the other. The selection does not presume that bimanual behavior has already been learned: the current single-arm validation route is a risk-reduction stage before bilateral demonstrations, an expanded action representation, and coordinated deployment are introduced. Detailed comparisons with Flexiv and ALOHA-style alternatives are retained in Appendix~A.
+
+\paragraph{C2 -- GELLO teleoperation.} GELLO is selected for demonstration collection because it provides an intuitive leader interface and a direct route to robot motion data~\cite{gello}. During the final dual-arm collection stage, the teleoperation arrangement will supply the operator motion used to record the corresponding follower-arm state and action trajectories. This choice reduces the distance between how demonstrations are produced and how the learning dataset represents them, while still requiring a calibrated leader--follower mapping and consistent operator procedure. 
+
+\paragraph{C3 -- Three-camera, state, and action data pipeline.} The selected collection concept synchronizes two wrist RGB streams, one top RGB stream, robot proprioception, gripper state, and commanded actions at the episode level. The top view preserves workspace and fixture context, while the wrist views are intended to preserve local information near each contact region. Demonstrations are screened for synchronization and task completion before conversion to the LeRobot format; this provides the traceability needed for training, replay, and later failure analysis. The current two-stream single-arm dataset is a staged implementation of this pipeline, not the claimed final sensing configuration.
+
+\paragraph{C4 -- 3D-printed soft gripper.} The selected end-effector is a 3D-printed soft gripper configured for the project components. Compliance is valued because it can accommodate small geometric variation and reduce concentrated contact during grasping or insertion, while additive manufacturing allows rapid iteration of the contact geometry. The selection is informed by the UMI open manipulation-interface direction~\cite{umi}, but the project does not claim to duplicate UMI hardware.
+
+\paragraph{C5 -- ACT policy in LeRobot.} ACT is the selected current policy module. In the LeRobot workflow, it uses the available visual observations and robot state to predict a chunk of future actions~\cite{act,lerobot}. The operator selects a task-specific checkpoint at runtime, so current control is vision--action imitation learning rather than text-conditioned task inference. Diffusion Policy was retained as an earlier model baseline, and $\pi$-style VLA models remain a future evolution path; neither is represented as the current deployed controller in this report.
+
+\subsubsection{Operational Workflow}
+
+The operational workflow links the five selected modules into one closed data and control loop. For a defined assembly task, the FR3 platform, soft grippers, and three-camera layout are configured first. GELLO demonstrations then generate episodes containing visual observations, robot state, gripper state, and actions. The data pipeline checks synchronization and completion, stores the accepted episodes in LeRobot format, and trains an ACT checkpoint for that task. During deployment, the operator selects the task checkpoint; ACT receives the current observations and robot state, outputs an action chunk, and the FR3 control interface executes the admissible command. New observations, failure monitoring, and the documented recovery procedure close the loop against ES1--ES6.
+
+This workflow supports staged expansion without overstating the current result. The earlier screw pick-and-place collection is no longer the primary validation task because its required precision exceeded the present proof-of-concept scope. Ring-on-cylinder insertion remains a task-specific learning case, and a power-plug insertion dataset has been constructed for the next expansion task. These datasets support task-specific checkpoint switching; they do not yet establish a unified multi-task policy, language-conditioned inference, or synchronized dual-arm three-camera training data.
+
+  \begin{figure}[H]
+  \centering
+  \includegraphics[width=0.98\textwidth]{imgs/overview_workflow_gai.png}
+  \caption{System architecture of the selected concept. Red fields identify parameters pending laboratory confirmation.}
+  \label{fig:selected-concept-overview}
+  \end{figure}
+
+% ---------------- Engineering Design Analysis -------------
+\subsection{Engineering Design Analysis}
+
+\subsubsection{Relevant Engineering Fundamentals}
+
+The implemented system combines robot kinematics, contact-rich manipulation, machine vision, imitation learning, data synchronization, and real-time control. The Franka Research 3 is a seven-degree-of-freedom serial manipulator. If
+\[
+\mathbf q_t=[q_{1,t},\ldots,q_{7,t}]^\mathsf T,
+\]
+the end-effector pose is determined by
+\[
+{}^{B}\mathbf T_{E,t}=f(\mathbf q_t).
+\]
+The recorded observation state contains seven measured joint positions and the measured gripper width in metres. The action contains seven absolute joint-position targets and one absolute gripper-width target. The policy therefore generates high-level position targets, while the Franka impedance controller and the manufacturer controller remain responsible for low-level servo execution.
+
+Plug insertion is a constrained contact task. Lateral and angular misalignment can cause edge contact, jamming, incomplete seating, or excessive force. For an insertion depth \(L\) and effective lateral clearance \(c\), a first-order angular tolerance is
+\[
+\theta_{\max}\approx\tan^{-1}\left(\frac{c}{L}\right).
+\]
+The manipulated metal interface is a two-pole, non-earthed Chinese-standard plug conforming to GB~1002--2024. The task uses the upper parallel pair of openings in the socket mock-up. The current pose-error target is below \SI{20}{\milli\metre}, but successful insertion is governed by the stricter functional condition that both pins visibly enter the correct openings and reach a stable seated condition without damage or manual assistance.
+
+The gripper uses two identical compliant fingers printed in TPU with Shore hardness 64D. Each finger has an overall bounding-box size of \(123.36\times25.80\times40.00~\mathrm{mm}\) and is attached by screws. The elongated tapered geometry and repeated compliant ribs permit deformation around different charger-body shapes, while the reinforced mounting end limits deformation near the screw interface.
+
+One fixed Intel RealSense D435i camera provides the overhead or \texttt{cam\_front} view, while one Intel RealSense D405 provides the wrist or \texttt{cam\_left} view. The current ACT policy uses only their RGB streams. The D435i preserves global scene context, and the short-range D405 provides local detail near the plug--socket contact region.
+
+ACT predicts a 32-step action chunk rather than one action. The intended \pistyle{} VLA model will preserve the same robot-compatible action interface while adding a language instruction:
+\[
+(\text{overhead RGB},\text{wrist RGB},\text{robot state},
+\text{language instruction})
+\longrightarrow
+\text{action chunk}.
+\]
+This interface continuity is the main engineering reason for using ACT as the present baseline.
+
+\subsubsection{Design Assumptions and Constraints}
+
+The proof-of-concept operates in a structured laboratory environment. The socket is a 3D-printed, electrically unpowered mock-up fixed in a repeatable orientation. The plug begins within the demonstrated operating region, lighting is sufficiently stable for RGB sensing, and the robot can be returned to a known initial joint configuration before each trial. Absolute robot--socket--camera installation dimensions are outside the scope of this report; the proof-of-concept relies on fixed mounts and a repeatable fixture rather than a dimensioned production-cell layout.
+
+The major architecture constraint is deployment computation. The original dual-arm concept was reduced to one arm because the available deployment system could not run the planned bimanual perception and policy pipeline with sufficient reliability. The implemented system therefore uses one Franka Research 3 arm, two identical TPU~64D gripper fingers, one D405 wrist camera, one D435i overhead camera, and an eight-dimensional joint-position interface. This is a proof-of-concept scope reduction, not a change to the long-term bimanual VLA objective.
+
+Policy training is performed on an NVIDIA RTX A6000 GPU. Runtime policy inference is hosted on a laptop with an NVIDIA GeForce RTX 4060 Laptop GPU. The software environment uses Python~3.12.13, PyTorch~2.10.0+cu128, and LeRobot~0.5.2.
+
+The current ACT policy is a vision--proprioception--action model, not a complete VLA model. It receives no language token, and the operator manually selects a task-specific checkpoint. The future VLA system will use a language instruction to determine the requested task.
+
+The plug-insertion dataset contains 52 episodes and 19,357 frames. This scale is appropriate for validation of one bounded task but does not support a claim of general-purpose manipulation.
+
+\subsubsection{Determination of Design Parameters}
+
+\paragraph{Implemented design parameters.}
+The final task is two-pole plug insertion. In accordance with the Design Expo task and the engineering specifications, insertion is performed using the upper pair of socket openings.
+
+The robotic platform consists of one Franka Research 3 robot. Compared with the original dual-arm concept, this configuration preserves the complete perception-to-action pipeline while reducing computational requirements and integration risk.
+
+The robot state is represented as
+\[
+[q_1,\ldots,q_7,g_{\mathrm{width}}],
+\]
+where \(q_1,\ldots,q_7\) are the seven measured joint positions and \(g_{\mathrm{width}}\) is the measured gripper width in metres. The action representation consists of absolute joint-position targets and an absolute gripper-width target, matching the confirmed ROS and LeRobot policy contract.
+
+For arm-action alignment, the observation at time \(t\) is paired with the arm target at time \(t+1\). Therefore, the next commanded joint target is used as the supervised arm action. For gripper-action alignment, the observation at time \(t\) is paired with the gripper target at the same time \(t\), preserving the existing gripper-label convention.
+
+The perception system uses a D405 wrist camera, identified as \texttt{cam\_left}, together with a D435i overhead camera, identified as \texttt{cam\_front}. This arrangement combines a close-range wrist view with a stable global view of the workspace. The recorded image stream contains two RGB images with a resolution of \(424\times240\), captured at a nominal rate of 5~Hz, which matches the historical LeRobot dataset contract. Before being provided to the policy, the two images are converted into tensors of size \(3\times224\times224\), consistent with the ResNet18 preprocessing pipeline.
+
+The observation history contains only the current observation. Each policy input therefore consists of the current robot state and the two current RGB images. The action chunk length is set to 32, allowing the policy to generate a temporally structured sequence of future actions.
+
+Both data collection and policy training operate at 5~Hz, matching the stored dataset and its action cadence. In contrast, the inference and execution pipeline operates at 15~Hz. This setting matches the current runtime configuration but introduces a temporal-rate mismatch, which is evaluated in Section~5.2.8.
+
+A new policy prediction is triggered when the remaining action queue falls below 90\% of the 32-action chunk. Under normal operation, this causes a new chunk to be requested after approximately four actions have been executed. When old and newly predicted action chunks overlap, the aggregated action is computed as
+\[
+\mathbf a_{\mathrm{aggregated}}
+=
+0.8\mathbf a_{\mathrm{old}}
++
+0.2\mathbf a_{\mathrm{new}}.
+\]
+This weighting favors trajectory continuity while still incorporating information from the newest prediction.
+
+The gripper is manufactured from TPU with a Shore hardness of 64D. This material provides sufficient compliance to accommodate variations in charger-body geometry while retaining a reinforced, screw-mounted base.
+
+The long-term policy direction is a \pistyle{} vision-language-action model. This approach introduces language conditioning and supports multi-task transfer without replacing the existing robot-side executor abstraction.
+
+
+A 32-step training target sampled at 5~Hz represents a nominal demonstration horizon of
+\[
+T_{\mathrm{chunk,train}}=\frac{32}{5}=\SI{6.4}{\second}.
+\]
+If the same 32 actions are consumed directly at the configured 15~Hz runtime rate, the physical execution horizon becomes
+\[
+T_{\mathrm{chunk,run}}=\frac{32}{15}\approx\SI{2.13}{\second},
+\]
+and requesting a new chunk after approximately four actions corresponds to
+\[
+T_{\mathrm{replan,run}}\approx\frac{4}{15}
+=\SI{0.267}{\second}.
+\]
+The difference between the training cadence and runtime cadence is therefore a real temporal-scaling issue rather than a cosmetic configuration difference.
+
+\subsubsection{Mechanical and Workspace Analysis}
+
+The mechanical analysis is intentionally limited to the end-effector, standardized plug interface, and socket mock-up. Absolute robot--socket--camera layout dimensions are not included.
+
+The gripper contains two identical TPU~64D compliant fingers. Each finger has an overall bounding-box size of
+\[
+123.36\times25.80\times40.00~\mathrm{mm}
+\quad (L\times T\times H).
+\]
+The geometric ratios are
+\[
+\frac{L}{T}=\frac{123.36}{25.80}\approx4.78,
+\qquad
+\frac{L}{H}=\frac{123.36}{40.00}\approx3.08.
+\]
+These ratios, together with the tapered outline and repeated ribs, characterize the finger as an elongated compliant component rather than a rigid, geometry-matched jaw. The design therefore does not require the plastic body of every charger to have identical dimensions. The screw-mounted reinforced end provides a comparatively stiff attachment region, while deformation is concentrated along the ribbed finger body.
+
+The socket is a 3D-printed unpowered mock-up with an overall bounding-box size of
+\[
+80.00\times80.00\times30.00~\mathrm{mm}.
+\]
+The task uses the upper pair of parallel openings, corresponding to the two-pole Chinese-standard plug interface. The socket body provides a repeatable visual and mechanical target without exposing the robot or operator to mains voltage.
+
+The metal plug head is treated as a GB~1002--2024 two-pole, non-earthed interface. Because the contact geometry is standardized, the mechanical task focuses on aligning the two metal pins with the upper socket openings. The charger-body dimensions are not used as a controlled engineering parameter; the compliant fingers accommodate variation in the insulated body.
+
+The present analysis is a geometry and compatibility check rather than a finite-element strength claim. A material-specific force or deflection model would require measured print-direction properties and contact loads, which are not used as acceptance metrics in the current proof-of-concept.
+
+\subsubsection{Perception and Camera Configuration Analysis}
+
+The overhead camera is an Intel RealSense D435i mapped to \texttt{cam\_front}. Its manufacturer specifications include an approximate operating range of 0.3--3~m, a depth field of view of approximately \(87^\circ\times58^\circ\), and depth output up to \(1280\times720\) at 30~fps. The wrist camera is an Intel RealSense D405 mapped to \texttt{cam\_left}. It is designed for short-range operation from approximately 7--50~cm, with an approximately \(87^\circ\times58^\circ\) depth field of view and depth output up to 720p at 30~fps. These manufacturer limits explain the selection: the D435i is suitable for global coverage, while the D405 is appropriate for close-range wrist observation.
+
+The current learning pipeline does not use the cameras at their maximum hardware rates. It records two RGB streams at \(424\times240\) and a nominal 5~Hz, then resizes both images to \(224\times224\) for ACT. Depth maps and the D435i inertial measurements are not included in the current state or policy input.
+
+Both images share an ImageNet-pretrained ResNet18 backbone. Each image produces a \(512\times7\times7\) feature map, which is projected through a \(1\times1\) convolution to \(d_{\mathrm{model}}=512\). The fixed logical mapping
+\[
+\texttt{cam\_left}\equiv\text{D405 wrist},
+\qquad
+\texttt{cam\_front}\equiv\text{D435i overhead}
+\]
+is part of the policy contract and is checked before deployment.
+
+The current ACT policy does not calculate an explicit geometric object pose and does not require calibrated camera extrinsics during inference. Reproducibility is achieved by retaining fixed mounts and camera identities. Consequently, geometric pose-estimation accuracy is not inferred from the camera streams and is treated separately in Section~5.2.9.
+
+\subsubsection{Data Collection and Synchronization Analysis}
+
+The implemented data path is
+\begin{multline*}
+\text{GELLO}
+\rightarrow
+\text{FR3 impedance controller}
+\rightarrow
+\text{ROS 2 topics}
+\rightarrow
+\text{bridge caches}
+\\
+\rightarrow
+\text{ZMQ}
+\rightarrow
+\text{LeRobot recorder}
+\rightarrow
+\text{Parquet/MP4}.
+\end{multline*}
+GELLO publishes seven joint targets and a gripper percentage at approximately 25~Hz. The Franka Research 3 impedance controller follows the GELLO joint targets. The bridge records
+\[
+\mathbf s_t=[q_{1,t},\ldots,q_{7,t},g_{\mathrm{width},t}],
+\]
+where the joint positions are measured robot observations and the gripper width is stored in metres.
+
+The confirmed command topic \texttt{/commanded\_joint\_states} is used for the arm action. The final label convention intentionally pairs the state and images at time \(t\) with the next arm command, while the gripper remains aligned to the current sample:
+\[
+\mathbf a_t=
+[q^{\mathrm{cmd}}_{1,t+1},\ldots,
+q^{\mathrm{cmd}}_{7,t+1},
+g^{\mathrm{cmd}}_{t}].
+\]
+This mixed alignment must be preserved consistently in preprocessing, training, inference, and documentation.
+
+The plug dataset contains 52 episodes and 19,357 frames. Training uses 46 episodes and 17,110 frames; validation uses 6 episodes and 2,247 frames. Held-out validation episodes are 3, 7, 9, 16, 26, and 39. Splitting by episode prevents neighboring frames from the same trajectory from leaking into both sets.
+
+The historical bridge assembled packets from the latest cached ROS topic values rather than matching messages by timestamp. Robot state, gripper state, and camera images were required only to be sufficiently recent, and the historical recorder did not write the bridge timestamp into the final dataset. LeRobot timestamps were generated from
+\[
+t_i=\frac{\mathrm{frame\ index}_i}{\mathrm{fps}},
+\]
+so the stored 5~Hz timeline is nominal rather than a record of ROS, camera, or robot hardware time. The historical dataset therefore cannot be used to measure true latency, jitter, or cross-modal skew retrospectively.
+
+The final collection and training contract is 5~Hz. Images are stored as MP4 streams and state/action records are stored in LeRobot Parquet data. Images are recorded at \(424\times240\) and resized to \(224\times224\) during policy preprocessing. Actions are normalized for training and denormalized before execution. The reported normalized action MAE is therefore not a millimetre-level plug-pose metric.
+
+Training uses 100,000 optimizer steps with batch size 8. Relative to 17,110 training frames, this corresponds to approximately
+\[
+\frac{100000\times8}{17110}\approx46.8
+\]
+equivalent passes through the training frames, although the exact sample reuse depends on the sequence-window data loader.
+
+The historical dataset stores a static task string and does not contain episode-level success, failure reason, operator, scene, offset version, or hardware-configuration labels. For the future VLA stage, new recordings should add a language instruction and task metadata, but these fields are not claimed as part of the existing ACT dataset.
+
+\subsubsection{Learning Algorithm and Policy Analysis}
+
+The current policy is ACT with a training-time conditional VAE. Its input contains the current eight-dimensional robot state and two current RGB images. Both views share an ImageNet-pretrained ResNet18. Each branch produces a \(512\times7\times7\) feature map and is projected to \(d_{\mathrm{model}}=512\).
+
+The main transformer encoder has four layers, hidden dimension 512, eight attention heads, feed-forward dimension 3200, ReLU activation, and dropout 0.1. The decoder has one layer and 32 learnable action queries, producing a \(32\times8\) action chunk.
+
+The training-only VAE encoder has four transformer layers and latent dimension 32. During inference the latent vector is fixed to zero. The loss is
+\[
+\mathcal L_{\mathrm{total}}
+=
+\mathcal L_{1}
++
+10\mathcal L_{\mathrm{KL}},
+\]
+where padded actions are masked out of the L1 term. The KL term is
+\[
+\mathcal L_{\mathrm{KL}}
+=
+\operatorname{mean}
+\left[
+\sum
+-\frac{1}{2}
+\left(
+1+\log\sigma^2-\mu^2-\exp(\log\sigma^2)
+\right)
+\right].
+\]
+
+Training uses AdamW, learning rate \(10^{-5}\), backbone learning rate \(10^{-5}\), weight decay \(10^{-4}\), gradient clipping at 10.0, batch size 8, and 100,000 optimizer steps. The model contains approximately 51.6 million parameters. Training is performed on an NVIDIA RTX A6000. The software environment is Python~3.12.13, PyTorch~2.10.0+cu128, and LeRobot~0.5.2.
+
+The selected checkpoint achieved
+\[
+\texttt{normalized\_action\_mae}=0.183973
+\]
+on the six held-out validation episodes. This supports checkpoint comparison but does not demonstrate physical insertion success.
+
+ACT is the current baseline, not the final project objective. The transition to a \pistyle{} VLA system is planned as follows:
+\begin{enumerate}[label=(\arabic*)]
+\item retain the current Franka, camera, and executor interfaces;
+\item add language instructions and task metadata to new demonstrations;
+\item expand the dataset to multiple assembly tasks and object variations;
+\item map VLA outputs to the existing robot action adapter;
+\item fine-tune or adapt a pretrained $\pi$-family model using the laboratory dataset.
+\end{enumerate}
+The future VLA policy will replace manual checkpoint selection with language-conditioned behavior, while the current ACT system validates the robot-side data and execution infrastructure.
+
+\subsubsection{Control, Computation, and Real-Time Performance Analysis}
+
+At deployment, ACT predicts 32 actions and the executor inserts them into a queue. A new chunk is requested after approximately four actions. Overlapping commands are blended using
+\[
+\mathbf a_{\rm blend}=0.8\mathbf a_{\rm old}+0.2\mathbf a_{\rm new}.
+\]
+This is a custom executor rule; ACT temporal ensembling is disabled.
+
+The total timing budget is
+\[
+T_{\rm total}=T_{\rm capture}+T_{\rm transfer}+T_{\rm preprocess}
++T_{\rm inference}+T_{\rm queue}+T_{\rm command}.
+\]
+At \SI{5}{\hertz}, a newly required command update should be available within \SI{200}{\milli\second}, or the executor must explicitly rely on the remaining queued actions. Mean and worst-case latency are not yet measured.
+
+The executor should check finite values, joint limits, gripper limits, command age, maximum joint increment, and workspace bounds. Missing images, stale state, timeout, or invalid actions should cause a controlled stop. A future VLA model will probably require more memory and inference time, so the policy server should remain separate from the deterministic safety executor.
+
+
+\subsubsection{Evaluation against Engineering Specifications}
+
+  The engineering specifications are evaluated through six separate test
+  procedures. The table summarizes the measurement structure; the detailed
+  protocol for each specification is described below. All reported rates are
+  computed from independently initialized trials, and no acceptance threshold is
+  treated as an achieved result before the corresponding physical evaluation is
+  complete.
+
+  \begin{table}[H]
+  \centering
+  \caption{Validation Structure for Engineering Specifications}
+  \label{tab:analysis-vs-specifications}
+  \small
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabularx}{\textwidth}{
+  >{\centering\arraybackslash}p{0.06\textwidth}
+  p{0.24\textwidth}
+  p{0.26\textwidth}
+  p{0.25\textwidth}
+  >{\centering\arraybackslash}p{0.11\textwidth}}
+  \toprule
+  \textbf{No.} &
+  \textbf{Metric} &
+  \textbf{Test Protocol} &
+  \textbf{Recorded Outcome} &
+  \textbf{Target} \\
+  \midrule
+  ES1 &
+  Planning success &
+  Scene feasibility screen &
+  Valid executable plan &
+  $>90\%$ \\
+
+  ES2 &
+  Execution success &
+  Repeated task trials &
+  Completed assembly task &
+  $>70\%$ \\
+
+  ES3 &
+  Detection accuracy &
+  Labeled image set &
+  Correct component detection &
+  $>90\%$ \\
+
+  ES4 &
+  Pose error &
+  Calibrated pose comparison &
+  Translation error &
+  $<20$\,mm \\
+
+  ES5 &
+  Failure detection &
+  Injected fault trials &
+  Early failure flag &
+  $>90\%$ \\
+
+  ES6 &
+  Recovery success &
+  Recovery replay trials &
+  Valid state restored &
+  $>70\%$ \\
+  \bottomrule
+  \end{tabularx}
+  \end{table}
+
+  \noindent\textbf{ES1: Planning Success Rate.}
+  Before each execution trial, the system performs a scene-feasibility screen
+  using the defined initial robot pose, fixture location, target-component
+  location, and task checkpoint. A plan is counted as successful only when the
+  required approach, manipulation, and retreat motions are executable within the
+  configured workspace without violating the defined collision or joint-limit
+  constraints. The planning success rate is the fraction of valid executable
+  plans among all initialized trials.
+
+  \noindent\textbf{ES2: Task Execution Success Rate.}
+  Task execution is evaluated through repeated physical trials of each selected
+  assembly operation. Each task has a predefined completion predicate, such as a
+  component reaching its required final position, completing an insertion, or
+  remaining stably placed after robot retreat. A trial is counted once, regardless
+  of the number of intermediate policy action chunks generated during execution.
+  This episode-level success definition follows the real-robot evaluation
+  practice used for imitation-learning policies such as ACT~\cite{act}.
+
+  \noindent\textbf{ES3: Component Detection Accuracy.}
+  Component detection is tested using held-out multi-view RGB observations that
+  are annotated with the task-relevant component identity. For each observation,
+  the detection output is compared with the annotation, and the result is scored
+  as correct or incorrect. Accuracy is reported both for individual camera views
+  and for the pooled evaluation set, allowing the contribution of the overhead
+  and wrist-camera observations to be examined separately.
+
+  \noindent\textbf{ES4: Pose Estimation Error.}
+  Pose-estimation performance is evaluated by comparing the estimated component
+  position with a calibrated reference pose in the workcell coordinate frame.
+  The reported error is the Euclidean translation distance between the two
+  positions. Reference poses are obtained from the calibrated fixture or another
+  repeatable measurement artifact. Both mean error and worst-case error should be
+  reported because the acceptance threshold applies to contact-sensitive assembly
+  operations rather than only to average performance.
+
+  \noindent\textbf{ES5: Failure Detection Rate.}
+  Failure detection is evaluated using documented abnormal execution cases,
+  including missed grasps, incorrect alignment, component displacement, loss of
+  visual confidence, and unsuccessful insertion. A failure counts as detected
+  only when the monitoring logic flags the deviation before an additional unsafe
+  action is issued. The test log records the failure category, detection time,
+  and system response so that the detection rate can be traced to specific
+  physical conditions.
+
+  \noindent\textbf{ES6: Recovery Rate.}
+  Recovery is evaluated only after a failure has been detected. For each detected
+  failure, the system applies the corresponding reset, retreat, re-observation,
+  or retry procedure and then checks whether a valid task state has been
+  restored. The recovery rate is calculated using detected failures as the
+  denominator, rather than all execution trials. This conditional definition
+  ensures that recovery performance is measured independently and does not
+  artificially increase the task execution success rate.
+
+% ------------------- Design Description -------------------
+\subsection{Design Description}
+
+\subsubsection{Detailed System Layout}
+
+The implemented system contains one Franka Research 3 arm, two identical screw-mounted TPU~64D fingers, one wrist-mounted RealSense D405, one fixed overhead RealSense D435i, a two-pole charger plug, a 3D-printed unpowered socket mock-up, a GELLO teleoperator, a training workstation, and a deployment laptop.
+
+During data collection, the two RGB streams, robot state, and command targets are assembled through ROS~2, the bridge, ZMQ, and the LeRobot recorder. During policy operation, the current images and state are sent to ACT, and the predicted action chunk is passed to the robot-side executor.
+
+The long-term architecture replaces the task-specific ACT policy server with a \pistyle{} VLA policy server. The physical robot, camera acquisition, dataset interface, action adapter, and safety executor are retained, while a language instruction is added to the observation.
+
+Absolute installation dimensions are intentionally omitted. The system is defined by its component interfaces, fixed camera-role mapping, unpowered socket fixture, and documented software configuration.
+
+\subsubsection{Dual-Arm Robotic Platform}
+
+The implemented platform uses Franka Research 3. The robot has seven degrees of freedom, a manufacturer-rated payload of 3~kg, a reach of 855~mm, and position repeatability better than \(\pm0.1~\mathrm{mm}\). Each joint contains torque sensing, making the platform suitable for impedance-controlled research manipulation.
+
+The observation interface is
+\[
+[q_1,\ldots,q_7,g_{\mathrm{width}}],
+\]
+and the action interface contains seven absolute joint-position targets and one absolute gripper-width target. Low-level servoing and built-in safety remain inside the Franka control system.
+
+Bimanual expansion is deferred until the single-arm plug pipeline is stable. A future dual-arm representation will require synchronized bilateral data and an action adapter that represents both arms and both grippers. This expansion does not change the current single-arm proof-of-concept claim.
+
+
+\subsubsection{End-Effector and Mechanical Components}
+
+The custom gripper consists of two identical compliant fingers printed in TPU~64D. Each finger measures \(123.36\times25.80\times40.00~\mathrm{mm}\) and is attached by screws. The finger is elongated and tapered, with repeated compliant ribs and a reinforced mounting end. The ribbed region deforms around the insulated charger body, while the mounting end transfers load to the gripper structure.
+
+The gripper does not require the plastic charger housing to have one exact dimension. Its compliance is used to tolerate different charger-body shapes, while the standardized metal plug head defines the insertion interface.
+
+The socket is a 3D-printed, electrically unpowered mock-up measuring \(80.00\times80.00\times30.00~\mathrm{mm}\). The task uses the upper pair of parallel openings corresponding to the Chinese-standard two-pole plug. The mock-up provides a repeatable insertion target without mains electrical risk.
+
+\subsubsection{Vision and Sensing System}
+
+The vision system uses:
+\[
+\texttt{cam\_left}=\text{RealSense D405 wrist camera},
+\]
+\[
+\texttt{cam\_front}=\text{RealSense D435i overhead camera}.
+\]
+The D405 is selected for its short 7--50~cm operating range near the end-effector, while the D435i is selected for broader global observation. The current recorder stores only RGB at \(424\times240\) and a nominal 5~Hz. Depth and inertial data are not used by ACT.
+
+During preprocessing, both images are resized to \(224\times224\). The two views share one ImageNet-pretrained ResNet18 backbone and are projected to the 512-dimensional transformer representation. Camera identities are checked against the policy contract before a dry run.
+
+\subsubsection{Demonstration Data Collection System}
+
+GELLO publishes seven joint targets and a gripper percentage at approximately 25~Hz. The FR3 impedance controller follows these targets. ROS~2 topics carry the measured robot state, gripper state, camera images, and commanded joint state. The bridge caches the latest topic messages and sends assembled packets over ZMQ to the LeRobot recorder.
+
+The recorder writes robot state and action data to Parquet and the two RGB streams to MP4. The historical main dataset uses one left arm, two cameras, nominal 5~Hz, and eight-dimensional state and action records. The final arm action is read from \texttt{/commanded\_joint\_states}. The sample at time \(t\) uses the next arm target at \(t+1\), while the gripper target remains aligned at \(t\).
+
+Before collection, the operator unlocks the Franka Control Interface and checks the GELLO offset. Episodes are started manually. Between episodes, the operator returns the robot and scene to the initial condition; reset is not automatically coupled to the recorder. The historical recorder stores a static task string and does not store success, failure reason, operator, hardware version, or language instruction as structured episode metadata.
+
+\subsubsection{Data Processing Pipeline}
+
+The processing pipeline loads complete LeRobot episodes, checks state/action dimensions and video availability, preserves the episode-level split, resizes images from \(424\times240\) to \(224\times224\), and normalizes the state and action variables using stored dataset statistics.
+
+Each training sample contains the current observation and a 32-step target action sequence. The seven arm dimensions follow the confirmed \(t+1\) alignment, while the gripper dimension follows the \(t\) alignment. Near the end of an episode, padded future actions are marked with \texttt{action\_is\_pad} and excluded from the L1 loss.
+
+The historical dataset timestamp is generated from frame index divided by the nominal 5~Hz rate. It does not preserve ROS or hardware timestamps. Therefore, the dataset is suitable for imitation-learning training but not retrospective measurement of sensor latency or jitter.
+
+The final software environment is Python~3.12.13, PyTorch~2.10.0+cu128, and LeRobot~0.5.2. Training is performed on an RTX A6000 GPU. For future VLA-compatible recording, the dataset schema should be extended with task name, natural-language instruction, success/failure label, operator, hardware configuration, and software revision.
+
+\subsubsection{Current ACT Policy and Future \pistyle{} VLA Architecture}
+
+The current ACT network uses a shared ImageNet-pretrained ResNet18, a four-layer transformer encoder, a one-layer decoder, 32 learned action queries, and a training-only four-layer VAE encoder with latent dimension 32. The main transformer dimension is 512, the number of attention heads is 8, the feed-forward dimension is 3200, and dropout is 0.1. The network produces a \(32\times8\) action chunk and contains approximately 51.6 million parameters.
+
+Training uses AdamW, batch size 8, learning rate \(10^{-5}\), backbone learning rate \(10^{-5}\), weight decay \(10^{-4}\), gradient clipping at 10.0, and 100,000 optimizer steps. The selected checkpoint achieved normalized action MAE 0.183973 on the six validation episodes.
+
+The long-term \pistyle{} VLA policy will receive the same two RGB images and robot state together with a natural-language instruction. An action adapter will convert VLA output to the existing executor interface. This design supports language-conditioned task selection and later multi-task or dual-arm expansion without allowing the policy model to bypass the robot-side safety layer.
+
+\subsubsection{Robot Control and Deployment Pipeline}
+
+Deployment begins by inspecting the policy contract. The runtime must confirm ACT policy type, eight-dimensional state and action, exactly \texttt{cam\_left} and \texttt{cam\_front}, absolute joint-position arm action, absolute gripper width in metres, and the intended rate configuration.
+
+For an approved dry run, the operator:
+\begin{enumerate}[label=(\arabic*)]
+\item assigns an operator and a separate safety observer;
+\item clears the workspace and confirms no stale command publisher is active;
+\item starts FR3 state publication without the impedance controller;
+\item starts the gripper manager, D405/D435i camera publisher, and bridge;
+\item verifies robot state, gripper state, both image streams, and camera identities;
+\item starts the policy server on the RTX 4060 Laptop GPU;
+\item runs the ACT executor without the motion-enabling \texttt{--execute} option;
+\item observes at least 60 seconds of finite eight-dimensional predictions and confirms that only prediction events, not execution events, are logged.
+\end{enumerate}
+
+Autonomous policy-driven motion remains blocked in the current release. It may be enabled only after the safety conditions listed in Section~5.2.8 are implemented, tested off-robot, approved by the robot owner, and verified in a supervised reduced-gain first-motion test.
+
+For unexpected motion, collision, excessive speed, incorrect direction, or workspace intrusion, the safety observer uses Franka Desk Stop or the physical emergency stop before attempting software commands. Reset is treated as a controlled motion operation and is performed only with the executor stopped, the impedance controller inactive, and the workspace clear. Shutdown proceeds by stopping the executor, policy server, bridge, cameras, gripper manager, and Franka bringup, followed by confirmation that no command publisher remains.
+
+\subsubsection{Hardware--Software Interfaces}
+
+\begin{longtable}{p{0.17\textwidth}p{0.19\textwidth}p{0.20\textwidth}p{0.35\textwidth}}
+\caption{Principal hardware--software interfaces.}
+\label{tab:interfaces}\\
+\toprule
+\textbf{Interface} & \textbf{Source} & \textbf{Destination} & \textbf{Data contract}\\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Interface} & \textbf{Source} & \textbf{Destination} & \textbf{Data contract}\\
+\midrule
+\endhead
+Wrist image & RealSense D405 & Bridge / recorder / policy & \texttt{cam\_left}, RGB \(424\times240\) at nominal 5~Hz; resized to \(3\times224\times224\).\\
+Overhead image & RealSense D435i & Bridge / recorder / policy & \texttt{cam\_front}, RGB \(424\times240\) at nominal 5~Hz; resized to \(3\times224\times224\).\\
+Robot state & FR3 joint and gripper topics & Bridge / recorder / policy & Seven measured joint positions and gripper width in metres.\\
+Arm action & \path{/commanded_joint_states} & Recorder / ACT target / executor & Seven absolute joint-position targets aligned to \(t+1\).\\
+Gripper action & Gripper command & Recorder / ACT target / executor & Absolute gripper width in metres aligned to \(t\).\\
+Bridge packet & Latest ROS topic caches & ZMQ / LeRobot recorder & State, action, and two images; historical timestamps are not retained in the final dataset.\\
+Policy action & ACT or future VLA server & Robot-side executor & \(32\times8\) normalized action chunk.\\
+Language instruction & Operator or task interface & Future VLA policy & Episode-level natural-language task description.\\
+Software environment & Python / PyTorch / LeRobot & Training and deployment & Python~3.12.13, PyTorch~2.10.0+cu128, LeRobot~0.5.2.\\
+\bottomrule
+\end{longtable}
+
+\subsubsection{System Operation}
+
+Before data collection or deployment, the operator secures the unpowered socket mock-up, installs the two-pole charger plug, checks the TPU fingers and screw attachments, verifies the D405 and D435i image streams, confirms emergency-stop access, and returns the Franka Research 3 to the approved initial state.
+
+For demonstration collection, GELLO controls the FR3 impedance controller while the bridge and LeRobot recorder acquire the two RGB streams, measured state, command targets, and episode indices. The operator manually starts and saves each episode and manually resets the robot and scene between episodes.
+
+For a policy dry run, the camera and state infrastructure is started with the impedance controller inactive. The ACT policy predicts actions for at least 60 seconds without opening the robot command socket. The operator checks dimensions, camera ordering, finite values, and the first predicted target relative to the current state.
+
+After autonomous release criteria are eventually satisfied, a plug-insertion trial begins from the approved initial state and terminates on visual success, timeout, protective stop, emergency stop, invalid observation, or manual intervention. Visual success means that both metal pins enter the upper pair of socket openings and the charger reaches a stable seated condition. A partially inserted plug, wrong opening, protective stop, manual assistance, or visible damage is recorded as failure.
+
+The future VLA mode will replace manual ACT checkpoint selection with a language instruction such as ``insert the two-pole plug into the socket.'' The same robot-side executor and safety procedure will remain in use.
+
+\subsubsection{Parts and Components}
+\begin{landscape}
+\begingroup
+\small
+\setlength{\tabcolsep}{4pt}
+
+\begin{longtable}{cllcc}
+\caption{Parts and Components}\label{tab:parts-components}\\
+\toprule
+\textbf{No.} & \textbf{Part or Component} & \textbf{Specification} & \textbf{Quantity} & \textbf{Purpose} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{No.} & \textbf{Part or Component} & \textbf{Specification} & \textbf{Quantity} & \textbf{Purpose} \\
+\midrule
+\endhead
+1 & Franka robot system & \makecell[l]{Franka Research 3; 7-DoF;\\3~kg payload; 855~mm reach} & 1 set & \makecell[c]{Robot execution\\and impedance control}\\
+2 & Custom compliant fingers & \makecell[l]{TPU 64D; two identical fingers;\\
+\(123.36\times25.80\times40.00\)~mm each;\\screw mounted} & 2 & \makecell[c]{Grip the charger body\\with passive compliance}\\
+3 & Wrist RGB camera & \makecell[l]{Intel RealSense D405;\\
+\texttt{cam\_left}; short-range wrist view} & 1 & \makecell[c]{Local plug--socket\\observation}\\
+4 & Overhead RGB camera & \makecell[l]{Intel RealSense D435i;\\
+\texttt{cam\_front}; fixed global view} & 1 & \makecell[c]{Global workspace\\observation}\\
+5 & Two-pole charger plug & \makecell[l]{GB~1002--2024 two-pole,\\non-earthed metal interface} & 1 or more & \makecell[c]{Manipulated\\test component}\\
+6 & Socket mock-up & \makecell[l]{3D-printed and unpowered;\\
+\(80.00\times80.00\times30.00\)~mm;\\upper two-pole openings used} & 1 & \makecell[c]{Repeatable and\\electrically safe target}\\
+7 & GELLO teleoperator & \makecell[l]{7-joint and gripper target publisher;\\approximately 25~Hz} & 1 & \makecell[c]{Human demonstration\\collection}\\
+8 & Training GPU & NVIDIA RTX A6000, 48~GB & 1 & \makecell[c]{ACT model\\training}\\
+9 & Deployment GPU & \makecell[l]{NVIDIA GeForce RTX 4060\\Laptop GPU, 8~GB} & 1 & \makecell[c]{Policy-server\\inference}\\
+10 & Safety equipment & \makecell[l]{Franka Desk Stop, physical e-stop,\\
+separate safety observer} & 1 set & \makecell[c]{Emergency stop and\\supervised operation}\\
+11 & Software stack & \makecell[l]{Python 3.12.13; PyTorch 2.10.0+cu128;\\
+LeRobot 0.5.2; ROS 2; ZMQ} & 1 configuration & \makecell[c]{Collection, training,\\inference, and control}\\
+\bottomrule
+\end{longtable}
+
+\endgroup
+\end{landscape}
+\normalsize
+
+
+% ---------------- Manufacturing Plan ----------------------
+% ==========================================================
+% SECTION 6 / REPORT PAGES 21--22
+% Manufacturing and Implementation Plan and Budget
+%
+% Replace the existing Manufacturing Plan placeholder block in
+% DR3_report.tex with this fragment. No additional packages are required.
+% ==========================================================
+
+% ---------------- Manufacturing Plan ----------------------
+\subsection{Manufacturing and Implementation Plan}
+
+\subsubsection{Implementation Scope}
+
+The long-term objective is a vision-language-action system for bimanual
+industrial manipulation. For Design Review~3, the team uses a single-arm
+ring-placement task to verify the complete data-to-deployment pipeline before
+extending it to bimanual PC-component assembly. The current proof-of-concept
+therefore consists of an existing Franka arm, two RGB camera streams, a custom
+task-oriented gripper, a synchronized demonstration dataset, and a deployed
+visuomotor imitation-learning policy. The robot, cameras, and computing
+resources are existing laboratory equipment; only the gripper and task
+fixtures require fabrication.
+
+\subsubsection{Materials and Manufacturing Processes}
+
+Additive manufacturing is selected for the task-specific mechanical parts
+because it supports fast and inexpensive design iteration. Table~\ref{tab:manufacturing-processes}
+summarizes the required resources, processes, and the locations where
+manufacturing tolerances are important.
+
+\begin{table}[H]
+\centering
+\caption{Materials and Manufacturing Processes}
+\label{tab:manufacturing-processes}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\textwidth}{cXXXX}
+\toprule
+\textbf{No.} & \textbf{Part or Resource} & \textbf{Material or Source} &
+\textbf{Process or Tool} & \textbf{Critical Consideration} \\
+\midrule
+1 & Franka arm & Laboratory equipment & Existing-platform integration &
+Workspace, flange alignment, and safe limits \\
+2 & Custom gripper & TPU 64D & SIC 3D printing &
+Grasp clearance, stiffness, and mounting alignment \\
+3 & Socket, target, and fixture & TPU 64D & 3D printing/manual assembly &
+Repeatable geometry and initial position \\
+4 & Cameras and mounts & Laboratory equipment & Mounting and calibration &
+Rigid pose, field of view, and synchronized capture \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The gripper will be printed, inspected, and mounted to the Franka flange. The
+socket and plug will then be placed in a fixed fixture inside the
+reachable workspace. Tight tolerances are required at the gripper--flange
+interface and at the grasp/placement clearances; cosmetic surfaces and
+non-mating fixture dimensions are less critical. No custom PCB or electrical
+actuator is required. Hardware integration is limited to checking the existing
+robot controller, RGB cameras, GPU server, network connection, gripper
+response, and emergency-stop access before deployment.
+
+\subsubsection{Software and Simulation Implementation}
+
+The implementation uses Python, LeRobot~0.5.2, PyTorch, ROS~2/Franka
+interfaces, and ZeroMQ. Demonstrations are stored in LeRobot format; every
+timestep contains two RGB observations, an eight-dimensional robot state, an
+eight-dimensional action, and episode indexing information. The repository
+provides tools for recording and checking demonstrations, training ACT and
+Diffusion Policy, loading checkpoints, serving policy inference, and executing
+returned actions on the robot. Diffusion Policy was used as the initial
+baseline, whereas ACT was selected for the current deployment because it showed
+more stable qualitative behavior in the available real-robot tests. Exact
+package versions, code paths, tensor definitions, hyperparameters, and
+checkpoint inventories will be placed in the technical appendix.
+
+\subsubsection{System Integration and Implementation Status}
+
+Integration follows a reproducible sequence: (1) start and verify the robot,
+cameras, and communication bridge; (2) record and validate demonstration
+episodes; (3) train a policy and select a checkpoint; (4) start the GPU policy
+server; and (5) run the robot executor in dry-run mode before enabling physical
+motion. The data-collection tools, dataset checks, ACT and Diffusion training
+pipelines, policy server, and robot executor have been implemented. Three
+project datasets and multiple checkpoints are available, and a preliminary
+real-robot plug-inserted-into-socket trial has succeeded. Remaining work is to freeze the
+deployment configuration, reconcile the recording and execution frequencies,
+identify the final checkpoint, complete the gripper fabrication record, and
+conduct repeated trials with structured outcome and timing logs.
+
+\subsubsection{Budget}
+
+The current proof-of-concept is covered by laboratory and Student Innovation
+Center resources, so its projected additional out-of-pocket cost is CNY~0.
+This is not the total economic value of the system; in-kind equipment values
+should be added if the final rubric requires a full project-value budget.
+
+\begin{table}[H]
+\centering
+\caption{Project Budget for the Proof-of-Concept Demo}
+\label{tab:budget}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\textwidth}{cXXccc}
+\toprule
+\textbf{No.} & \textbf{Component or Service} & \textbf{Provider} &
+\textbf{Quantity} & \textbf{Cash Cost} & \textbf{Status} \\
+\midrule
+1 & Franka robotic arm & Laboratory & 1 arm & CNY~0 & Available \\
+2 & GPU server and cameras & Laboratory & Shared & CNY~0 & Available \\
+3 & Gripper, objects, and fixtures & Student Innovation Center & - & CNY~0 & Available \\
+\midrule
+\multicolumn{4}{r}{\textbf{Projected Additional Cash Cost}} & \textbf{CNY~0} & \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\noindent\textit{To be confirmed before final submission: camera models and
+quantities, 3D-print material, gripper CAD/dimensions and critical tolerances,
+the number of print iterations, and any required in-kind equipment values.}
+
+% ================= END OF Manufacturing and Implementation Plan ======================
+
+% ==========================================================
+% SECTION 7 / REPORT PAGES 23--24
+% Validation Plan
+%
+% Replace the existing Validation Plan placeholder block in
+% DR3_report.tex with this fragment. No additional packages are required.
+%
+% IMPORTANT CONSISTENCY NOTE:
+% The earlier Engineering Specifications table must use these same six
+% targets: Planning >90%, Execution >70%, Detection >90%, Pose Error <20 mm,
+% Failure Detection >90%, and Recovery Rate >70%.
+% ==========================================================
+
+\begingroup
+\setlength{\parskip}{2pt}
+
+\subsection{Validation Plan}
+\footnotesize
+
+\subsubsection{Validation Objectives}
+
+Validation will determine, by reproducible tests, whether the implemented
+design meets the revised engineering specifications and will separate
+proof-of-concept feasibility from statistically supported performance. The
+long-term objective is language-conditioned bimanual manipulation, whereas the
+current implementation is a single-arm Franka FR3 visuomotor imitation-learning
+system. This stage therefore tests the working perception-to-action and
+robot-execution pipeline on three bounded tasks: placing a ring over a
+cylindrical target; inserting a two-pin plug into its matching two-hole
+socket; and placing a screw completely inside a small container. Passing these
+tests will validate the present proof-of-concept stage, not unimplemented
+language planning, bimanual coordination, or autonomous failure handling.
+
+The pose-error target is revised from $<5$~mm to $<20$~mm because baseline data
+collection revealed that fine hand motions could not be reproduced with stable
+millimeter-level accuracy through the teleoperation interface. The resulting
+demonstrations therefore do not consistently encode a $5$~mm tolerance, and an
+imitation policy cannot reasonably be required to reproduce precision absent
+from its training data. The revised limit is terminal object-to-target
+translational error measured against a calibrated reference. Plug insertion
+also has a stricter functional criterion: all pins must enter the corresponding
+holes and reach a marked seating depth without damage or manual intervention.
+For ES3--ES4, the test plan separates recognition quality from calibrated geometric accuracy, consistent with the distinction between object-pose benchmarking and symmetry-aware pose estimation in BOP and EPOS \cite{bop,epos}. The report therefore treats detection accuracy and terminal translational error as separate acceptance quantities rather than using task success as a proxy for either measurement.
+
+\subsubsection{Specifications to Be Validated}
+
+Table~\ref{tab:validation-matrix} explicitly identifies what each specification
+tests, how the test will be conducted, and the expected outcome. Requirements
+whose modules do not yet exist are retained and marked not evaluated rather
+than inferred from a successful manipulation.
+
+\begin{table}[t]
+\centering
+\caption{Validation matrix for the revised engineering specifications}
+\label{tab:validation-matrix}
+\scriptsize
+\setlength{\tabcolsep}{2.5pt}
+\renewcommand{\arraystretch}{0.88}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.05cm}
+>{\raggedright\arraybackslash}p{2.25cm}
+>{\raggedright\arraybackslash}X
+>{\raggedright\arraybackslash}p{2.55cm}}
+\toprule
+\textbf{Specification / status} & \textbf{What is tested} &
+\textbf{How the test is conducted} & \textbf{Expected outcome / acceptance} \\
+\midrule
+ES1: Planning Success $>90\%$\newline\emph{Not evaluated} & Instruction-to-plan
+validity & Compare 30 held-out instruction/initial-condition cases with
+verified task sequences and executability checks & More than 27 of 30 plans
+are correct and executable \\
+ES2: Execution Success $>70\%$\newline\emph{Feasibility only} & Autonomous
+end-to-end completion & Run 30 physical trials per task with frozen checkpoints
+and controlled starting-pose variation & At least 22 of 30 trials succeed for
+\emph{each} task; results are not pooled \\
+ES3: Detection Accuracy $>90\%$\newline\emph{Not evaluated} & Object and target
+localization & Compare exposed perception outputs with independently labeled
+images spanning the three tasks, pose variation, and lighting variation & More
+than $90\%$ of labeled instances are correct; also report precision and recall \\
+ES4: Pose Error $<20$~mm\newline\emph{Not measured} & Terminal translational
+accuracy & Measure final object and target references with a calibrated top
+view or equivalent physical metrology & Mean error $<20$~mm; report standard
+deviation and 95th percentile \\
+ES5: Failure Detection $>90\%$\newline\emph{Not evaluated} & Recognition of
+grasp, alignment, insertion, drop, and missed-container failures & Introduce 30
+labeled failure cases across the tasks and compare alarms with ground truth &
+$TP/(TP+FN)>90\%$; report false alarms separately \\
+ES6: Recovery Rate $>70\%$\newline\emph{Not evaluated} & Return to task after a
+detected recoverable failure & Command re-grasp, re-alignment, or re-placement
+for the same controlled failure cases & At least 22 of 30 recovery attempts
+complete the intended task \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsubsection{Experimental Setup}
+
+The setup comprises one Franka FR3 arm, the selected task-compatible gripper,
+two RGB views, an inference computer, and repeatable ring/cylinder,
+plug/socket, and screw/container fixtures. The socket will be fixed and
+unpowered. The deployed policy receives the camera streams and an
+eight-dimensional robot state and returns seven arm commands plus one gripper
+command. Before counted trials, the checkpoint, camera mounts, fixture
+coordinates, start configuration, workspace limits, labels, and control rate
+will be frozen. The datasets were recorded at 5~Hz, while an ACT executor
+defaults to 15~Hz; this discrepancy must be resolved and the final
+dataset-aligned rate documented. Camera calibration or equivalent metrology
+must be completed before ES4 testing.
+
+\subsubsection{Test Procedures and Metrics}
+
+For ES2 and ES4, each task will have 30 counted trials: ten nominal, ten with a
+defined translational start-pose perturbation, and ten with combined translation
+and yaw perturbations inside the trained workspace. Trial order will be
+randomized. Task-specific checkpoints are permitted, but the checkpoint,
+controller, camera pose, fixture, and success definition may not change within
+a task set. Debugging trials will be uncounted and reported separately.
+
+Before motion, a dry run will verify cameras, state/action dimensions, finite
+outputs, inference communication, workspace limits, fixture security, and
+emergency-stop access. A ring trial succeeds only when the released ring
+remains fully over the cylinder; a plug trial succeeds only when all two pins
+reach the marked depth in matching holes; and a screw trial succeeds only when
+the released screw remains completely inside the container. A drop, incomplete
+placement/insertion, timeout, collision/protective stop, or manual assistance is
+a failure. Each trial will record task/trial ID, checkpoint/configuration,
+initial condition, timestamps, outcome, pose error, failure/detection/recovery,
+safety events, execution time, and video. Raw logs, calibration, code settings,
+and calculations will be placed in the appendix.
+
+\noindent The metrics are
+$R_{\mathrm{plan}}=N_{\mathrm{valid\ plans}}/N_{\mathrm{commands}}$,
+$R_{\mathrm{exec},i}=N_{\mathrm{success},i}/N_{\mathrm{trials},i}$,
+$R_{\mathrm{det}}=N_{\mathrm{correct}}/N_{\mathrm{labeled}}$,
+$e=\lVert\mathbf{p}_{\mathrm{object}}-\mathbf{p}_{\mathrm{target}}\rVert_2$,
+$R_{\mathrm{fail}}=TP/(TP+FN)$, and
+$R_{\mathrm{rec}}=N_{\mathrm{successful\ recoveries}}/
+N_{\mathrm{recovery\ attempts}}$.
+
+\subsubsection{Expected Outcomes and Acceptance Criteria}
+
+The expected output is a reproducible three-task ACT baseline with per-task
+success rates, pose-error statistics, a failure inventory, and synchronized
+video/log evidence. Each target is accepted only by the rule in
+Table~\ref{tab:validation-matrix}; plug insertion must additionally satisfy its
+seating criterion. One successful video is feasibility evidence, not
+statistical validation. The present ring demonstration is therefore
+preliminary, and specifications without completed trials remain unvalidated.
+
+\subsubsection{Specifications Supported through Engineering Analysis}
+
+Engineering analysis supports test readiness but does not replace experiments.
+The three recorded datasets contain 150 episodes and 43,882 frames, two RGB
+streams, and matching eight-dimensional state/action interfaces. Dataset
+continuity, dimensions, and video readability can be checked by the implemented
+validator; ACT and Diffusion Policy checkpoints have been trained; and the
+collection, training, inference-server, and robot-executor path exists. These
+facts support integration feasibility and reduce interface-mismatch risk, but
+do not establish any numerical target. No repeated-trial record, calibrated
+pose report, or quantitative planning, detection, failure-detection, or recovery
+result is currently available. The qualitative selection of ACT over Diffusion
+Policy is likewise a design decision to be tested, not proof of superiority.
+Experience from the ring demonstration shows that a bounded task can be
+executed, but cannot demonstrate compliance. ES1, ES3, ES5, and ES6 remain not
+evaluated; ES2 is feasibility-only, and ES4 is unmeasured.
+
+\endgroup
+
+% ================= END OF SECTION Validation Plan ======================
+
+
+
+% =============== PROJECT TIMELINE AND PLAN ================
+\section{Project Timeline and Plan}
+
+\subsection{Milestones and Deadlines}
+
+\drone{We organized the 12-week project into seven milestones, each gating the
+next phase of development.}
+
+At the end of Week 10, policy training for the three proof-of-concept tasks had
+been completed, and the project was transitioning from model development to
+systematic physical testing. The milestones were therefore revised to
+distinguish completed development work from the validation and final-delivery
+activities scheduled for Weeks 11 and 12. Table~\ref{tab:updated-milestones}
+summarizes the updated milestones and deadlines.
+
+\begin{table}[H]
+\centering
+\caption{Updated Project Milestones and Deadlines}
+\label{tab:updated-milestones}
+\small
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.12}
+
+\begin{tabularx}{\textwidth}{
+>{\centering\arraybackslash}p{2.05cm}
+>{\centering\arraybackslash}p{1.05cm}
+>{\raggedright\arraybackslash}X
+>{\centering\arraybackslash}p{1.90cm}}
+
+\toprule
+\textbf{Milestone} &
+\textbf{Week} &
+\textbf{Description} &
+\textbf{Status} \\
+
+\midrule
+
+\textcolor{gray}{M1} &
+\textcolor{gray}{2} &
+\textcolor{gray}{Environment \& task specification completed} &
+Completed \\
+
+\textcolor{gray}{M2} &
+\textcolor{gray}{4} &
+\textcolor{gray}{Teleoperation system operational} &
+Completed \\
+
+\textcolor{gray}{M3} &
+\textcolor{gray}{6} &
+\textcolor{gray}{Dataset collection completed} &
+Completed \\
+
+M4 &
+9 &
+Baseline evaluation and policy revision completed &
+Completed \\
+
+M5 &
+10 &
+Three proof-of-concept task policies trained &
+Completed \\
+
+M6 &
+11 &
+ACT refinement, validation setup, initial testing, and poster
+completion by July 23 &
+In progress \\
+
+M7 &
+12 &
+Three-task validation, demo video by July 27, Design Expo
+presentation, and final report &
+Planned \\
+
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Updated Gantt Chart}
+
+\drone{The first half of the project (Weeks 1--6) focuses on
+infrastructure---simulation setup, teleoperation development, and large-scale
+data collection. Several tasks overlap intentionally; for example, dataset
+processing begins before the last collection runs finish, and VLA evaluation
+overlaps with system integration to allow iterative refinement.}
+
+Figure~\ref{fig:updated-gantt} presents the revised schedule. Relative to the
+initial plan, baseline evaluation was extended through Week 9, VLA pipeline
+integration was extended through Week 10, and VLA training was extended through
+Week 11. These adjustments reflect the additional data and deployment iterations
+required after the initial Diffusion Policy baseline showed limited performance
+under the available dataset conditions and ACT was selected as the current
+deployment policy. The end of Week 10 is treated as the current schedule point.
+
+\begin{figure}[H]
+\centering
+\IfFileExists{imgs/dr3_updated_gantt_chart.png}{%
+  \includegraphics[width=\textwidth]{imgs/dr3_updated_gantt_chart.png}%
+}{%
+  \fbox{%
+    \parbox[c][0.29\textheight][c]{0.92\textwidth}{%
+      \centering
+      \textbf{Updated Gantt Chart Placeholder}\\[6pt]
+      Upload the final Gantt-chart image to Overleaf using the filename\\[4pt]
+      \texttt{imgs/dr3\_updated\_gantt\_chart.png}
+    }%
+  }%
+}
+\caption{Updated project schedule showing completed work, ongoing development,
+schedule extensions, and remaining validation and final-delivery activities.}
+\label{fig:updated-gantt}
+\end{figure}
+
+During Weeks 11 and 12, the main technical priority is to freeze the final ACT
+checkpoints and deployment configuration, prepare a repeatable test setup, and
+conduct physical testing of the ring-placement, two-pin plug-insertion, and
+screw-to-container tasks. The remaining deliverables also include validation
+data analysis, completion of the Design Expo poster by July 23, completion of
+the demonstration video by July 27, preparation and rehearsal of the Design
+Expo presentation, and integration of the final report. Autonomous failure
+detection and recovery will not be implemented during the remaining project
+period. Observed failures and manual-reset procedures will instead be recorded,
+and the corresponding engineering specifications will remain marked as not
+evaluated.
+
+\subsection{Task Ownership and Deliverables}
+
+\drone{Each team member owns a clear interface in the robot-learning loop:}
+
+The remaining work is distributed according to these existing roles while
+providing shared ownership for robot testing and final communication materials.
+Table~\ref{tab:remaining-tasks} lists the assigned owners, deliverables, and
+deadlines.
+
+\begin{table}[H]
+\centering
+\caption{Remaining Tasks, Owners, Deliverables, and Deadlines}
+\label{tab:remaining-tasks}
+\scriptsize
+\setlength{\tabcolsep}{2.5pt}
+\renewcommand{\arraystretch}{1.02}
+\begin{tabularx}{\textwidth}{c >{\raggedright\arraybackslash}p{2.85cm}
+>{\raggedright\arraybackslash}p{3.0cm} >{\raggedright\arraybackslash}X
+>{\raggedright\arraybackslash}p{1.35cm}}
+\toprule
+\textbf{No.} & \textbf{Task} & \textbf{Owner(s)} & \textbf{Deliverable} &
+\textbf{Deadline} \\
+\midrule
+1 & ACT refinement and checkpoint freeze & Tianzong Cheng; Yiming Gu & Final
+task-specific checkpoints and deployment configurations & Week 11 \\
+2 & Control-rate alignment, robot checks, and fixture preparation & Yixin Wu;
+Lv Wu & Repeatable test setup and pre-test checklist & Week 11 \\
+3 & Physical validation of the three tasks & Haoran Yang; Yixin Wu; Tianzong
+Cheng & Counted task trials with synchronized video records & Weeks 11--12 \\
+4 & Pose measurement, trial logging, and statistical analysis & Haoran Yang;
+Lv Wu & Success-rate, pose-error, and failure-summary tables & Weeks 11--12 \\
+5 & Design Expo poster & Haoran Yang; Yiming Gu & Final poster & July 23 \\
+6 & Demonstration-video production & Yixin Wu; Lv Wu; Tianzong Cheng & Edited
+final demonstration video & July 27 \\
+7 & Design Expo presentation and rehearsal & Haoran Yang; Tianzong Cheng;
+Yiming Gu & Final slides, speaking plan, and rehearsed demonstration flow &
+Week 12 \\
+8 & Final-report integration and review & Haoran Yang; Lv Wu; Yiming Gu &
+Complete final report with validation evidence and appendices & End of Week 12 \\
+9 & Final system demonstration and backup procedure & Yixin Wu; Tianzong Cheng &
+Stable demonstration setup and documented fallback procedure & Week 12 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+% ==========================================================
+% ANALYSIS OF POTENTIAL PROBLEMS
+%
+% Replace the existing Analysis of Potential Problems placeholder block in
+% DR3_report.tex with this fragment. The \drone macro is already defined in
+% the report preamble and is used for text retained verbatim from DR1.
+% ==========================================================
+
+\section{Analysis of Potential Problems}
+
+\subsection{Technical Risks}
+
+\drone{Bimanual teleoperation is inherently difficult. If demonstration
+quality is low, the downstream learning will suffer. We plan to iterate on the
+teleoperation interface early and discard low-quality episodes during
+curation.}
+
+This anticipated risk was observed during development. Fine hand motions could
+not be reproduced consistently through the teleoperation interface, so the
+demonstrations could not reliably support the original $5$~mm pose-error
+tolerance. Because policy performance is limited by the precision represented
+in the training data, the system-level pose-error criterion was revised to
+$20$~mm. The plug-insertion task still requires all two pins to enter the
+corresponding holes and reach the marked seating depth.
+
+Earlier bimanual tests revealed a second risk: the two master-side
+teleoperation controllers collided before the Franka end effectors reached the
+desired separation. This prevented close-proximity manipulation in narrow or
+small workspaces. The three current proof-of-concept tasks use a single arm and
+are not directly affected. For future bimanual tasks, the graspable region will
+be enlarged where possible; otherwise, one arm will remain fixed while the
+other performs the active motion. After interference, both arms will return to
+a documented safe pose before the task is restarted.
+
+\subsection{Manufacturing and Integration Risks}
+
+All data collection will use the confirmed 5~Hz
+control frequency, and real-robot execution will use 15~Hz. Before counted trials, the team will freeze the final
+task-specific ACT checkpoints, robot starting pose, camera locations, object
+fixtures, and success definitions. Terminal placement error will be measured
+with a ruler and calipers against marked physical references. A common
+reference point and repeated measurements will reduce measurement inconsistency.
+
+Autonomous failure detection and recovery cannot be implemented within the
+remaining project period, so the corresponding engineering specifications
+(ES5 and ES6) will be marked as not evaluated. Failures and manual interventions
+will still be logged. After a failure, the operator will stop the policy,
+return the robot to the safe starting configuration, reset the objects, and
+begin a new trial without overwriting the original failure record.
+
+\subsection{Schedule and Resource Risks}
+
+At the end of Week 10, training for all three proof-of-concept tasks was
+complete and the system was ready for physical testing. Validation must now
+proceed in parallel with poster completion by July 23, video completion by July
+27, Design Expo preparation, and final-report integration. Robot, computing,
+and experimental-space access has already been coordinated. The remaining
+schedule risk is late discovery of an unstable checkpoint or insufficient valid
+trials. The team will therefore freeze the most stable checkpoint, prioritize
+counted trials, and retain the completed demonstration video as a backup for
+the live presentation.
+
+\subsection{Risk Mitigation and Recovery Plans}
+
+Table~\ref{tab:risk-analysis} summarizes the principal remaining risks and the
+corresponding mitigation or recovery actions.
+
+\begin{table}[H]
+\centering
+\caption{Potential Problems and Mitigation or Recovery Plans}
+\label{tab:risk-analysis}
+\scriptsize
+\setlength{\tabcolsep}{2.2pt}
+\renewcommand{\arraystretch}{1.02}
+\begin{tabularx}{\textwidth}{c
+>{\raggedright\arraybackslash}p{2.05cm}
+>{\raggedright\arraybackslash}p{2.05cm}
+>{\raggedright\arraybackslash}X
+>{\centering\arraybackslash}p{1.75cm}
+>{\centering\arraybackslash}p{1.35cm}}
+\toprule
+\textbf{No.} & \textbf{Potential Problem} & \textbf{Impact} &
+\textbf{Mitigation or Recovery Plan} & \textbf{Probability} &
+\textbf{Severity} \\
+\midrule
+1 & Teleoperation precision is insufficient & Low-quality demonstrations and
+terminal placement error & Use the revised $20$~mm criterion, remove poor
+demonstrations, freeze fixtures, and verify placement with ruler/caliper
+measurements & High (observed) & High \\
+2 & Master-side controllers collide during close bimanual motion & Franka arms
+cannot reach the required close separation & Enlarge graspable regions; use one
+fixed arm and one moving arm; retreat to the safe pose before restarting &
+Observed in bimanual tests & High \\
+3 & Final checkpoint is unstable during repeated physical trials & Insufficient
+successful trials and delayed validation & Freeze the most stable task-specific
+checkpoint, use fixed 5~Hz execution, and separate debugging from counted trials
+& Medium & High \\
+4 & Ruler or caliper measurements are inconsistent & Unreliable pose-error
+evidence & Mark common reference points, zero-check the calipers, repeat the
+measurement, and retain the raw measurement sheet & Medium & Medium \\
+5 & Failure detection and autonomous recovery remain unavailable & ES5 and ES6
+cannot be experimentally validated & Mark both specifications not evaluated;
+log every failure and use the documented manual reset procedure & Certain &
+High \\
+6 & Live demonstration fails near the delivery deadline & Design Expo evidence
+is interrupted or incomplete & Retain the completed video as backup, rehearse
+the stable procedure, and prohibit unverified changes after final recording &
+Medium & High \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% ================= END OF ANALYSIS OF POTENTIAL PROBLEMS =============
+
+
+% ==================== CONCLUSIONS =========================
+\section{Conclusions}
+
+This design review establishes an implementable architecture for the current
+proof-of-concept while preserving the longer-term goal of language-conditioned
+bimanual industrial manipulation. The implemented system combines a Franka
+robot, two RGB camera views, task-compatible grippers and fixtures, GELLO-based
+teleoperation, the LeRobot data format, and task-specific Action Chunking with
+Transformers (ACT) policies. The operator currently selects the checkpoint for
+the required task; language-based task selection, coordinated bimanual control,
+and autonomous failure handling are not claimed as demonstrated capabilities.
+
+By the end of Week 10, the team had completed the teleoperation, data
+collection, dataset-processing, training, inference-server, and robot-execution
+pipeline. Task-specific policies had been trained for three bounded single-arm
+tasks: placing a ring over a cylindrical target, inserting a two-pin plug
+into a matching two-hole socket, and placing a screw completely inside a
+small container. The deployed interface uses two visual observations and an
+eight-dimensional robot state/action representation. A preliminary ring-placement trial demonstrates the feasibility of the
+complete data-to-deployment path, but does not establish compliance with the
+numerical engineering specifications.
+
+The validation plan therefore uses frozen task-specific checkpoints,
+repeatable initial conditions, fixed camera and fixture configurations, and
+counted physical trials for each task. The terminal placement-error criterion
+was revised from less than 5~mm to less than 20~mm because the teleoperation
+interface could not consistently produce demonstrations with stable
+millimeter-level precision. This revision aligns the acceptance threshold with
+the precision represented in the training data. It does not replace the
+task-specific functional requirements; in particular, plug insertion is
+successful only when all two pins enter the corresponding holes and reach the
+marked seating depth without damage or manual assistance. Terminal error will
+be measured with a ruler and calipers against marked physical references.
+
+At the time of this review, task-execution performance is supported only by
+feasibility evidence, and terminal placement error has not been measured through
+repeated trials. The language-planning, explicit component-detection, autonomous
+failure-detection, and autonomous recovery specifications remain not evaluated
+because the corresponding modules are outside the implemented scope. Observed
+failures will still be logged, followed by a documented manual reset that does
+not remove the original failure record. These limitations ensure that the ACT
+baseline is not presented as a completed bimanual VLA system.
+
+The remaining work in Weeks 11 and 12 is to freeze the final checkpoints and
+deployment configuration, complete the three-task physical validation, analyze
+success rates and placement-error measurements, and integrate the evidence into
+the Design Expo poster, demonstration video, presentation, and final report.
+Dataset curation, fixed test conditions, stable checkpoint selection, and a
+completed backup video will reduce the remaining delivery risks. Subject to the
+planned tests, the project is positioned to deliver a reproducible and
+quantitatively documented single-arm ACT proof-of-concept at the Design Expo,
+with language-conditioned bimanual manipulation retained as future work.
+
+% ==================== REFERENCES ==========================
+\newpage
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{99}
+\bibitem{rt2} A.~Brohan et al., ``RT-2: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control,'' \textit{arXiv preprint arXiv:2307.15818}, 2023.
+\bibitem{openvla} M.~J.~Kim et al., ``OpenVLA: An Open-Source Vision-Language-Action Model,'' \textit{arXiv preprint arXiv:2406.09246}, 2024.
+\bibitem{rdt1b} S.~Liu et al., ``RDT-1B: A Diffusion Foundation Model for Bimanual Manipulation,'' \textit{arXiv preprint arXiv:2410.07864}, 2024.
+\bibitem{pi0} K.~Black et al., ``$\pi_0$: A Vision-Language-Action Flow Model for General Robot Control,'' \textit{arXiv preprint arXiv:2410.24164}, 2024.
+\bibitem{act} T.~Z.~Zhao et al., ``Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware,'' \textit{Robotics: Science and Systems}, 2023.
+\bibitem{diffusionpolicy} C.~Chi et al., ``Diffusion Policy: Visuomotor Policy Learning via Action Diffusion,'' in \textit{Robotics: Science and Systems}, 2023. doi: 10.15607/RSS.2023.XIX.026.
+\bibitem{gello} P.~Wu, Y.~Shentu, Z.~Yi, X.~Lin, and P.~Abbeel, ``GELLO: A General, Low-Cost, and Intuitive Teleoperation Framework for Robot Manipulators,'' \textit{arXiv preprint arXiv:2309.13037}, 2023.
+\bibitem{lerobot} Hugging Face, ``LeRobot: State-of-the-Art Machine Learning for Real-World Robotics,'' software documentation, 2026. [Online]. Available: \url{https://huggingface.co/docs/lerobot/main/en/index}. Accessed: July 19, 2026.
+\bibitem{umi} C.~Chi et al., ``Universal Manipulation Interface: In-The-Wild Robot Teaching Without In-The-Wild Robots,'' \textit{arXiv preprint arXiv:2402.10329}, 2024.
+\bibitem{frankafci} Franka Robotics, ``Franka Control Interface Documentation,'' 2026. [Online]. Available: \url{https://support.franka.de/docs/overview.html}. Accessed: July 20, 2026.
+\bibitem{pico4ultra} PICO, ``PICO 4 Ultra,'' 2026. [Online]. Available: \url{https://www.picoxr.com/global/products/pico4-ultra}. Accessed: July 20, 2026.
+\bibitem{transporter} A.~Zeng et al., ``Transporter Networks: Rearranging the Visual World for Robotic Manipulation,'' in \textit{Proceedings of the 4th Conference on Robot Learning (CoRL)}, 2020. [Online]. Available: \url{https://arxiv.org/abs/2010.14406}.
+\bibitem{cliport} M.~Shridhar, L.~Manuelli, and D.~Fox, ``CLIPort: What and Where Pathways for Robotic Manipulation,'' in \textit{Proceedings of the 5th Conference on Robot Learning (CoRL)}, 2021. [Online]. Available: \url{https://arxiv.org/abs/2109.12098}.
+\bibitem{peract} M.~Shridhar, L.~Manuelli, and D.~Fox, ``Perceiver-Actor: A Multi-Task Transformer for Robotic Manipulation,'' in \textit{Proceedings of the 6th Conference on Robot Learning (CoRL)}, 2022. [Online]. Available: \url{https://arxiv.org/abs/2209.05451}.
+\bibitem{bridgev2} H.~Walke et al., ``BridgeData V2: A Dataset for Robot Learning at Scale,'' in \textit{Proceedings of the 7th Conference on Robot Learning (CoRL)}, 2023. [Online]. Available: \url{https://arxiv.org/abs/2308.12952}.
+\bibitem{openx} Open X-Embodiment Collaboration et al., ``Open X-Embodiment: Robotic Learning Datasets and RT-X Models,'' in \textit{Proceedings of the 7th Conference on Robot Learning (CoRL)}, 2023. [Online]. Available: \url{https://arxiv.org/abs/2310.08864}.
+\bibitem{droid} A.~Khazatsky et al., ``DROID: A Large-Scale In-the-Wild Robot Manipulation Dataset,'' in \textit{Robotics: Science and Systems (RSS)}, 2024. [Online]. Available: \url{https://arxiv.org/abs/2403.12945}.
+\bibitem{libero} B.~Liu et al., ``LIBERO: Benchmarking Knowledge Transfer for Lifelong Robot Learning,'' in \textit{Advances in Neural Information Processing Systems}, vol.~36, 2023. [Online]. Available: \url{https://arxiv.org/abs/2306.03310}.
+\bibitem{robomimic} A.~Mandlekar et al., ``What Matters in Learning from Offline Human Demonstrations for Robot Manipulation,'' in \textit{Proceedings of the 5th Conference on Robot Learning (CoRL)}, 2021. [Online]. Available: \url{https://arxiv.org/abs/2108.03298}.
+\bibitem{mimicgen} A.~Mandlekar et al., ``MimicGen: A Data Generation System for Scalable Robot Learning Using Human Demonstrations,'' in \textit{Proceedings of the 7th Conference on Robot Learning (CoRL)}, 2023. [Online]. Available: \url{https://arxiv.org/abs/2310.17596}.
+\bibitem{rvt} A.~Goyal et al., ``RVT: Robotic View Transformer for 3D Object Manipulation,'' in \textit{Proceedings of the 7th Conference on Robot Learning (CoRL)}, 2023. [Online]. Available: \url{https://arxiv.org/abs/2306.14896}.
+\bibitem{dp3} Y.~Ze et al., ``3D Diffusion Policy: Generalizable Visuomotor Policy Learning via Simple 3D Representations,'' in \textit{Robotics: Science and Systems (RSS)}, 2024. [Online]. Available: \url{https://arxiv.org/abs/2403.03954}.
+\bibitem{r3m} S.~Nair, A.~Rajeswaran, V.~Kumar, C.~Finn, and A.~Gupta, ``R3M: A Universal Visual Representation for Robot Manipulation,'' in \textit{Proceedings of the 6th Conference on Robot Learning (CoRL)}, 2022. [Online]. Available: \url{https://arxiv.org/abs/2203.12601}.
+\bibitem{bop} T.~Hodan et al., ``BOP: Benchmark for 6D Object Pose Estimation,'' in \textit{Proceedings of the European Conference on Computer Vision (ECCV)}, 2018. [Online]. Available: \url{https://arxiv.org/abs/1808.08319}.
+\bibitem{epos} T.~Hodan et al., ``EPOS: Estimating 6D Pose of Objects with Symmetries,'' in \textit{Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)}, 2020. [Online]. Available: \url{https://arxiv.org/abs/2004.00605}.
+\end{thebibliography}
+
+% ==================== APPENDICES ===========================
+\appendix
+
+\section{Documentation of Generated Concepts}
+\subsection{Module Alternatives Retained after Concept Generation}
+
+\textbf{C1 platform alternatives.} A dual Flexiv platform remains attractive for force-aware contact tasks, but it would require a new controller, teleoperation, and data-interface integration path. An ALOHA-style platform offers low-cost bimanual research hardware, but its mechanical and software fit differs from the laboratory FR3 environment. Neither alternative was selected for the current route.
+
+\textbf{C2 teleoperation alternatives.} PICO 4 Ultra offers an XR controller and hand-tracking route, but its end-effector mapping and calibration would become additional project work~\cite{pico4ultra}. UMI offers a portable hand-held demonstration approach~\cite{umi}; it is useful as a research comparator but is less directly coupled to the selected fixed dual-FR3 workcell and joint-state pipeline.
+
+\textbf{C3 data-collection alternatives.} A one-wrist-plus-top configuration reduces calibration and storage requirements, while a proprioception-only configuration removes visual synchronization entirely. Both options reduce information that could support component localization and contact-region observation, so they were not selected for the final architecture.
+
+\textbf{C4 gripper alternatives.} The Franka parallel gripper has a direct robot interface and repeatable parallel jaws but offers limited geometry adaptation. A 3D-printed hard gripper can be tailored to a component and can provide rigid locating features; it was not selected because the soft-gripper concept better supports compliant contact and rapid iteration for the present component range.
+
+\textbf{C5 policy alternatives.} Diffusion Policy~\cite{diffusionpolicy} remains a valid visuomotor action-generation baseline, but it is not the selected deployment model. A $\pi$-style VLA policy~\cite{pi0} is the long-term direction for language-conditioned generalization, not a current model claim or a schedule-compatible deployment choice.
+
+\section{Complete Concept Selection Matrices}
+
+ \subsection{Selection Notes for the Five Concepts}
+
+  \noindent\textbf{Dual FR3 Robot Platform.}
+  The dual-FR3 platform was selected because it provides a direct controller path within the available laboratory
+  ecosystem and preserves the final objective of coordinated bimanual manipulation. Flexiv and ALOHA-style platforms
+  were retained as alternatives: Flexiv is attractive for force-aware contact operations, whereas ALOHA offers a lower-
+  cost bimanual research route. However, both alternatives would require either a different software and control
+  ecosystem or a weaker fit to the target precision and available hardware resources. The selected platform therefore
+  accepts a higher integration burden in exchange for a more direct route to the final dual-arm system.
+
+  \noindent\textbf{GELLO Teleoperation Interface.}
+  GELLO was selected because it closely couples operator motion with the robot-state and action records required by the
+  imitation-learning pipeline. PICO 4 Ultra and UMI provide credible immersive and hand-held alternatives, respectively.
+  Their main limitation in this project is the additional motion-mapping, calibration, and interface work required to
+  connect their operator inputs reliably to the fixed FR3 workcell. GELLO consequently provides the most practical
+  collection route, although its leader--follower calibration and operator consistency must still be controlled.
+
+  \noindent\textbf{Three-Camera Data-Collection Pipeline.}
+  The selected data-collection configuration combines two wrist RGB cameras, one top RGB camera, and synchronized robot-
+  state and action records. This arrangement provides both global workspace context and local contact-region
+  observations, thereby maximizing visual coverage for component localization and pose-sensitive manipulation. A reduced
+  two-camera configuration or a proprioception-only configuration would be simpler to deploy and store, but would
+  provide less visual redundancy and weaker evidence for perception-based localization. The selected concept therefore
+  accepts the additional synchronization, calibration, and data-management burden required by the three-camera route.
+
+  \noindent\textbf{3D-Printed Soft Gripper.}
+  The selected gripper uses two identical compliant fingers printed in TPU 64D. Each finger measures
+  \(123.36 \times 25.80 \times 40.00~\mathrm{mm}\) and is attached by screws. Compared with the Franka parallel gripper and a rigid 3D-printed gripper, the compliant ribbed design better accommodates variations in charger-body geometry and reduces concentrated contact forces. Its confirmed material, geometry, and attachment method make it suitable for the current two-pole plug-insertion proof-of-concept.
+
+
+  \noindent\textbf{ACT Policy in LeRobot.}
+  ACT was selected because it is integrated with the current LeRobot workflow and supports task-specific checkpoint
+  training and deployment. Diffusion Policy remains a valid visuomotor baseline, while $\pi$-style VLA models represent
+  a future route toward broader vision-language-action capability. However, Diffusion Policy currently presents a less
+  direct integration path for the available workflow, and $\pi$-style VLA models exceed the maturity and resource scope
+  of the present project stage. ACT is therefore selected as the current deployable policy, with the explicit limitation
+  that it does not yet provide language-conditioned inference or unified multi-task control.
+
+
+\section{Detailed Drawings and System Diagrams}
+\subsection{Franka Research 3 Platform}
+
+  The final workcell is based on two Franka Research 3 (FR3) robot arms. Each FR3 provides seven degrees of freedom, a
+  nominal payload of 3~kg, and a maximum reach of 855~mm. These specifications provide sufficient workspace coverage for
+  the target tabletop assembly tasks while retaining the redundancy required to approach components from different
+  orientations. Link-side torque sensing at all seven joints is particularly relevant to contact-rich manipulation
+  because it supports compliant interaction, monitoring, and safety-aware control~\cite{frankafci}.
+
+  \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.58\textwidth]{imgs/franka_fr3.png}
+      \caption{Franka Research 3 robot arm used as the basis of the dual-arm manipulation platform.}
+      \label{fig:fr3-overview}
+  \end{figure}
+
+  The FR3 arms are configured as upright manipulators with the custom gripper attached through the end-effector mounting
+  interface. During policy learning, the robot state is represented by the seven joint positions together with the
+  gripper state. The final bimanual configuration will extend this representation to synchronized left- and right-arm
+  states and actions. At deployment, the learned policy provides admissible high-level commands through the Franka
+  Control Interface, while low-level safety functions, joint limits, and robot-controller protections remain active.
+
+  \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.88\textwidth]{imgs/fr3_param.png}
+      \caption{Key kinematic and hardware parameters of the Franka Research 3 platform.}
+      \label{fig:fr3-parameters}
+  \end{figure}
+
+  The selected configuration uses one FR3 arm for each side of the shared workcell. This arrangement enables future role
+  allocation between the arms, such as stabilizing a component with one arm while the other performs alignment or
+  insertion. These parameters will be
+  finalized together with the fixture geometry and camera calibration procedure.
+
+  \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.88\textwidth]{imgs/fr3_config.png}
+      \caption{Planned dual-FR3 workcell configuration and subsystem placement.}
+      \label{fig:fr3-configuration}
+  \end{figure}
+
+   \subsection{GELLO Teleoperation Device}
+
+  The demonstration-collection interface is based on the GELLO--Franka teleoperation controller shown in
+  Figure~\ref{fig:gello-device}. GELLO is a low-cost, general-purpose physical teleoperation device designed for
+  scalable robot-demonstration collection. Its kinematic structure mirrors the target robot arm, allowing the operator
+  to command the follower robot through direct motion of the leader device. The controller combines 3D-printed
+  structural components with standard actuator modules, which reduces the hardware barrier for collecting manipulation
+  demonstrations while preserving an intuitive ``follow-the-arm'' interaction mode.
+
+  \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.68\textwidth]{imgs/gello.png}
+      \caption{GELLO--Franka teleoperation controller used for demonstration collection.}
+      \label{fig:gello-device}
+  \end{figure}
+
+  The selected GELLO--Franka configuration provides seven arm degrees of freedom and a gripper-control channel. The
+  assembly uses seven DYNAMIXEL XL330-M288-T actuators for the arm joints and one DYNAMIXEL XL330-M077-T actuator for
+  the gripper-related joint. The remaining hardware consists of a ZNJ integrated control board with a 5~V, 5~A switched-
+  mode power supply, an FPX330-H101 structural kit, and 3D-printed components for the leader arm and Franka-compatible
+  gripper interface. This configuration is intended to generate leader-arm motion that can be mapped to the
+  corresponding FR3 joint-space trajectory during data collection.
+
+  The XL330 actuator series is compact and suitable for small teleoperation mechanisms. It operates over a 3.7--6~V
+  input range, with 5~V recommended for the selected configuration, and supports position, extended-position, velocity,
+  PWM, current, and current-based position-control modes. Each actuator has approximate dimensions of $20 \times 34
+  \times 26$~mm and a mass of approximately 18~g. These characteristics allow the leader device to remain lightweight
+  while providing the joint-level motion measurements required by the demonstration pipeline.
+
+  \subsection{3D-Printed Soft Gripper Finger and Socket Mock-Up}
+
+  The selected end-effector uses two identical compliant fingers adapted from the open-source
+  \textit{Gripper Finger} design~\cite{umi}. The project adopts only the finger geometry rather
+  than reproducing the complete external gripper or teleoperation hardware. Each finger is
+  3D-printed in TPU 64D, has an overall size of
+  \(123.36 \times 25.80 \times 40.00~\mathrm{mm}\), and is attached to the gripper structure
+  using screws.
+
+  The tapered profile and repeated compliant ribs allow the fingers to conform to variations
+  in the insulated charger body and reduce concentrated contact forces during grasping and
+  insertion. Compared with a rigid 3D-printed gripper, the compliant design provides greater
+  tolerance to small geometric and pose variations, although deformation may reduce grasp
+  repeatability. The finger geometry is therefore evaluated together with the vision and
+  insertion procedure in the current single-arm proof-of-concept.
+
+  \begin{figure}[htbp]
+      \centering
+      % Replace the filename below with the final gripper orthographic-view image.
+      \includegraphics[width=0.95\textwidth]
+      {imgs/soft_gripper_finger_three_views.png}
+      \caption{Orthographic views of the TPU 64D compliant gripper finger. The overall
+      bounding-box dimensions are
+      \(123.36 \times 25.80 \times 40.00~\mathrm{mm}\).}
+      \label{fig:soft-gripper-orthographic}
+  \end{figure}
+
+  The insertion target is a 3D-printed, electrically unpowered socket mock-up with an overall
+  size of \(80.00 \times 80.00 \times 30.00~\mathrm{mm}\). The task uses the upper pair of
+  parallel openings corresponding to a Chinese-standard two-pole plug. The compliant fingers
+  grasp the insulated charger body, while the standardized metal plug head defines the
+  insertion interface. The adopted finger CAD model is available at
+  \href{https://cad.onshape.com/documents/a8a98201374f5cc9c6538790}
+  {the Onshape project document}.
+
+
+
+
+\end{document}
