@@ -6,10 +6,16 @@
   "githubBranch": "cursor/five-authors-cover-a987",
   "mainFile": "main.tex",
   "createdAt": "2026-07-27T09:42:12.184Z",
-  "updatedAt": "2026-07-27T15:06:08.762Z",
+  "updatedAt": "2026-07-27T15:16:55.406Z",
   "lastPullAt": "2026-07-27T14:05:53.867Z",
-  "lastPushAt": "2026-07-27T15:03:49.394Z",
-  "collaborators": [],
+  "lastPushAt": "2026-07-27T15:06:22.207Z",
+  "collaborators": [
+    {
+      "userId": "1267f7cb-9287-4d6a-be0f-649794775ffd",
+      "role": "write",
+      "addedAt": "2026-07-27T15:11:18.989Z"
+    }
+  ],
   "autoPushEnabled": true,
   "shareLink": {
     "token": "9432a936078f405088ff36470b6605a2",
