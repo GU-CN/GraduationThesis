@@ -1503,52 +1503,6 @@
       \endverb
       \keyw{realsensed405}
     \endentry
-    \entry{dynamixelxl330}{online}{}
-      \name{author}{1}{}{%
-        {{hash=2bf461f0165d4919653775be7cc334b1}{%
-           family={{ROBOTIS}},
-           familyi={R\bibinitperiod}}}%
-      }
-      \name{namea}{1}{}{%
-        {{hash=2bf461f0165d4919653775be7cc334b1}{%
-           family={{ROBOTIS}},
-           familyi={R\bibinitperiod}}}%
-      }
-      \list{language}{1}{%
-        {english}%
-      }
-      \strng{namehash}{2bf461f0165d4919653775be7cc334b1}
-      \strng{fullhash}{2bf461f0165d4919653775be7cc334b1}
-      \strng{bibnamehash}{2bf461f0165d4919653775be7cc334b1}
-      \strng{authorbibnamehash}{2bf461f0165d4919653775be7cc334b1}
-      \strng{authornamehash}{2bf461f0165d4919653775be7cc334b1}
-      \strng{authorfullhash}{2bf461f0165d4919653775be7cc334b1}
-      \strng{nameabibnamehash}{2bf461f0165d4919653775be7cc334b1}
-      \strng{nameanamehash}{2bf461f0165d4919653775be7cc334b1}
-      \strng{nameafullhash}{2bf461f0165d4919653775be7cc334b1}
-      \field{sortinit}{1}
-      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{langid}{english}
-      \field{languageid}{english}
-      \field{lansortorder}{4}
-      \field{title}{{DYNAMIXEL XL330-M288-T}: Specifications}
-      \field{urlday}{27}
-      \field{urlmonth}{7}
-      \field{urlyear}{2026}
-      \field{usera}{EB}
-      \field{userd}{english}
-      \field{userf}{english}
-      \field{urldateera}{ce}
-      \verb{urlraw}
-      \verb https://emanual.robotis.com/docs/en/dxl/x/xl330-m288/
-      \endverb
-      \verb{url}
-      \verb https://emanual.robotis.com/docs/en/dxl/x/xl330-m288/
-      \endverb
-      \keyw{dynamixelxl330}
-    \endentry
     \entry{pico4ultra}{online}{}
       \name{author}{1}{}{%
         {{hash=cb918ce26c8f5aca35e80022078babd7}{%
@@ -1626,8 +1580,8 @@
       \strng{nameanamehash}{e7c54e991d05a41de60c20885f5f2f58}
       \strng{nameafullhash}{e7c54e991d05a41de60c20885f5f2f58}
       \field{extraname}{2}
-      \field{sortinit}{2}
-      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{booktitle}{Robotics: Science and Systems (RSS)}
@@ -1644,6 +1598,52 @@
       \verb 10.15607/RSS.2023.XIX.026
       \endverb
       \keyw{diffusionpolicy}
+    \endentry
+    \entry{dynamixelxl330}{online}{}
+      \name{author}{1}{}{%
+        {{hash=2bf461f0165d4919653775be7cc334b1}{%
+           family={{ROBOTIS}},
+           familyi={R\bibinitperiod}}}%
+      }
+      \name{namea}{1}{}{%
+        {{hash=2bf461f0165d4919653775be7cc334b1}{%
+           family={{ROBOTIS}},
+           familyi={R\bibinitperiod}}}%
+      }
+      \list{language}{1}{%
+        {english}%
+      }
+      \strng{namehash}{2bf461f0165d4919653775be7cc334b1}
+      \strng{fullhash}{2bf461f0165d4919653775be7cc334b1}
+      \strng{bibnamehash}{2bf461f0165d4919653775be7cc334b1}
+      \strng{authorbibnamehash}{2bf461f0165d4919653775be7cc334b1}
+      \strng{authornamehash}{2bf461f0165d4919653775be7cc334b1}
+      \strng{authorfullhash}{2bf461f0165d4919653775be7cc334b1}
+      \strng{nameabibnamehash}{2bf461f0165d4919653775be7cc334b1}
+      \strng{nameanamehash}{2bf461f0165d4919653775be7cc334b1}
+      \strng{nameafullhash}{2bf461f0165d4919653775be7cc334b1}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{langid}{english}
+      \field{languageid}{english}
+      \field{lansortorder}{4}
+      \field{title}{{DYNAMIXEL XL330-M288-T}: Specifications}
+      \field{urlday}{27}
+      \field{urlmonth}{7}
+      \field{urlyear}{2026}
+      \field{usera}{EB}
+      \field{userd}{english}
+      \field{userf}{english}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://emanual.robotis.com/docs/en/dxl/x/xl330-m288/
+      \endverb
+      \verb{url}
+      \verb https://emanual.robotis.com/docs/en/dxl/x/xl330-m288/
+      \endverb
+      \keyw{dynamixelxl330}
     \endentry
   \enddatalist
 \endrefsection
