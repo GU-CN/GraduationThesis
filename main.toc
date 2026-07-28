@@ -92,10 +92,11 @@
 \contentsline {chapter}{\numberline {Chapter 6}Discussion and conclusions}{45}{chapter.6}%
 \contentsline {section}{\numberline {6.1}Discussion}{45}{section.6.1}%
 \contentsline {section}{\numberline {6.2}Conclusions}{45}{section.6.2}%
-\contentsline {chapter}{Appendix I.\ Documentation of Generated Concepts}{47}{chapter*.23}%
-\contentsline {chapter}{Appendix II.\ Hardware Specifications and Parts Records}{50}{chapter*.34}%
-\contentsline {chapter}{Appendix II.\ Hardware Specifications and Parts Records}{59}{chapter*.49}%
-\contentsline {chapter}{Appendix II.\ Hardware Specifications and Parts Records}{68}{chapter*.64}%
-\contentsline {chapter}{Appendix II.\ Hardware Specifications and Parts Records}{77}{chapter*.79}%
-\contentsline {chapter}{Research\ Projects\ and\ Publications\ during\ Undergraduate\ Period}{86}{section*.93}%
-\contentsline {chapter}{Acknowledgements}{87}{section*.95}%
+\contentsline {chapter}{References}{47}{chapter*.22}%
+\contentsline {chapter}{Appendix I.\ Documentation of Generated Concepts}{49}{chapter*.24}%
+\contentsline {chapter}{Appendix II.\ Hardware Specifications and Parts Records}{52}{chapter*.35}%
+\contentsline {chapter}{Appendix II.\ Hardware Specifications and Parts Records}{61}{chapter*.50}%
+\contentsline {chapter}{Appendix II.\ Hardware Specifications and Parts Records}{70}{chapter*.65}%
+\contentsline {chapter}{Appendix II.\ Hardware Specifications and Parts Records}{79}{chapter*.80}%
+\contentsline {chapter}{Research\ Projects\ and\ Publications\ during\ Undergraduate\ Period}{88}{section*.94}%
+\contentsline {chapter}{Acknowledgements}{89}{section*.96}%
