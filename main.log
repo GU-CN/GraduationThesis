@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2026.7.27)  29 JUL 2026 00:33
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2026.7.27)  29 JUL 2026 02:19
 entering extended mode
  file:line:error style messages enabled.
  %&-line parsing enabled.
@@ -2322,12 +2322,17 @@ File: dr3-report/imgs/soft_gripper_finger_three_views.png Graphic file (type bmp
 
 ] [70] [71
 
-]) [72] (./contents/acknowledgements.tex) [73
+]) [72] (./contents/achievements.tex) [73
 
 
 
 
-] [74] (./contents/digest.tex)
+] (./contents/acknowledgements.tex) [74
+
+
+
+
+] [75] (./contents/digest.tex)
 \tf@thm=\write7
 \openout7 = `main.thm'.
 
@@ -2339,18 +2344,18 @@ File: dr3-report/imgs/soft_gripper_finger_three_views.png Graphic file (type bmp
 
 ] [2] [3] [4] [5] (./main.aux)
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 81969811CEA0889419A4727AB3E83AF9;25688.
+(rerunfilecheck)             Checksum: A5301D46FC3C2CA4E742F6C33DF01F3B;26062.
 Package logreq Info: Writing requests to 'main.run.xml'.
 \openout1 = `main.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 50269 strings out of 478151
- 1058010 string characters out of 5853000
- 1877888 words of memory out of 5000000
- 70030 multiletter control sequences out of 15000+600000
+ 50294 strings out of 478151
+ 1059549 string characters out of 5853000
+ 1879282 words of memory out of 5000000
+ 70053 multiletter control sequences out of 15000+600000
  569338 words of font info for 260 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  103i,14n,116p,1250b,7269s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on main.xdv (88 pages, 1805948 bytes).
+Output written on main.xdv (89 pages, 1809288 bytes).

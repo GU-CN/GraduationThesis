@@ -113,4 +113,5 @@
 \contentsline {chapter}{References}{59}{chapter*.25}%
 \contentsline {chapter}{Appendix I.\ Documentation of Generated Concepts}{61}{chapter*.27}%
 \contentsline {chapter}{Appendix II.\ Hardware Specifications and Parts Records}{64}{chapter*.38}%
-\contentsline {chapter}{Acknowledgements}{73}{section*.52}%
+\contentsline {chapter}{Research\ Projects\ and\ Publications\ during\ Undergraduate\ Period}{73}{section*.52}%
+\contentsline {chapter}{Acknowledgements}{74}{section*.54}%
