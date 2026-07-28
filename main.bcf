@@ -2900,6 +2900,7 @@
     <bcf:datasource type="file" datatype="bibtex" glob="false">refs.bib</bcf:datasource>
   </bcf:bibdata>
   <bcf:section number="0">
+<<<<<<< Updated upstream
     <bcf:citekey order="1">rt2</bcf:citekey>
     <bcf:citekey order="1">openvla</bcf:citekey>
     <bcf:citekey order="1">rdt1b</bcf:citekey>
@@ -2997,3 +2998,5 @@
                 labelalphanametemplatename="global">
   </bcf:datalist>
 </bcf:controlfile>
+=======
+>>>>>>> Stashed changes

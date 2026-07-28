@@ -38,6 +38,10 @@ INPUT /usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-xetex.def
 INPUT /usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-xetex.def
 INPUT /usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-xetex.def
 INPUT /usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-xetex.def
+<<<<<<< Updated upstream
+=======
+INPUT extractbb --version
+>>>>>>> Stashed changes
 INPUT /usr/share/texlive/texmf-dist/tex/latex/l3packages/xparse/xparse.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/l3packages/xparse/xparse.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/l3packages/xparse/xparse.sty
@@ -1598,6 +1602,7 @@ INPUT /usr/share/texlive/texmf-dist/tex/generic/gettitlestring/gettitlestring.st
 INPUT /usr/share/texlive/texmf-dist/tex/generic/gettitlestring/gettitlestring.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/kvoptions/kvoptions.sty
 INPUT /usr/share/texlive/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty
+<<<<<<< Updated upstream
 INPUT ./main.out
 INPUT main.out
 INPUT ./main.out
@@ -1608,17 +1613,22 @@ INPUT ./main.out
 INPUT main.out
 INPUT ./main.out
 INPUT ./main.out
+=======
+>>>>>>> Stashed changes
 OUTPUT main.out
 INPUT /usr/share/texlive/texmf-dist/tex/latex/biblatex/lbx/english.lbx
 INPUT /usr/share/texlive/texmf-dist/tex/latex/biblatex/lbx/english.lbx
 INPUT /usr/share/texlive/texmf-dist/tex/latex/biblatex/lbx/english.lbx
 OUTPUT main.bcf
+<<<<<<< Updated upstream
 INPUT main.bbl
 INPUT ./main.bbl
 INPUT main.bbl
 INPUT ./main.bbl
 INPUT ./main.bbl
 INPUT main.bbl
+=======
+>>>>>>> Stashed changes
 INPUT /usr/share/texlive/texmf-dist/tex/latex/graphics/color.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/translations/translations-basic-dictionary-english.trsl
 INPUT /usr/share/texlive/texmf-dist/tex/latex/translations/translations-basic-dictionary-english.trsl
@@ -1759,6 +1769,7 @@ INPUT contents/abstract.tex
 INPUT ./contents/abstract.tex
 INPUT ./contents/abstract.tex
 INPUT contents/abstract.tex
+<<<<<<< Updated upstream
 INPUT ./main.toc
 INPUT main.toc
 INPUT main.toc
@@ -1914,3 +1925,5 @@ INPUT ./main.out
 INPUT ./main.out
 INPUT main.run.xml
 OUTPUT main.run.xml
+=======
+>>>>>>> Stashed changes
