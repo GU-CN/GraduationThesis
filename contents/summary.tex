@@ -4,11 +4,11 @@
 
 \section{Discussion}
 
-This project developed a bimanual industrial manipulation system for representative 3C assembly operations. The final system integrates a dual-Franka Research~3 platform, GELLO-based demonstration collection, synchronized visual and proprioceptive data recording, task-compatible end effectors and fixtures, and an ACT-based policy deployment workflow. The design process remains traceable from customer requirements to engineering specifications, concept generation, concept selection, implementation, and validation.
+This project developed a bimanual industrial manipulation system for representative 3C assembly operations. The final system integrates a dual-Franka Research~3 platform, GELLO-based demonstration collection, synchronized visual and proprioceptive data recording, task-compatible end effectors and fixtures, and a unified $\pi_{0.5}$ VLA policy deployment workflow. The design process remains traceable from customer requirements to engineering specifications, concept generation, concept selection, implementation, and validation.
 
 A key outcome is that the bimanual manipulation task has been completed on the integrated real-robot setup. This confirms that the selected mechanical, sensing, data, and policy modules can operate together as a system rather than only as isolated components. The completed bimanual result also supports the original motivation of moving beyond single-arm demonstrations toward coordinated manipulation in a shared workcell.
 
-The main limitation is that the present implementation remains a bounded laboratory proof of concept. The task setup, workspace, initial conditions, and fixtures are controlled. The ACT controller provides a deployable imitation-learning baseline, while language-conditioned checkpoint selection, unified multi-task VLA inference, autonomous planning, and generalized recovery remain outside the demonstrated scope.
+The main limitation is that the present implementation remains a bounded laboratory proof of concept. The task setup, workspace, initial conditions, and fixtures are controlled. The unified $\pi_{0.5}$ controller has demonstrated language-conditioned multi-task bimanual inference with one jointly trained checkpoint, while robustness to substantially different scenes and instruction wording, autonomous task planning, and generalized failure recovery remain outside the demonstrated scope.
 
 
 \section{Conclusions}
@@ -76,5 +76,4 @@ To avoid expanding the project before its present weaknesses are resolved, futur
 \end{enumerate}
 
 This sequence preserves a measurable baseline while progressively addressing the main limitation revealed by the final validation. It also gives future teams a clear separation between documentation work, engineering redesign, learning-system experiments, and higher-level research extensions.
-
 
