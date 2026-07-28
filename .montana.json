@@ -6,7 +6,7 @@
   "githubBranch": "cursor/five-authors-cover-a987",
   "mainFile": "main.tex",
   "createdAt": "2026-07-27T09:42:12.184Z",
-  "updatedAt": "2026-07-28T10:35:45.678Z",
+  "updatedAt": "2026-07-28T10:40:24.935Z",
   "lastPullAt": "2026-07-27T16:25:39.715Z",
   "lastPushAt": "2026-07-28T10:35:45.678Z",
   "collaborators": [
@@ -26,5 +26,6 @@
     "token": "9432a936078f405088ff36470b6605a2",
     "role": "write",
     "createdAt": "2026-07-27T14:28:04.928Z"
-  }
+  },
+  "lastSyncError": "GitHub 克隆失败：error: cannot pull with rebase: You have unstaged changes.\nerror: please commit or stash them.\n"
 }
