@@ -4,15 +4,97 @@
 
 \chapter{Final design and implementation}\label{chap:final-design}
 
-\section{Selected concept description}
+\section{Final design and engineering changes}
 
 \subsection{Design evolution from the DR3 baseline}
 
 The final implementation retains the modular physical architecture selected in Design Review~3 (DR3), but the learning system and demonstrated scope have changed substantially. DR3 proposed a dual-Franka Research~3 (FR3) workcell, GELLO demonstration collection, two wrist cameras and one overhead camera, custom compliant fingers, a LeRobot dataset, and an imitation-learning policy. At that stage, Action Chunking with Transformers (ACT) and task-specific checkpoints were the deployable baseline. Language-conditioned bimanual control was a future objective.
 
-The completed system replaces the task-specific ACT controller with the LeRobot implementation of $\pi_{0.5}$. It uses two FR3 arms, two grippers, three RGB views, a 16-dimensional bilateral state and action interface, and one jointly trained multi-task checkpoint. The three tasks are selected by natural-language instructions rather than by manually loading three independent policy files. ACT therefore remains part of the design history and concept-selection evidence, but it is not presented as the final controller.
+The completed system replaces the task-specific ACT controller with the LeRobot implementation of $\pi_{0.5}$. It uses two FR3 arms, two grippers, three RGB views, a 16-dimensional bilateral state and action interface, and one jointly trained multi-task checkpoint. The three tasks are selected by natural-language instructions rather than by manually loading three independent policy files. The final physical evaluation used the 65,000-step checkpoint selected by the task-balanced offline validation rule. ACT therefore remains part of the design history and concept-selection evidence, but it is not presented as the final controller.
 
 The mechanical elements selected in DR3 remain directly relevant. The two FR3 arms provide a common kinematic and controller interface, and the two GELLO leaders provide matched bilateral demonstration inputs. The wrist and overhead cameras provide complementary local and global views. The 3D-printed compliant fingers provide a task-compatible contact interface. The later policy update changes how these modules are connected and trained, but does not remove the need for their original engineering analysis.
+
+\subsection{Engineering Change Notice from DR3 to the final prototype}
+
+Table~\ref{tab:ch4-ecn} records the material changes between the DR3 baseline
+and the implemented prototype. The purpose of this Engineering Change Notice
+(ECN) is not to restate the project history. It identifies which interfaces
+changed, why the change was accepted, which evidence verifies the final state,
+and which limitation remains after implementation.
+
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{2.5pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{
+  >{\centering\arraybackslash}p{0.07\textwidth}
+  >{\raggedright\arraybackslash}p{0.18\textwidth}
+  >{\raggedright\arraybackslash}p{0.20\textwidth}
+  >{\raggedright\arraybackslash}p{0.23\textwidth}
+  >{\raggedright\arraybackslash}p{0.24\textwidth}}
+  \caption{Engineering Change Notice from the DR3 baseline to the final prototype}
+  \label{tab:ch4-ecn}\\
+  \toprule
+  \textbf{ECN} & \textbf{DR3 baseline} & \textbf{Final implemented state} &
+  \textbf{Reason and affected interface} & \textbf{Verification and residual risk} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{ECN} & \textbf{DR3 baseline} & \textbf{Final implemented state} &
+  \textbf{Reason and affected interface} & \textbf{Verification and residual risk} \\
+  \midrule
+  \endhead
+  01 &
+  Task-specific ACT checkpoints selected by the operator. &
+  One language-conditioned LeRobot $\pi_{0.5}$ checkpoint is shared by all three tasks. &
+  The change removes manual policy-file switching and makes the instruction, three images, and bilateral state one common policy input. &
+  The 65,000-step checkpoint completed all three physical tasks. No matched ACT trial set was run, so comparative superiority is not claimed. \\
+  02 &
+  Single-arm and staged validation evidence was used while the dual-arm route remained the target architecture. &
+  Two FR3 arms and two grippers are represented by one 16-dimensional bilateral state and one 16-dimensional absolute action. &
+  The data, model adapter, and robot adapter now use the same \(7+1+7+1\) ordering. &
+  Dataset metadata, checkpoint configuration, dry runs, and physical trials verify the interface. Exact base poses and swept-volume geometry remain documentation gaps. \\
+  03 &
+  Earlier policy work used task-specific datasets and did not establish a common multi-task sampler. &
+  \texttt{dual\_ring}, \texttt{dual\_socket}, and \texttt{dual\_ram} are trained jointly with equal task probability. &
+  Equal task probability prevents the ring dataset, which has the most frames, from dominating task selection during training. &
+  The dataset manifest and sampler configuration verify the three-task scope. The compatible \texttt{dual\_socket2} directory was not included. \\
+  04 &
+  Manual checkpoint identity was coupled to the selected task. &
+  Checkpoint selection uses the unweighted macro flow-matching loss of the three tasks; step 65,000 is selected. &
+  A task-balanced offline rule is used before physical testing, avoiding selection from the final 75 task outcomes. &
+  Step 65,000 has macro loss 0.036552. Offline loss remains a model-selection quantity, not a physical success metric. \\
+  05 &
+  ACT predicted a 32-step chunk and the earlier executor operated under a different policy-specific temporal interface. &
+  $\pi_{0.5}$ predicts 50 actions and the executor consumes the first 10 at the configured 5~Hz cadence before replanning. &
+  The longer prediction horizon supplies temporal context while the shorter executed segment limits open-loop motion. &
+  Shape and queue behavior are verified in dry runs and deployment. End-to-end query latency was not measured. \\
+  06 &
+  DR3 listed planned ES1--ES6 validation activities. &
+  The final report contains completed ES1--ES6 results and 75 counted end-to-end task trials. &
+  The validation record now separates planning, task execution, detection, pose error, failure detection, and recovery rather than treating one aggregate rate as complete validation. &
+  Chapter~\ref{chap:validation} reports denominators and pass/fail judgments. The ES4 raw error series is unavailable and is not reconstructed. \\
+  07 &
+  The current controller and source state were described primarily by a repository branch and intended scripts. &
+  The report records the actual local training files, environment versions, file hashes, checkpoint assets, and uncommitted-source risk. &
+  Software, model weights, normalization assets, and run configuration are treated as virtual implementation materials. &
+  The final checkpoint is portable, but the Git commit alone cannot reproduce the training run because relevant files were untracked or locally modified. \\
+  08 &
+  The proof-of-concept budget emphasized zero incremental cash expenditure. &
+  The final budget separates zero additional cash cost from in-kind robots, cameras, compute, storage, fabrication, software, and labour. &
+  The distinction prevents a laboratory system from being represented as having zero economic value. &
+  The resource categories are recorded; replacement values, print time, energy, and labour were not supplied. \\
+  \bottomrule
+\end{longtable}
+\endgroup
+
+The ECN shows that the central architectural change is concentrated in the
+learning and validation layers. The two-arm mechanical platform, sensing
+layout, demonstration interface, compliant fingers, and deterministic
+robot-side protection remain continuous with DR3. This continuity makes the
+physical workcell a controlled basis for evaluating the new policy route, but
+it does not create a controlled ACT-versus-\(\pi_{0.5}\) comparison because the
+earlier and final controllers were not tested under one matched protocol.
 
 \subsection{Overall system architecture}
 
@@ -30,10 +112,90 @@ Figure~\ref{fig:ch4-pi05-architecture} summarizes the final $\pi_{0.5}$ training
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.98\textwidth]{figures/overview_workflow_gai.png}
-  \caption{The $\pi_{0.5}$ model architecture for language-conditioned bimanual manipulation. Multi-view visual observations, a task instruction, and the 16-dimensional bilateral robot state condition the adapted model, which produces continuous action chunks for both FR3 arms and grippers.}
+  \includegraphics[width=0.98\textwidth]{figures/final_pi05_system_overview.png}
+  \caption{Final $\pi_{0.5}$ system overview for language-conditioned bimanual manipulation. Three camera views, a task instruction, and the 16-dimensional bilateral robot state condition the frozen vision-language backbone and the adapted robot-action path, which produces continuous absolute joint and gripper action chunks for both FR3 arms.}
   \label{fig:ch4-pi05-architecture}
 \end{figure}
+
+\subsection{VLA input--output formulation and notation}
+
+The final controller can be expressed as a conditional visual-language-action
+policy. At decision time \(t\), the visual observation is the ordered set
+\begin{equation}
+  \mathcal I_t=
+  \left\{
+  \mathbf I_t^{\mathrm{overhead}},
+  \mathbf I_t^{\mathrm{left}},
+  \mathbf I_t^{\mathrm{right}}
+  \right\},
+  \label{eq:ch4-multiview-observation}
+\end{equation}
+the language instruction is \(\ell\), and the bilateral proprioceptive state is
+\(\mathbf s_t\in\mathbb R^{16}\). The learned policy maps these conditions to a
+50-step bilateral action chunk:
+\begin{equation}
+  \widehat{\mathbf A}_{t:t+H-1}
+  =
+  \pi_\theta\!\left(\mathcal I_t,\ell,\mathbf s_t\right),
+  \qquad
+  \widehat{\mathbf A}_{t:t+H-1}
+  \in\mathbb R^{H\times16},
+  \qquad H=50.
+  \label{eq:ch4-vla-policy}
+\end{equation}
+Each row contains the absolute targets for seven left-arm joints, the left
+gripper, seven right-arm joints, and the right gripper. Equation
+\ref{eq:ch4-vla-policy} is the system-level VLA contract; it does not imply that
+the model directly controls joint torque or bypasses the FR3 low-level
+controllers.
+
+The executor applies only the first \(h=10\) rows:
+\begin{equation}
+  \widehat{\mathbf a}_{t+j}
+  =
+  \left[
+  \widehat{\mathbf A}_{t:t+H-1}
+  \right]_{j,:},
+  \qquad j=0,\ldots,h-1,
+  \qquad h=10,
+  \label{eq:ch4-receding-horizon}
+\end{equation}
+then acquires a new \(\mathcal I_{t+h}\) and \(\mathbf s_{t+h}\) and queries the
+policy again. The predicted horizon is therefore longer than the executed
+segment. This receding-horizon use of action chunks limits the amount of motion
+committed before visual and proprioceptive feedback is refreshed.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Principal symbols used in the $\pi_{0.5}$ design and validation equations}
+  \label{tab:ch4-symbols}
+  \small
+  \begin{tabularx}{\textwidth}{
+    >{\centering\arraybackslash}p{0.16\textwidth}
+    >{\raggedright\arraybackslash}p{0.22\textwidth}
+    X}
+    \toprule
+    \textbf{Symbol} & \textbf{Dimension or domain} & \textbf{Meaning} \\
+    \midrule
+    \(t\) & decision index or sampled flow time & Context-dependent time variable; the flow-time use is stated explicitly in the training subsection. \\
+    \(\mathcal I_t\) & three RGB images & Ordered overhead, left-wrist, and right-wrist visual observation. \\
+    \(\ell\) & token sequence & Natural-language task instruction supplied to the shared checkpoint. \\
+    \(\mathbf s_t\) & \(\mathbb R^{16}\) & Bilateral measured joint and gripper state. \\
+    \(\mathbf a_t\) & \(\mathbb R^{16}\) & One bilateral absolute joint/gripper target. \\
+    \(\widehat{\mathbf A}_{t:t+H-1}\) & \(\mathbb R^{H\times16}\) & Predicted bilateral action chunk. \\
+    \(H\) & 50 action steps & Model prediction horizon. \\
+    \(h\) & 10 action steps & Number of actions consumed before re-observation. \\
+    \(\theta\) & model parameters & Parameters of the conditional $\pi_{0.5}$ policy; only the action path and projections are trained in the final run. \\
+    \(\boldsymbol\epsilon\) & \(\mathbb R^{50\times16}\) & Gaussian noise used by the flow-matching objective. \\
+    \(\mathbf x_t\) & \(\mathbb R^{50\times16}\) & Noisy interpolated action state at sampled flow time \(t\). \\
+    \(\mathbf u_t\) & \(\mathbb R^{50\times16}\) & Target flow velocity \(\boldsymbol\epsilon-\mathbf a\). \\
+    \(\mathbf v_\theta\) & \(\mathbb R^{50\times16}\) & Action-expert velocity prediction. \\
+    \(\mathcal L_{\mathrm{FM}}\) & scalar & Normalized flow-matching training loss. \\
+    \(\mathcal L_{\mathrm{macro}}\) & scalar & Unweighted mean of ring, socket, and RAM validation losses. \\
+    \(\widehat p\) & \([0,1]\) & Observed success proportion \(x/n\) in Chapter~\ref{chap:validation}. \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
 
 \subsection{Selected module concepts}
 
@@ -354,6 +516,117 @@ The remaining 72 episodes per task are used for training. Splitting by episode p
 
 The tasks are sampled with equal probability during training. Task selection occurs before sample selection, so \texttt{dual\_ring} does not receive a larger task-level probability merely because it contains more frames. This choice balances the three instructions and prevents the longest average trajectory from dominating the gradient updates.
 
+\subsection{Dataset inclusion boundary and language-prompt contract}
+
+The final checkpoint is a three-dataset model. A fourth local directory,
+\texttt{dual\_socket2}, contains the same LeRobot Dataset v3.0 feature schema
+and 80 episodes, but it is not enumerated by the training program used for the
+reported run. It therefore contributes no frame to the normalizer, sampler,
+optimizer updates, validation loss, checkpoint selection, or physical result.
+Schema compatibility is not evidence of use. Table~\ref{tab:ch4-dataset-scope}
+records this boundary explicitly.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Dataset and instruction scope of the deployed $\pi_{0.5}$ checkpoint}
+  \label{tab:ch4-dataset-scope}
+  \footnotesize
+  \begin{tabularx}{\textwidth}{
+    >{\raggedright\arraybackslash}p{0.16\textwidth}
+    >{\centering\arraybackslash}p{0.10\textwidth}
+    >{\centering\arraybackslash}p{0.13\textwidth}
+    X}
+    \toprule
+    \textbf{Directory} & \textbf{Episodes} & \textbf{Used} &
+    \textbf{Training instruction or exclusion} \\
+    \midrule
+    \texttt{dual\_ring} & 80 & Yes &
+    First, push the can to the middle, then pick up the black ring with the handle, put it over the can, and set it down. \\
+    \texttt{dual\_socket} & 80 & Yes &
+    Push the box with the power socket to the middle, then pick up the plug and insert it into the socket. \\
+    \texttt{dual\_ram} & 80 & Yes &
+    Pull the computer motherboard closer, then remove the memory module and place it in the yellow tray. \\
+    \texttt{dual\_socket2} & 80 & No &
+    Compatible local data directory, but absent from the task-prompt map and from the reported training, statistics, validation, and checkpoint. \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+The raw \texttt{tasks.parquet} metadata in each used directory contains the
+generic source task \texttt{franka\_gello\_teleop}. During loading,
+\texttt{PromptDataset} replaces that generic value with the task-specific
+instruction in Table~\ref{tab:ch4-dataset-scope}. The prompt is consequently
+part of the executable training configuration rather than an informal caption
+added after data collection. Deployment uses the same instruction wording.
+
+If \texttt{dual\_socket2} is added in a later experiment, its statistical and
+sampling role must be decided before training. Treating four directories as
+four equal sampler groups would give the two socket directories a combined
+50\% task probability. Treating them as two sources of one semantic socket
+task would instead require a hierarchical sampler so that ring, socket, and
+RAM remain approximately one third each. Either choice also requires new
+normalization statistics, validation reporting, checkpoint selection, and
+physical evaluation; the present 65,000-step result cannot be re-labelled as a
+four-dataset experiment.
+
+\subsection{Training statistics and task-balanced sampling}
+
+The action and state normalizers are calculated from the 107,740 training
+frames obtained after the episode split. For every real state and action
+dimension, the implementation records the count, minimum, maximum, mean,
+standard deviation, and the 1st, 10th, 50th, 90th, and 99th percentiles. State
+and action use quantile normalization, while images use the identity numeric
+normalizer after pixel preprocessing.
+
+For a scalar feature \(x_d\) in dimension \(d\), the implemented quantile
+mapping can be represented by
+\begin{equation}
+  \widetilde x_d
+  =
+  2\,
+  \operatorname{clip}
+  \left(
+  \frac{x_d-Q_{0.01,d}}
+       {Q_{0.99,d}-Q_{0.01,d}},
+  0,1
+  \right)
+  -1,
+  \label{eq:ch4-quantile-normalization}
+\end{equation}
+where \(Q_{0.01,d}\) and \(Q_{0.99,d}\) are computed from training frames only.
+The postprocessor applies the corresponding inverse scaling to predicted
+actions. Extreme values outside the stored quantile range are clipped for the
+model representation; the robot adapter still performs independent finite,
+joint, gripper, and workspace checks after unnormalization.
+
+The normalizer pools frames, but the sampler balances tasks. If
+\(N_k\) is the number of training frames in task \(k\), each sample in that
+task receives weight
+\begin{equation}
+  w_{k,i}=\frac{1}{N_k}.
+  \label{eq:ch4-balanced-sample-weight}
+\end{equation}
+The total weight of each task is then
+\(\sum_{i=1}^{N_k} w_{k,i}=1\). With replacement enabled, the expected
+long-run sampler share is one third for ring, socket, and RAM, even though
+their frame counts differ. At batch size~4, 100,000 optimizer steps process
+approximately 400,000 sampled training items; the expected count is therefore
+about 133,000 items per task, subject to sampling variation.
+
+This distinction matters. Quantile statistics are influenced by the number of
+frames in each directory, so the longer ring trajectories contribute more
+values to the pooled distribution. Gradient sampling, by contrast, gives the
+three semantic tasks equal expected probability. The design protects task
+balance at the optimizer interface without claiming that the normalization
+statistics are task-equal.
+
+For offline validation, the program fixes at most 64 batches per task. With
+batch size~4, each validation point uses at most 256 frames from each task,
+selected reproducibly at program start. The resulting per-task loss and their
+unweighted macro-average are suitable for comparing checkpoints under this
+fixed procedure. They do not summarize every validation frame, and they do not
+measure real-robot task completion.
+
 \subsection{\texorpdfstring{$\pi_{0.5}$}{pi0.5} base model and software configuration}
 
 The final controller uses the official \texttt{pi05\_base} model. The upstream checkpoint is identified by
@@ -367,6 +640,120 @@ The project uses LeRobot~0.5.2 with local project modifications. The base commit
 \small\texttt{dc06dba9d6220ab99c94e83ec7f0d45a35b44bed}.
 \end{center}
 The dataset format is LeRobot Dataset v3.0. Training is executed on physical GPU~1 of an NVIDIA RTX~A6000 with 48~GB of memory.
+
+\subsection{Model input construction and state--language representation}
+
+The base configuration has a model-side action dimension of 32 and an action
+horizon of 50. Project state and action are only 16-dimensional, so the
+preprocessor pads entries 16--31 with zeros and preserves the physical values
+in entries 0--15. Loss is evaluated only over the real 16 dimensions, and the
+deployment adapter removes the padded tail before any robot command is formed.
+
+The numeric state is quantile-normalized to approximately \([-1,1]\), then
+discretized into 256 bins. The resulting state tokens are placed beside the
+task instruction in the model prompt:
+\begin{quote}
+\small\ttfamily
+Task: <task instruction>, State: <discretized state tokens>;\\
+Action:
+\end{quote}
+The PaliGemma SentencePiece tokenizer uses right padding and a maximum sequence
+length of 200 tokens. This representation makes the task instruction and
+current bilateral state jointly available to the model, but the final physical
+experiment does not isolate their individual effects. Because each visually
+distinct scene was paired with its expected instruction, the evidence supports
+a language-conditioned unified interface rather than a claim that language
+alone determines the selected behavior.
+
+The three camera images are supplied in the fixed order
+\(\{\texttt{cam\_left},\texttt{cam\_front},\texttt{cam\_right}\}\). Each image
+is resized and padded by the image-preprocessing pipeline described above, then mapped from
+\([0,1]\) to \([-1,1]\). No camera slot is empty in the final configuration.
+The preprocessor rejects a missing feature name rather than silently replacing
+one of the three deployed views.
+
+\subsection{Flow-matching training objective}
+
+The action expert is trained with a conditional flow-matching objective. Let
+\(\mathbf a\in\mathbb R^{50\times16}\) be the normalized demonstrated action
+chunk and let
+\(\boldsymbol\epsilon\sim\mathcal N(\mathbf 0,\mathbf I)\) be an equally shaped
+Gaussian-noise sample. A time value is sampled from
+\[
+t_0\sim\operatorname{Beta}(1.5,1.0),
+\qquad
+t=0.999t_0+0.001.
+\]
+The interpolated action state is
+\begin{equation}
+  \mathbf x_t=t\boldsymbol\epsilon+(1-t)\mathbf a,
+  \label{eq:ch4-flow-state}
+\end{equation}
+and the target velocity is
+\begin{equation}
+  \mathbf u_t=\boldsymbol\epsilon-\mathbf a.
+  \label{eq:ch4-flow-target}
+\end{equation}
+Conditioned on the three images, task/state tokens, and \(t\), the action
+expert predicts \(\mathbf v_\theta(\mathbf x_t,t)\). The implemented loss is
+\begin{equation}
+  \mathcal L_{\mathrm{FM}}
+  =
+  \frac{1}{B\cdot50\cdot16}
+  \sum_{b=1}^{B}
+  \sum_{\tau=1}^{50}
+  \sum_{d=1}^{16}
+  \left(
+  u_{b,\tau,d}
+  -
+  v_{\theta,b,\tau,d}
+  \right)^2.
+  \label{eq:ch4-flow-loss}
+\end{equation}
+Padding dimensions are not used to improve the reported value. The loss is
+calculated in normalized action space and is therefore dimensionless. It is
+not joint error in radians, gripper-width error in metres, Cartesian pose
+error, insertion error, or task success. This distinction controls the
+checkpoint discussion in Chapter~\ref{chap:validation}.
+
+\subsection{Adaptation scope and trainable parameters}
+
+The final run uses action-expert-only adaptation. The entire PaliGemma
+vision-language component, including the SigLIP visual encoder, remains frozen.
+Trainable names are restricted to the Gemma action expert and the action/time
+projection modules. No LoRA or other PEFT adapter is used in this LeRobot
+experiment.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Parameter and optimization scope of the final LeRobot $\pi_{0.5}$ run}
+  \label{tab:ch4-training-scope}
+  \small
+  \begin{tabularx}{\textwidth}{p{0.31\textwidth}X}
+    \toprule
+    \textbf{Item} & \textbf{Implemented scope} \\
+    \midrule
+    Frozen parameters & 3,449,982,704 parameters in the PaliGemma vision-language component \\
+    Trainable parameters & 693,422,112 parameters in the action expert and action/time projections \\
+    Total parameters & 4,143,404,816 \\
+    Parameter-efficient adapter & None; parameter names containing LoRA are rejected \\
+    Image augmentation & Disabled for the reported run \\
+    Gradient checkpointing & Disabled \\
+    Automatic mixed precision & Disabled; model weights use \texttt{bfloat16} as configured \\
+    Compilation & \texttt{torch.compile} disabled \\
+    Relative-action conversion & Disabled in preprocessing and postprocessing \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+The parameter count clarifies what ``fine-tuning'' means in this report. The
+final controller is not trained from random initialization and the full
+vision-language backbone is not updated. The experiment adapts the action
+generation path to the project camera/state/action contract while preserving
+the base representation. A separate OpenPI/JAX socket experiment contains
+LoRA parameters and an eight-dimensional single-arm state/action record, but
+it is not the source of the deployed dual-arm checkpoint and is excluded from
+the final design claim.
 
 \subsection{Training procedure}
 
@@ -400,6 +787,53 @@ The three tasks are trained jointly for 100,000 optimizer steps. Batch size is 4
 The training configuration deliberately separates task balancing from frame count. The action and state normalizers are derived from the training data only. Validation episodes are not used to compute model updates. The same action representation and
 \texttt{use\_relative\_actions\allowbreak=false}
 setting are retained when the selected checkpoint is loaded for deployment.
+
+\subsection{Optimizer schedule, runtime, and checkpoint package}
+
+AdamW uses
+\(\beta_1=0.9\), \(\beta_2=0.95\), \(\epsilon=10^{-8}\), weight decay 0.01,
+and global gradient-norm clipping at 1.0. During the first 1,000 optimizer
+steps, the learning rate increases to \(2.5\times10^{-5}\). Cosine decay then
+reduces it to \(2.5\times10^{-6}\) at step 100,000. One iteration executes
+preprocessing, gradient reset, forward loss calculation, backpropagation,
+gradient clipping, optimizer update, and scheduler update in that order.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Measured training resource use and checkpoint storage}
+  \label{tab:ch4-training-resources}
+  \small
+  \begin{tabularx}{\textwidth}{p{0.32\textwidth}X}
+    \toprule
+    \textbf{Resource or artifact} & \textbf{Recorded value} \\
+    \midrule
+    Complete-run elapsed time & 17~h 01~min 17~s \\
+    Typical optimizer-step time & Approximately 0.60~s at batch size~4 \\
+    Maximum allocated GPU memory & 23.49~GiB \\
+    Final training-window loss & 0.028063; not the checkpoint-selection metric \\
+    Checkpoint interval & Every 5,000 steps from 5,000 through 100,000 \\
+    Number of complete checkpoints & 20 \\
+    Approximate output-directory size & 216~GB \\
+    Model file per checkpoint & Approximately 9.35~GB \\
+    Optimizer state per checkpoint & Approximately 2.20~GB \\
+    Selected checkpoint & Step 65,000, chosen by held-out macro loss \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+Each checkpoint contains the policy configuration, complete model weights,
+preprocessor and postprocessor definitions, quantile normalizers, the
+PaliGemma tokenizer asset, the multi-task manifest, optimizer state, scheduler
+state, random-number-generator state, and training step. The early processor
+configuration used an absolute tokenizer path. A portability repair copied the
+tokenizer model into each checkpoint and rewrote the processor reference to a
+relative file. The watcher verified the repair through step 100,000.
+
+Saving complete model and optimizer states supports continuation and auditing,
+but it has a substantial storage cost. It also does not, by itself, make the
+experiment fully reproducible: model artifacts preserve the trained state,
+whereas source, environment, data identity, and base-weight provenance
+determine whether the state can be recreated.
 
 \subsection{Validation and checkpoint selection}
 
@@ -629,7 +1063,7 @@ Table~\ref{tab:ch4-system-component-summary} retains only the system-level compo
   \end{tabularx}
 \end{table}
 
-\section{Manufacturing and implementation plan}
+\section{Prototype manufacturing and implementation}
 
 \subsection{Implementation scope}
 
@@ -761,9 +1195,91 @@ Table~\ref{tab:ch4-budget} separates the reported incremental cash cost from the
 
 The CNY~0 value is therefore an incremental cash figure, not the total system value. A full economic budget would require the purchase or replacement value of two FR3 systems, two GELLO assemblies, three cameras, the GPU workstation, storage, safety hardware, print material, print time, labour, and energy. Those values were not included in the supplied DR3 or final implementation record and should be added only from invoices or the laboratory asset register.
 
+\subsection{Software, environment, and checkpoint provenance}
+
+The project records Git
+\texttt{HEAD=dc06dba9d6220ab99c94e83ec7f0d45a35b44bed}, but that identifier is
+only the base repository state. At inspection time, the index contained
+approximately 705 staged deletions, the current project files appeared again
+as untracked files, and the final $\pi_{0.5}$ training program was itself
+untracked. The commit therefore cannot be cited as a complete source snapshot
+for the 100,000-step run.
+
+To make the inspected implementation identifiable even without a clean commit,
+Table~\ref{tab:ch4-source-hashes} records hashes for the training path that
+produced the final experiment.
+
+\begingroup
+\footnotesize
+\begin{longtable}{
+  >{\raggedright\arraybackslash}p{0.40\textwidth}
+  >{\ttfamily\raggedright\arraybackslash}p{0.52\textwidth}}
+  \caption{SHA-256 identifiers for key $\pi_{0.5}$ implementation files}
+  \label{tab:ch4-source-hashes}\\
+  \toprule
+  \textbf{Project-relative file} & \textbf{SHA-256} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Project-relative file} & \textbf{SHA-256} \\
+  \midrule
+  \endhead
+  \texttt{train/train\_lerobot\_pi05\_multitask.py} &
+  83d3ddbb4319dc225701cb8f236cbfea77b6d7d61ebfc7d0b994244ef092b8b8 \\
+  \texttt{scripts/train\_dual\_pi05\_multitask.sh} &
+  05c717449929362d84f1b1068c97fd02939bc7a71616fc1329f0c7daa114799c \\
+  \texttt{scripts/train\_dual\_pi05\_multitask.sbatch} &
+  a6d862671837ff11c1d2c50f9f76549eab2afbfb606e988834e6f5613462550d \\
+  \texttt{configuration\_pi05.py} &
+  c66dfddc27557dd89a1cabd1354f041923bfcb541d348185a9a1af7fab643a8b \\
+  \texttt{modeling\_pi05.py} &
+  263a2c1e40e5a1cf0ab0808f149a1a383b337c0ace4bddff15e26119449648f9 \\
+  \texttt{processor\_pi05.py} &
+  ca9cca8d54a681e13072b3acfb557f7b8e77c37ac4452bdbc4f9e1773dd43dea \\
+  \bottomrule
+\end{longtable}
+\endgroup
+
+The observed training environment used Python~3.12.13,
+LeRobot~0.5.2, PyTorch~2.10.0+\texttt{cu128}, and
+Transformers~5.3.0. The supplied \texttt{environment.yml} does not lock this
+complete stack. The converted base weights are present locally, but the
+download identifier and conversion command were not retained with the run.
+The final reproducibility claim is consequently partial: the checkpoint and
+key files are identifiable and deployable, but recreating the same training
+state from the repository alone is not yet guaranteed.
+
+\subsection{Reproduction checklist for the final configuration}
+
+A future release should treat the physical and virtual assets as one versioned
+prototype package. At minimum, reproduction of the final configuration
+requires the following checks:
+\begin{enumerate}
+  \item archive the exact hashed training, processor, executor, and deployment
+        files under one clean commit;
+  \item export a complete environment lock including CUDA-dependent packages;
+  \item record the upstream base-checkpoint identifier and conversion command;
+  \item preserve the three used dataset versions, prompts, episode indices,
+        normalization statistics, and the explicit \texttt{dual\_socket2}
+        exclusion;
+  \item retain the step-65,000 checkpoint, its tokenizer, processors,
+        multi-task manifest, and training state;
+  \item record camera identities, bilateral feature ordering, absolute-action
+        convention, chunk settings, and robot-side limits;
+  \item perform a no-motion policy dry run before enabling either FR3 command
+        path; and
+  \item reproduce the Chapter~\ref{chap:validation} trial definitions without
+        using the reported outcomes to alter the checkpoint.
+\end{enumerate}
+
+Items such as exact base poses, camera extrinsics, print settings, fixture
+coordinates, and measured latency remain necessary for a stronger
+reproduction package. They are listed as gaps rather than filled with inferred
+values.
+
 \subsection{Current implementation status and remaining documentation}
 
-The final implementation now includes dual-arm state and action handling, three RGB inputs, LeRobot Dataset v3.0 data, one jointly trained $\pi_{0.5}$ checkpoint, equal-probability three-task sampling, the defined episode-level validation split, macro flow-matching checkpoint selection, and a 5~Hz absolute-action deployment interface. The selected DR3 hardware modules and engineering drawings have been retained in this chapter.
+The final implementation now includes dual-arm state and action handling, three RGB inputs, LeRobot Dataset v3.0 data, one jointly trained $\pi_{0.5}$ checkpoint, equal-probability three-task sampling, the defined episode-level validation split, macro flow-matching checkpoint selection, and a 5~Hz absolute-action deployment interface. The deployed artifact is the step-65,000 checkpoint; the later step-100,000 checkpoint is retained as the final training state but is not re-labelled as the validation optimum. The selected DR3 hardware modules and engineering drawings have been retained in this chapter.
 
 Several quantities remain documentation gaps rather than model-design gaps. They include measured FR3 base poses, camera extrinsics and mounting distances, dimensioned fixture locations, ring and can clearances, and final socket insertion clearance and depth. They also include motherboard and memory-module clearances, measured gripper force--deflection behaviour, TPU print settings, print mass and time, full in-kind asset value, and measured end-to-end latency. These values should be added if the report is expected to make production-level tolerance, structural, timing, or economic claims.
 

@@ -22,7 +22,7 @@ The final controller is the LeRobot implementation of $\pi_{0.5}$, initialized f
 
 The project objective is to establish an end-to-end engineering pipeline for bounded bimanual industrial-manipulation experiments. This pipeline includes hardware integration, packet-associated multi-camera sensing, bilateral teleoperated demonstration collection, LeRobot Dataset v3.0 preparation, joint multi-task $\pi_{0.5}$ fine-tuning, language-conditioned deployment, and repeatable physical validation of the three scoped tasks.
 
-The engineering acceptance targets inherited from the design-specification stage are planning success above 90\%, task execution success above 70\%, component detection accuracy above 90\%, pose error below 20\,mm, failure-detection rate above 90\%, and recovery success above 70\%. These values define validation thresholds rather than performance claims. Because the implemented $\pi_{0.5}$ policy is an end-to-end controller without separate planning, detection, pose-estimation, or learned recovery modules, Chapter~\ref{chap:validation} distinguishes directly measurable end-to-end task outcomes from design-stage targets that are not independently observable in the final architecture.
+The engineering acceptance targets inherited from the design-specification stage are planning success above 90\%, task execution success above 70\%, component detection accuracy above 90\%, pose error below 20\,mm, failure-detection rate above 90\%, and recovery success above 70\%. These values define the acceptance thresholds used by the final validation rather than assumed performance. Chapter~\ref{chap:validation} reports separate 25-experiment tests for planning, detection, pose error, failure detection, and recovery, together with 75 counted end-to-end task trials. Their denominators and operational definitions remain separate so that an intermediate result cannot be substituted for complete physical task success.
 
 \section{Main contributions}
 
@@ -32,7 +32,7 @@ The main contributions of this thesis are as follows:
   \item A dual-FR3 manipulation platform is specified and integrated with GELLO teleoperation, synchronized camera sensing, robot-state recording, and task-compatible end effectors and fixtures.
   \item A reproducible data and learning pipeline converts 240 bilateral teleoperated episodes into three LeRobot Dataset v3.0 task datasets with episode-level training and validation splits, equal-probability task sampling, and a common absolute-action representation.
   \item A single language-conditioned LeRobot $\pi_{0.5}$ checkpoint is fine-tuned and deployed for three bimanual tasks using three RGB views, a 16-dimensional bilateral state, and a 16-dimensional bilateral action interface.
-  \item A scoped physical-validation framework defines task-specific terminal conditions, run-termination rules, and end-to-end evaluation procedures for the ring, socket, and memory-module tasks.
+  \item A specification-led physical-validation framework maps ES1--ES6 to explicit operational definitions, separate denominators, task-specific terminal conditions, uncertainty estimates, failure stages, and pass/fail judgments.
   \item A traceable engineering process links customer requirements and quality function deployment to concept generation, module selection, implementation decisions, and validation criteria.
 \end{enumerate}
 

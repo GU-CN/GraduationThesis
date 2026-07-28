@@ -5,14 +5,133 @@
 
 \section{Validation objectives and scope}
 
-The validation evaluates the final unified $\pi_{0.5}$ system described in Chapter~\ref{chap:final-design}. Its principal purpose is to determine whether one jointly trained checkpoint can execute the three documented bimanual tasks on the physical dual-FR3 workcell. The evaluation therefore separates two quantities that have different meanings:
+The validation evaluates the final unified $\pi_{0.5}$ system described in Chapter~\ref{chap:final-design}. Its principal purpose is to determine whether one jointly trained checkpoint can execute the three documented bimanual tasks on the physical dual-FR3 workcell and whether the completed prototype meets the six engineering specifications defined in Chapter~\ref{chap:design-spec}. The evaluation therefore separates three evidence families that have different meanings:
 \begin{enumerate}
   \item the offline normalized flow-matching loss used to select a checkpoint; and
-  \item the end-to-end physical task success rate measured after deployment.
+  \item the 25-trial planning, detection, pose-error, failure-detection, and recovery evaluations associated with ES1 and ES3--ES6; and
+  \item the end-to-end physical task success rate measured over 75 deployments for ES2.
 \end{enumerate}
-The first quantity measures agreement with held-out demonstration samples and is used only for model selection. The second measures whether a complete physical trial reaches the task-specific terminal condition in Table~\ref{tab:ch4-task-definitions}. A low validation loss is not treated as a substitute for physical task completion.
+The first quantity measures agreement with held-out demonstration samples and is used only for model selection. The second family evaluates defined intermediate engineering outcomes under separate 25-trial protocols. The third measures whether a complete physical trial reaches the task-specific terminal condition in Table~\ref{tab:ch4-task-definitions}. A low validation loss is not treated as a substitute for physical task completion, and a configured threshold is not treated as a measured result.
 
-The physical evaluation covers the three bounded task configurations used during final implementation: ring placement over a can, insertion of a two-pin plug into a two-hole socket, and memory-module removal from a motherboard followed by placement in a yellow tray. Each task was evaluated in 25 counted trials, giving 75 physical trials in total. The results establish performance within these prepared laboratory scenes; they do not by themselves demonstrate open-world object generalization, arbitrary language understanding, or production-line reliability.
+The physical ES2 evaluation covers the three bounded task configurations used during final implementation: ring placement over a can, insertion of a two-pin plug into a two-hole socket, and memory-module removal from a motherboard followed by placement in a yellow tray. Each task was evaluated in 25 counted trials, giving 75 physical trials in total. The ES1, ES3, ES4, ES5, and ES6 records each use 25 experiments under their own operational definitions. These populations are reported separately because their denominators and success events are not interchangeable. The results establish performance within the prepared laboratory workcell; they do not by themselves demonstrate open-world object generalization, arbitrary language understanding, certified safety, or production-line reliability.
+
+\section{Validation design and engineering-specification mapping}
+
+\subsection{Measurement rules and independent denominators}
+
+Table~\ref{tab:ch5-es-protocol} maps every design-stage specification to its
+final measurement rule. A rate is calculated from a binary outcome:
+\begin{equation}
+  \widehat p=\frac{x}{n},
+  \label{eq:ch5-rate-estimator}
+\end{equation}
+where \(x\) is the number of successful outcomes and \(n\) is the number of
+counted experiments for that specification. The project acceptance decision
+uses the observed point estimate \(\widehat p\) and the threshold defined in
+Table~\ref{tab:es}. Statistical intervals are reported later to show the
+uncertainty associated with small samples; they do not replace the project
+acceptance rule.
+
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{2.5pt}
+\renewcommand{\arraystretch}{1.10}
+\begin{longtable}{
+  >{\centering\arraybackslash}p{0.06\textwidth}
+  >{\raggedright\arraybackslash}p{0.18\textwidth}
+  >{\raggedright\arraybackslash}p{0.32\textwidth}
+  >{\centering\arraybackslash}p{0.11\textwidth}
+  >{\raggedright\arraybackslash}p{0.25\textwidth}}
+  \caption{Final validation protocol for engineering specifications ES1--ES6}
+  \label{tab:ch5-es-protocol}\\
+  \toprule
+  \textbf{ES} & \textbf{Metric and target} & \textbf{Counted success or measurement rule} &
+  \textbf{Test count} & \textbf{Exclusion and boundary} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{ES} & \textbf{Metric and target} & \textbf{Counted success or measurement rule} &
+  \textbf{Test count} & \textbf{Exclusion and boundary} \\
+  \midrule
+  \endhead
+  ES1 &
+  Planning success \(>90\%\) &
+  The task instruction, initialized scene, current observation, and loaded unified checkpoint form a valid executable plan before physical motion. &
+  25 &
+  A rejected initialization is not counted as a later execution success. This metric evaluates executable-plan formation under the prepared scenes, not general autonomous planning. \\
+  ES2 &
+  Task execution \(>70\%\) &
+  A complete autonomous run reaches the task-specific terminal condition in Table~\ref{tab:ch4-task-definitions} without corrective assistance after start. &
+  75 total; 25 per task &
+  Partial completion and assisted completion are failures. Overall and per-task values are both retained. \\
+  ES3 &
+  Component detection \(>90\%\) &
+  The required component for the active task is correctly identified in the evaluated observation. &
+  25 &
+  The result applies to the documented objects and camera arrangement. It is not an arbitrary-object detection benchmark. \\
+  ES4 &
+  Pose error \(<20\)~mm &
+  The recorded component-position error is compared with the 20~mm limit. Successful executions are not entered as artificial zero-error observations. &
+  25 experiments; recorded-error subset &
+  The available record states that the measured errors are below 20~mm but does not provide the individual error series or the size of the recorded-error subset. No mean or variance is inferred. \\
+  ES5 &
+  Failure detection \(>90\%\) &
+  An induced or naturally occurring failure is identified before an additional unsafe action is issued. &
+  25 &
+  This is a project-level detection test around the learned policy, not a functional-safety certification. \\
+  ES6 &
+  Recovery success \(>70\%\) &
+  The defined recovery procedure restores a valid task state after a detected failure. &
+  25 &
+  A recovery opportunity is counted separately from the original ES2 task attempt and does not increase the ES2 numerator. \\
+  \bottomrule
+\end{longtable}
+\endgroup
+
+\subsection{Observed specification-level outcomes}
+
+The observed outcomes are summarized before the detailed task results so that
+the final design can be judged against its original targets.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Engineering-specification compliance under the final validation protocols}
+  \label{tab:ch5-es-compliance}
+  \small
+  \begin{tabularx}{\textwidth}{
+    >{\centering\arraybackslash}p{0.07\textwidth}
+    >{\centering\arraybackslash}p{0.14\textwidth}
+    >{\centering\arraybackslash}p{0.18\textwidth}
+    >{\centering\arraybackslash}p{0.16\textwidth}
+    X}
+    \toprule
+    \textbf{ES} & \textbf{Target} & \textbf{Observed result} &
+    \textbf{Point-estimate judgment} & \textbf{Interpretation} \\
+    \midrule
+    ES1 & \(>90\%\) & \(23/25=92\%\) & Pass &
+    The observed executable-plan rate exceeds the project threshold. \\
+    ES2 & \(>70\%\) & \(59/75=78.7\%\) & Pass overall &
+    The aggregate passes; the socket subtask is 52\% and does not pass individually. \\
+    ES3 & \(>90\%\) & \(24/25=96\%\) & Pass &
+    The observed detection rate exceeds the project threshold for the evaluated components. \\
+    ES4 & \(<20\)~mm & Recorded error \(<20\)~mm & Pass under recorded-error rule &
+    Successful executions were excluded rather than recorded as zero error; no distributional statistic is claimed. \\
+    ES5 & \(>90\%\) & \(23/25=92\%\) & Pass &
+    The observed failure-detection rate exceeds the project threshold. \\
+    ES6 & \(>70\%\) & \(23/25=92\%\) & Pass &
+    The observed recovery rate exceeds the project threshold under the defined recovery opportunities. \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+All six project-level point estimates or operational measurements satisfy their
+stated acceptance rule. This statement must be read together with two
+qualifications. First, ES2 is heterogeneous: the overall result passes because
+the RAM and ring tasks are strong, while socket insertion remains below 70\%.
+Second, the rate tests contain only 25 observations each and ES4 does not
+include a supplied continuous error series. The results demonstrate compliance
+with the project decision rules under the evaluated conditions, not precise
+population parameters or production reliability.
 
 \section{Checkpoint selection and deployment configuration}
 
@@ -30,9 +149,77 @@ Chapter~\ref{chap:final-design} defines the checkpoint-selection procedure in Eq
 \mathcal L_{\mathrm{ram}}
 }{3}.
 \]
-The checkpoint with the lowest recorded $\mathcal L_{\mathrm{macro}}$ was selected. Under this criterion, the best checkpoint occurred at 95,000 training steps. The model selected for physical deployment was therefore the 95,000-step unified checkpoint rather than the final 100,000-step training state.
+The checkpoint with the lowest recorded $\mathcal L_{\mathrm{macro}}$ was selected. Under this criterion, the best checkpoint occurred at 65,000 training steps, where the macro loss was 0.036552. The model selected for physical deployment was therefore the 65,000-step unified checkpoint rather than the final 100,000-step training state.
 
 This selection preserves equal task importance. The ring dataset contains more frames than the other two datasets, but neither the training sampler nor the checkpoint-selection metric gives it greater task-level weight.
+
+\subsection{Validation trajectory}
+
+Figure~\ref{fig:ch5-validation-curve} shows all 20 scheduled validation points.
+The largest decline occurs early in training: the macro loss decreases from
+0.047246 at step 5,000 to 0.038788 at step 25,000. Later values fluctuate
+within a narrower range. Step 65,000 is the minimum recorded macro value even
+though individual tasks can attain lower loss at another checkpoint. For
+example, the socket loss at step 100,000 is slightly lower than its value at
+step 65,000, but the selection rule evaluates the three-task macro rather than
+optimizing one task in isolation.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.96\textwidth]{figures/pi05_validation_curve.png}
+  \caption{Task-specific and unweighted macro normalized flow-matching loss across the 100,000-step training run. The 65,000-step checkpoint has the minimum recorded macro loss and was selected before physical testing.}
+  \label{fig:ch5-validation-curve}
+\end{figure}
+
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{longtable}{
+  >{\centering\arraybackslash}p{0.13\textwidth}
+  >{\centering\arraybackslash}p{0.15\textwidth}
+  >{\centering\arraybackslash}p{0.15\textwidth}
+  >{\centering\arraybackslash}p{0.15\textwidth}
+  >{\centering\arraybackslash}p{0.15\textwidth}}
+  \caption{Recorded validation losses throughout $\pi_{0.5}$ training}
+  \label{tab:ch5-full-validation-loss}\\
+  \toprule
+  \textbf{Step} & \textbf{Macro} & \textbf{Ring} & \textbf{Socket} & \textbf{RAM} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Step} & \textbf{Macro} & \textbf{Ring} & \textbf{Socket} & \textbf{RAM} \\
+  \midrule
+  \endhead
+   5,000 & 0.047246 & 0.047841 & 0.042100 & 0.051797 \\
+  10,000 & 0.045191 & 0.043725 & 0.042415 & 0.049435 \\
+  15,000 & 0.040952 & 0.042677 & 0.036072 & 0.044108 \\
+  20,000 & 0.039637 & 0.039171 & 0.034430 & 0.045309 \\
+  25,000 & 0.038788 & 0.038972 & 0.031825 & 0.045566 \\
+  30,000 & 0.039298 & 0.038914 & 0.032771 & 0.046208 \\
+  35,000 & 0.037891 & 0.037872 & 0.034088 & 0.041713 \\
+  40,000 & 0.039788 & 0.039263 & 0.036138 & 0.043962 \\
+  45,000 & 0.039579 & 0.037413 & 0.036164 & 0.045160 \\
+  50,000 & 0.038006 & 0.036331 & 0.033317 & 0.044369 \\
+  55,000 & 0.038648 & 0.033924 & 0.032502 & 0.049518 \\
+  60,000 & 0.038844 & 0.038564 & 0.033710 & 0.044257 \\
+  \textbf{65,000} & \textbf{0.036552} & \textbf{0.035224} & \textbf{0.031442} & \textbf{0.042989} \\
+  70,000 & 0.038273 & 0.037573 & 0.031956 & 0.045290 \\
+  75,000 & 0.037385 & 0.034964 & 0.033154 & 0.044036 \\
+  80,000 & 0.038209 & 0.034621 & 0.032229 & 0.047779 \\
+  85,000 & 0.039486 & 0.037060 & 0.033158 & 0.048240 \\
+  90,000 & 0.037782 & 0.037074 & 0.032224 & 0.044047 \\
+  95,000 & 0.037945 & 0.036334 & 0.033529 & 0.043973 \\
+  100,000 & 0.037026 & 0.036607 & 0.031235 & 0.043237 \\
+  \bottomrule
+\end{longtable}
+\endgroup
+
+The selected macro loss is approximately 22.6\% lower than the value at
+step 5,000. Values after step 65,000 do not improve the recorded macro
+criterion. This observation justifies the selected checkpoint under the
+declared procedure, but it is not an early-stopping experiment and does not
+prove that later training causes physical overfitting. Physical behavior is
+measured only by the trials reported below.
 
 \subsection{Deployment hardware}
 
@@ -42,7 +229,7 @@ The deployment-GPU model is recorded to distinguish training compute from infere
 
 \section{Physical trial protocol and success definition}
 
-For each trial, the prepared scene corresponded to one of the three fixed language instructions in Table~\ref{tab:ch4-task-definitions}. The same 95,000-step checkpoint was used for every task. Task identity was provided through the language instruction; separate task-specific checkpoints were not loaded.
+For each trial, the prepared scene corresponded to one of the three fixed language instructions in Table~\ref{tab:ch4-task-definitions}. The same 65,000-step checkpoint was used for every task. Task identity was provided through the language instruction; separate task-specific checkpoints were not loaded.
 
 The objects were reset before every trial and their initial positions were randomly perturbed around the nominal task arrangement. The permitted placement variation was approximately 5~cm for the ring and RAM scenes and approximately 3~cm for the socket scene. For each task, the 25 trials were conducted consecutively. Once autonomous execution started, no manual intervention or corrective assistance was permitted during a counted trial.
 
@@ -53,6 +240,19 @@ A trial was counted as an end-to-end success only when its complete terminal con
   \item for the RAM task, the memory module was fully removed from the motherboard and remained inside the yellow tray.
 \end{itemize}
 Failures were categorized by the first task stage that prevented the terminal condition. Partial completion was retained for failure analysis but was not counted as end-to-end success.
+
+The counted-trial record preserves the task, language instruction, checkpoint,
+initial reset confirmation, autonomous start, terminal outcome, first blocking
+stage, intervention status, and stop reason. These fields prevent an assisted
+or partially completed trajectory from being reclassified as a success. The
+task trials were conducted after checkpoint selection; their outcomes were not
+used to choose among the 20 offline checkpoints.
+
+The ES1, ES3, ES5, and ES6 tests use their own 25-experiment records. They are
+not added to the 75 ES2 denominator. Similarly, a recovery attempt recorded for
+ES6 is a response to a detected failure and is not counted as a new ES2 task
+success. This accounting prevents the same physical event from inflating more
+than one success rate.
 
 The randomized reset evaluates tolerance to moderate initial-position variation rather than exact repetition of one fixed scene. However, the displacement limits are approximate and the individual trial coordinates were not logged. The results are therefore reported as descriptive success rates over the bounded reset procedure rather than as estimates over a precisely sampled statistical distribution.
 
@@ -67,7 +267,7 @@ Table~\ref{tab:ch5-physical-results} reports the resulting task-level values.
 
 \begin{table}[htbp]
   \centering
-  \caption{End-to-end physical success rates using the 95,000-step unified checkpoint}
+  \caption{End-to-end physical success rates using the 65,000-step unified checkpoint}
   \label{tab:ch5-physical-results}
   \small
   \begin{tabularx}{\textwidth}{
@@ -96,6 +296,92 @@ Because every task contains the same number of physical trials, the micro-averag
 \approx78.7\%.
 \]
 This aggregate value is higher than the 70\% task-execution target in Table~\ref{tab:es}. However, the aggregate conceals a large task difference. The RAM and ring tasks individually exceed 70\%, whereas the socket task reaches only 52\%. The final system therefore does not satisfy the task-execution threshold uniformly across all three tasks.
+
+\subsection{Descriptive uncertainty of the observed rates}
+
+The raw count is the primary result, but a confidence interval helps show how
+much uncertainty remains with 25 task trials. For a binomial count \(x\) of
+\(n\) trials, the two-sided 95\% Wilson interval is
+\begin{equation}
+  \frac{
+  \widehat p+\frac{z^2}{2n}
+  \ \pm\
+  z\sqrt{
+  \frac{\widehat p(1-\widehat p)}{n}
+  +
+  \frac{z^2}{4n^2}
+  }
+  }{
+  1+\frac{z^2}{n}
+  },
+  \qquad z=1.96.
+  \label{eq:ch5-wilson}
+\end{equation}
+Wilson intervals are used because they remain well behaved at boundary results
+such as 25 successes in 25 trials.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Observed task-success rates and Wilson 95\% confidence intervals}
+  \label{tab:ch5-task-intervals}
+  \small
+  \begin{tabularx}{\textwidth}{
+    >{\raggedright\arraybackslash}p{0.29\textwidth}
+    >{\centering\arraybackslash}p{0.16\textwidth}
+    >{\centering\arraybackslash}p{0.18\textwidth}
+    X}
+    \toprule
+    \textbf{Evaluation unit} & \textbf{Count} & \textbf{Observed rate} &
+    \textbf{Wilson 95\% interval} \\
+    \midrule
+    Ring over can & 21/25 & 84.0\% & 65.3--93.6\% \\
+    Plug into socket & 13/25 & 52.0\% & 33.5--70.0\% \\
+    Memory-module removal & 25/25 & 100.0\% & 86.7--100.0\% \\
+    All ES2 task trials & 59/75 & 78.7\% & 68.1--86.4\% \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+The point estimate is the pre-defined project acceptance statistic, so the
+overall 78.7\% result passes ES2. The interval answers a different question:
+with 75 trials, the data still permit an underlying success probability below
+70\%. The final report therefore states that the observed project result meets
+the target; it does not claim statistical proof that a broader population rate
+exceeds 70\%. The same caution applies to the 100\% RAM observation. Its lower
+Wilson bound is 86.7\%, so 25 successful trials do not imply a zero failure
+probability.
+
+\begin{figure}[htbp]
+  \centering
+  \IfFileExists{figures/success_examples.png}{
+    \includegraphics[width=0.98\textwidth]{figures/success_examples.png}
+  }{
+    \fbox{
+      \begin{minipage}[c][0.25\textheight][c]{0.94\textwidth}
+        \centering
+        \begin{minipage}[c]{0.30\textwidth}
+          \centering
+          \textbf{(a) Ring success}\\[0.6em]
+          Insert a representative terminal frame showing the released ring over the can.
+        \end{minipage}
+        \hfill
+        \begin{minipage}[c]{0.30\textwidth}
+          \centering
+          \textbf{(b) Socket success}\\[0.6em]
+          Insert a representative terminal frame showing the plug seated in the socket.
+        \end{minipage}
+        \hfill
+        \begin{minipage}[c]{0.30\textwidth}
+          \centering
+          \textbf{(c) RAM success}\\[0.6em]
+          Insert a representative terminal frame showing the removed module in the yellow tray.
+        \end{minipage}
+      \end{minipage}
+    }
+  }
+  \caption{Representative successful physical executions of the three final tasks. The three panels should use frames from counted trials and should show the complete terminal condition rather than an intermediate grasp or approach.}
+  \label{fig:ch5-success-examples}
+\end{figure}
 
 \section{Task-specific results and failure analysis}
 
@@ -160,24 +446,178 @@ The dominant failure is constrained insertion rather than plug acquisition. Ten 
 
 The result does not by itself identify a single root cause. Possible contributors include residual socket-box pose variation after the right-arm push, plug pose variation inside the compliant left gripper, limited visual information at the contact point, and the temporal interval over which ten predicted actions are executed before replanning. These are engineering hypotheses inferred from the failure stage, not measured causal conclusions. Confirming them would require trial-level video review, socket and plug geometry measurements, and preferably logging of the wrist view and commanded joint targets immediately before contact.
 
+\section{Planning, detection, pose-error, failure-detection, and recovery results}
+
+\subsection{Rate-based engineering specifications}
+
+ES1, ES3, ES5, and ES6 are each evaluated over 25 experiments. Their point
+estimates and Wilson intervals are shown in
+Table~\ref{tab:ch5-other-es-intervals}. The threshold decision uses the point
+estimate, while the interval exposes the remaining sampling uncertainty.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Rate-based ES1, ES3, ES5, and ES6 results}
+  \label{tab:ch5-other-es-intervals}
+  \small
+  \begin{tabularx}{\textwidth}{
+    >{\centering\arraybackslash}p{0.08\textwidth}
+    >{\raggedright\arraybackslash}p{0.24\textwidth}
+    >{\centering\arraybackslash}p{0.13\textwidth}
+    >{\centering\arraybackslash}p{0.15\textwidth}
+    >{\centering\arraybackslash}p{0.18\textwidth}
+    X}
+    \toprule
+    \textbf{ES} & \textbf{Measured outcome} & \textbf{Target} &
+    \textbf{Count} & \textbf{Observed rate} & \textbf{Wilson 95\% interval} \\
+    \midrule
+    ES1 & Executable-plan formation & \(>90\%\) & 23/25 & 92.0\% & 75.0--97.8\% \\
+    ES3 & Required-component detection & \(>90\%\) & 24/25 & 96.0\% & 80.5--99.3\% \\
+    ES5 & Failure detection before further unsafe action & \(>90\%\) & 23/25 & 92.0\% & 75.0--97.8\% \\
+    ES6 & Recovery to a valid task state & \(>70\%\) & 23/25 & 92.0\% & 75.0--97.8\% \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+For ES1, 23 of 25 initialized task cases formed an executable plan with the
+loaded unified checkpoint and the selected instruction. The 92\% point estimate
+exceeds the greater-than-90\% target. This result shows that the prepared scene
+and task interface usually entered a valid executable state. It does not
+establish general high-level planning across unseen tasks because the test uses
+the three documented instructions and workcell configurations.
+
+For ES3, the required component was correctly detected in 24 of 25 evaluated
+observations. The 96\% point estimate exceeds the greater-than-90\% target. The
+result applies to the handled ring, plug and socket, motherboard, memory module,
+can, and tray under the final camera arrangement. It should not be reported as
+a category-level detector benchmark or as evidence for arbitrary components,
+because component identity and appearance were bounded by the final task set.
+
+For ES5, 23 of 25 evaluated failures were identified before an additional
+unsafe action was issued. The 92\% point estimate exceeds the
+greater-than-90\% target. The detection path operates around the learned policy:
+camera freshness, packet validity, finite action values, bounds, communication
+state, robot protective stops, and task-level failure conditions contribute to
+the decision. Passing ES5 under this test does not constitute functional-safety
+certification or quantify false alarms under unrestricted operation.
+
+For ES6, the defined recovery procedure restored a valid task state in 23 of 25
+recovery opportunities, giving 92\% and exceeding the greater-than-70\%
+target. Recovery outcomes are not added to the original ES2 numerator. This
+separation prevents a failed initial task attempt followed by recovery from
+being reported as an uninterrupted end-to-end success.
+
+The 95\% intervals for ES1, ES5, and ES6 are identical because their counts are
+identical. For ES1, ES3, and ES5, the lower interval bounds fall below the
+design threshold even though the point estimates pass. The evidence therefore
+supports the project acceptance decisions for these 25-experiment sets but is
+not a statistical guarantee that the underlying rates are greater than 90\%.
+
+\subsection{ES4 pose-error result and reporting rule}
+
+ES4 requires component position error below 20~mm. The final record reports
+that the measured position errors were below 20~mm. Successful executions were
+not assigned a synthetic error of zero; they were excluded from the
+recorded-error subset. This rule avoids artificially reducing an average by
+treating task success as perfect localization.
+
+The available summary does not include the individual error values or the
+number of non-success cases for which a metric error was recorded. The result
+is therefore reported as an operational threshold outcome:
+\[
+e_{\mathrm{recorded}}<20~\mathrm{mm}.
+\]
+No mean, median, maximum, standard deviation, confidence interval, or 25-sample
+error distribution is calculated. Under the supplied measurement rule, ES4
+passes its project limit; a stronger pose-estimation claim would require the
+trial-level reference and estimated coordinates, the measurement method, and
+the complete inclusion set.
+
 \section{Cross-task interpretation}
 
-The results demonstrate that one 95,000-step $\pi_{0.5}$ checkpoint can produce successful physical executions for all three language-selected tasks without loading separate policies. Performance is nevertheless task dependent. The RAM task was fully successful in the observed trial set, the ring task was largely successful but sensitive to handle acquisition, and the socket task remained limited by precision insertion.
+The results demonstrate that one 65,000-step $\pi_{0.5}$ checkpoint can produce successful physical executions for all three language-selected tasks without loading separate policies. Performance is nevertheless task dependent. The RAM task was fully successful in the observed trial set, the ring task was largely successful but sensitive to handle acquisition, and the socket task remained limited by precision insertion.
 
 The failure distribution also separates gross bimanual sequencing from local contact precision. No failure category in the supplied record was assigned to choosing the wrong arm role or loading the wrong task-specific checkpoint. The observed failures instead occur at local grasp or placement/insertion stages. This supports the feasibility of the unified bilateral action interface while showing that unified task representation does not remove the need for task-specific contact robustness.
 
 The current three scenes are visually distinct and each scene is paired with its expected instruction. Consequently, these trials validate deployment of a language-conditioned unified checkpoint, but they do not isolate how strongly the learned behavior depends on the language input. A separate instruction-sensitivity experiment using paraphrased, exchanged, or deliberately mismatched instructions would be required to distinguish language grounding from task recognition based primarily on scene appearance.
 
+\subsection{Requirements-level interpretation}
+
+At the project level, ES1 through ES6 all pass their stated point-estimate or
+operational threshold. The strongest evidence is not any one percentage but the
+chain across specifications: the configured scene and instruction generally
+form an executable plan; required components are detected; the recorded pose
+error remains below the operational limit; the same unified checkpoint
+completes all three task types; and most tested failure and recovery events are
+handled successfully.
+
+The compliance statement does not mean that every task is equally mature. ES2
+is defined as an overall task-execution rate and reaches 78.7\%, but socket
+insertion reaches only 52\%. A sponsor deciding whether to use the prototype
+for the socket operation should therefore treat the socket-specific value, not
+the overall average, as the relevant design signal. The mixed result is
+engineering evidence for targeted redesign rather than a reason to conceal the
+aggregate pass or the task-level failure.
+
+The result also separates system integration from policy comparison. ACT
+remains the DR3 deployable baseline, but no matched ACT trial set is available
+under the final three-task protocol. The present evaluation shows that the
+final $\pi_{0.5}$ route works within the scoped workcell and meets the project
+acceptance rules. It does not establish that $\pi_{0.5}$ is more accurate,
+safer, faster, or more data-efficient than ACT.
+
 \section{Validation limitations}
 
-Four limitations constrain interpretation of the reported percentages. First, although the objects were randomly perturbed within approximately 5~cm for the ring and RAM tasks and 3~cm for the socket task, the individual initial coordinates and exact sampling distribution were not logged. Second, the approximately one-minute completion time was not recorded as a per-trial timing series, and end-to-end inference latency was not measured separately. Third, the evaluation contains one selected checkpoint and no ACT, single-task, or alternative-checkpoint baseline; it therefore demonstrates final-system performance but not the superiority of $\pi_{0.5}$ over the DR3 baseline. Fourth, the visually distinct scenes were evaluated with their corresponding instructions, so the trials do not independently measure sensitivity to instruction wording.
+Several limitations constrain interpretation of the reported results.
+\begin{enumerate}
+  \item Although the objects were randomly perturbed within approximately
+        5~cm for the ring and RAM tasks and 3~cm for the socket task, the
+        individual initial coordinates and exact sampling distribution were
+        not logged. The experiment demonstrates tolerance to bounded resets,
+        not a quantified spatial-generalization distribution.
+  \item The approximately one-minute completion time was not recorded as a
+        per-trial timing series, and end-to-end inference latency was not
+        measured separately. The nominal 5~Hz cadence and ten-action segment
+        are configured interfaces rather than measured timing performance.
+  \item The evaluation contains one selected checkpoint and no ACT,
+        single-task, or alternative-checkpoint physical baseline. It
+        demonstrates final-system performance but not the superiority of
+        $\pi_{0.5}$ over the DR3 baseline.
+  \item The visually distinct scenes were evaluated with their corresponding
+        instructions. The trials therefore validate an instruction-conditioned
+        common interface but do not independently measure sensitivity to
+        instruction wording or separate language grounding from scene
+        recognition.
+  \item Each rate-based ES1, ES3, ES5, and ES6 result contains 25 observations.
+        The point estimates meet the project thresholds, but their Wilson
+        intervals remain wide. Larger pre-registered test sets would be needed
+        for precise population-level rate claims.
+  \item ES4 is available only as a recorded-error threshold result. The
+        individual errors and inclusion count were not supplied, so the result
+        cannot support a continuous error distribution or a statistical pose
+        analysis.
+  \item The exact training source was not archived as one clean Git commit, the
+        environment file is incomplete, and the base-weight conversion
+        procedure is not retained. The deployed checkpoint is identifiable and
+        portable, but exact retraining remains only partially reproducible.
+\end{enumerate}
 
-These limitations do not change the counted physical outcomes, but they define the boundary of the supported claims. The strongest supported conclusion is that the unified checkpoint executed all three scoped tasks on the physical dual-arm setup with task-dependent reliability. Broader claims about generalization, timing, language sensitivity, or production readiness require the additional measurements identified above.
+These limitations do not change the counted physical outcomes or the project
+point-estimate judgments, but they define the boundary of the supported claims.
+The strongest supported conclusion is that the 65,000-step unified checkpoint
+executed all three scoped tasks on the physical dual-arm setup with
+task-dependent reliability and that the six project specifications passed
+their stated final decision rules. Broader claims about generalization,
+timing, language sensitivity, comparative policy performance, statistical
+population rates, exact retraining, or production readiness require the
+additional measurements identified above.
 
 \section{Validation summary}
 
-The 95,000-step checkpoint, selected by the minimum task-balanced macro flow-matching loss, was deployed on an NVIDIA GeForce RTX 5070 Ti and evaluated in 75 physical trials. Objects were reset and randomly perturbed before every trial, the 25 trials for each task were conducted consecutively without manual intervention, and a complete execution took approximately one minute. The memory-module task achieved 25/25 successes, the ring task achieved 21/25, and the socket task achieved 13/25. The combined result was 59/75, or 78.7\%.
+The 65,000-step checkpoint, selected by the minimum task-balanced macro flow-matching loss of 0.036552, was deployed on an NVIDIA GeForce RTX 5070 Ti and evaluated in 75 physical trials. Objects were reset and randomly perturbed before every trial, the 25 trials for each task were conducted consecutively without manual intervention, and a complete execution took approximately one minute. The memory-module task achieved 25/25 successes, the ring task achieved 21/25, and the socket task achieved 13/25. The combined result was 59/75, or 78.7\%.
 
-Failure analysis shows that ring failures were dominated by unsuccessful handle acquisition, while socket failures were dominated by inaccurate alignment and insertion into the two-hole socket. The RAM and ring tasks exceeded the 70\% task-execution target, but the socket task did not. The validation therefore confirms successful unified multi-task deployment and identifies precision plug insertion as the principal remaining performance bottleneck.
+The additional engineering-specification tests produced ES1 planning success of 23/25 (92\%), ES3 component detection of 24/25 (96\%), ES5 failure detection of 23/25 (92\%), and ES6 recovery of 23/25 (92\%). The recorded ES4 error remained below 20~mm under the supplied rule that successful executions were not assigned a zero error. All project-level point estimates or operational measurements meet their stated thresholds, but their small-sample and protocol boundaries remain explicit.
+
+Failure analysis shows that ring failures were dominated by unsuccessful handle acquisition, while socket failures were dominated by inaccurate alignment and insertion into the two-hole socket. The RAM and ring tasks exceeded the 70\% task-execution target, but the socket task did not. The validation therefore confirms successful unified multi-task deployment and project-level specification compliance under the evaluated conditions, while identifying precision plug insertion as the principal remaining performance bottleneck.
 
 \setlength{\emergencystretch}{0pt}
