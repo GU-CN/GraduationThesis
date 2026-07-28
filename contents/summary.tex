@@ -19,4 +19,62 @@ The completed system demonstrates that a dual-arm robot workcell can be integrat
 
 Overall, the project establishes a practical foundation for flexible 3C assembly research. It shows that bimanual manipulation can be achieved within a controlled laboratory workcell using the selected hardware and learning pipeline, while leaving task-specific details and quantitative key data to be documented separately.
 
+\chapter{Future Work}\label{chap:future-work}
+
+The completed prototype establishes a functional basis for language-conditioned bimanual manipulation, but it remains a laboratory proof of concept rather than a production-ready assembly system. Future development should therefore proceed at two levels. At the system level, the work should improve robustness, generalization, autonomous failure handling, and deployment readiness. At the detailed engineering level, it should close the measurement and documentation gaps identified during implementation and validation. The recommendations below are intended to provide the project sponsor and future student teams with a practical continuation plan.
+
+\section{Improve contact-rich task performance}
+
+The first priority is the plug-insertion task. Its observed success rate was 52\%, compared with 84\% for the ring task and 100\% for the memory-module task. Future work should first separate failures occurring during socket-box positioning, plug grasping, alignment, and final insertion. Each stage should be given an independently observable terminal condition so that additional demonstrations can be targeted at the actual bottleneck rather than collected uniformly across the entire task.
+
+The insertion stage would benefit from a more constrained mechanical and sensing design. Recommended changes include adding a passive lead-in chamfer or alignment fixture, improving plug-grasp repeatability, reducing socket-box motion during insertion, and recording a close-range view that clearly exposes the plug pins and socket openings. If the available robot interface permits it, force or joint-torque feedback should be used to detect premature contact and to execute a compliant search or guarded insertion motion. The redesigned system should then be evaluated using the same end-to-end success definition and at least the same number of trials as the present study so that the result can be compared directly with the 52\% baseline.
+
+\section{Develop autonomous failure detection and recovery}
+
+The current system can stop safely when communication, state, action, or workspace checks fail, but it does not yet perform task-level recovery after a manipulation error. A future controller should distinguish among recoverable failures, unrecoverable failures, and safety-critical conditions. Recoverable events may include a missed grasp, an object displaced within the reachable workspace, an incomplete insertion, or a ring that remains graspable after a failed placement. Protective stops, unexpected human entry, invalid sensor data, and objects leaving the verified workspace should continue to require operator intervention.
+
+A practical recovery architecture can combine deterministic checks with learned visual assessment. After each important task stage, the controller should evaluate whether the expected state has been reached. If not, it should select a bounded recovery routine such as reopening the gripper, retreating to a safe pose, reacquiring the object, or repeating the final alignment. Every recovery attempt should be logged separately from the initial attempt. Future validation should report the failure-detection rate, false-alarm rate, recovery-attempt rate, and recovery success rate, including whether the current engineering target of greater than 70\% recovery success is achieved.
+
+\section{Expand data coverage and model evaluation}
+
+The present validation covers controlled scenes with moderate object-position perturbations. Future datasets should systematically vary object pose, lighting, camera displacement, background clutter, component type, and fixture tolerance. Initial conditions should be sampled from defined distributions and recorded numerically for every episode and physical trial. This would allow performance to be reported as a function of perturbation magnitude rather than as a single success percentage over an approximately defined reset region.
+
+Data collection should emphasize failure-prone and boundary conditions while preserving task balance. Failed demonstrations, recovery demonstrations, and successful corrections should be retained with explicit stage and outcome labels. Dataset versions should record episode counts, frame counts, camera calibration, operator identity, task instruction, object configuration, and the software commit used for collection. A held-out test set should remain unchanged across model revisions so that improvements are not inferred from repeatedly tuned validation data.
+
+The unified $\pi_{0.5}$ checkpoint should also be compared with meaningful baselines. At minimum, future experiments should include the DR3 ACT implementation, task-specific checkpoints, and alternative checkpoints from the same $\pi_{0.5}$ training run. Ablation studies should evaluate the contribution of language instructions, individual camera views, bilateral state input, equal-probability task sampling, and action-chunk execution length. These comparisons are necessary to determine which parts of the final architecture produce the observed performance rather than merely demonstrating that the integrated system can operate.
+
+\section{Improve language conditioning and task generalization}
+
+The current evaluation uses one fixed instruction for each visually distinct task. Consequently, it does not independently establish robustness to instruction wording or the ability to disambiguate tasks from language alone. Future testing should introduce paraphrases, reordered but equivalent instructions, irrelevant wording, and deliberately conflicting instructions. Visual scenes should also be designed so that the same objects can support more than one valid operation, making language information necessary for selecting the intended behavior.
+
+Longer-term work should investigate compositional task execution. Instead of learning each complete sequence only as a fixed demonstration pattern, the system could represent reusable skills such as locating, grasping, stabilizing, transporting, aligning, inserting, and releasing. A high-level instruction could then select and order these skills while the action model performs continuous control. Any such extension should preserve the deterministic safety boundary and should not permit language-model output to bypass robot-side joint, workspace, communication, or emergency-stop constraints.
+
+\section{Close mechanical, sensing, and timing documentation gaps}
+
+Several quantities required for production-level reproducibility were not measured in the present project. A future team should create a dimensioned workcell record containing the two FR3 base poses, fixture coordinates, camera positions and orientations, usable shared workspace, and verified inter-arm clearance. Camera intrinsic and extrinsic calibration should be stored with each dataset version, and calibration drift should be checked after mount adjustment or accidental contact.
+
+The custom TPU fingers should be documented with slicer version, print orientation, layer height, wall count, infill, nozzle and bed temperatures, print mass, print time, and fastening torque. Simple force--deflection and repeated-cycle tests should quantify compliance, permanent deformation, and failure. The ring/can clearance, plug/socket clearance and insertion depth, and memory-module extraction clearance should be measured using the available ruler and caliper rather than inferred from images.
+
+The deployment pipeline should record timestamps at image acquisition, packet assembly, policy-query start and completion, command publication, and robot-state feedback. These measurements would distinguish the configured 5~Hz action cadence from the achieved closed-loop rate and would identify whether image transport, model inference, network communication, or robot execution is the dominant source of delay.
+
+\section{Prepare for a more reproducible and deployable system}
+
+Future releases should package the software environment, configuration files, dataset metadata, calibration records, model checkpoint, and run procedure as one versioned deployment bundle. The Bill of Materials should be updated with supplier, catalog number, version, quantity, unit cost, and replacement value for both physical and virtual components. A reproduction checklist should allow a new team to reconstruct the workcell, validate device identities and coordinate conventions, perform a dry run, and reproduce the reported evaluation without relying on undocumented knowledge from the original team.
+
+For operation beyond supervised laboratory trials, the workcell will also require a formal risk assessment. The assessment should define guarded operating zones, speed and force limits, inter-arm collision handling, fixture retention requirements, emergency-stop access, safe reset procedures, and criteria for rejecting a scene before autonomous execution. Production deployment should be considered only after the system demonstrates repeatable performance across multiple operators, days, object instances, and controlled environmental variations.
+
+\section{Recommended continuation sequence}
+
+To avoid expanding the project before its present weaknesses are resolved, future work should follow a staged sequence:
+\begin{enumerate}
+  \item reproduce the current 75-trial result using the archived checkpoint, configuration, and task definitions;
+  \item complete the missing dimensional, calibration, fabrication, cost, and latency records;
+  \item improve the plug-insertion mechanics and collect targeted demonstrations until the task independently exceeds the 70\% success target;
+  \item implement stage-level failure detection and bounded recovery, then evaluate recovery against the defined engineering specifications;
+  \item compare the unified $\pi_{0.5}$ model with ACT, task-specific models, and controlled ablations; and
+  \item expand language and scene variation only after the revised system remains stable under the original evaluation protocol.
+\end{enumerate}
+
+This sequence preserves a measurable baseline while progressively addressing the main limitation revealed by the final validation. It also gives future teams a clear separation between documentation work, engineering redesign, learning-system experiments, and higher-level research extensions.
+
 

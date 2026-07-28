@@ -6,9 +6,9 @@
   "githubBranch": "cursor/five-authors-cover-a987",
   "mainFile": "main.tex",
   "createdAt": "2026-07-27T09:42:12.184Z",
-  "updatedAt": "2026-07-28T11:49:42.272Z",
+  "updatedAt": "2026-07-28T13:09:05.967Z",
   "lastPullAt": "2026-07-27T16:25:39.715Z",
-  "lastPushAt": "2026-07-28T10:41:21.839Z",
+  "lastPushAt": "2026-07-28T11:49:54.816Z",
   "collaborators": [
     {
       "userId": "1267f7cb-9287-4d6a-be0f-649794775ffd",
@@ -19,6 +19,11 @@
       "userId": "78f479b2-efdb-44b1-91f2-f2daf3025730",
       "role": "write",
       "addedAt": "2026-07-27T16:04:35.874Z"
+    },
+    {
+      "userId": "ef3d9fe2-ba86-470b-9bb9-48af495e987d",
+      "role": "write",
+      "addedAt": "2026-07-28T12:45:58.955Z"
     }
   ],
   "autoPushEnabled": true,
