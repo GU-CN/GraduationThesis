@@ -86,17 +86,24 @@
 \contentsline {subsection}{\numberline {4.4.8}Budget}{42}{subsection.4.4.8}%
 \contentsline {subsection}{\numberline {4.4.9}Current implementation status and remaining documentation}{43}{subsection.4.4.9}%
 \contentsline {chapter}{\numberline {Chapter 5}Validation results}{44}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Validation overview}{44}{section.5.1}%
-\contentsline {section}{\numberline {5.2}Key data}{44}{section.5.2}%
-\contentsline {section}{\numberline {5.3}Validation summary}{44}{section.5.3}%
-\contentsline {chapter}{\numberline {Chapter 6}Discussion and conclusions}{45}{chapter.6}%
-\contentsline {section}{\numberline {6.1}Discussion}{45}{section.6.1}%
-\contentsline {section}{\numberline {6.2}Conclusions}{45}{section.6.2}%
-\contentsline {chapter}{References}{47}{chapter*.22}%
-\contentsline {chapter}{Appendix I.\ Documentation of Generated Concepts}{49}{chapter*.24}%
-\contentsline {chapter}{Appendix II.\ Hardware Specifications and Parts Records}{52}{chapter*.35}%
-\contentsline {chapter}{Appendix II.\ Hardware Specifications and Parts Records}{61}{chapter*.50}%
-\contentsline {chapter}{Appendix II.\ Hardware Specifications and Parts Records}{70}{chapter*.65}%
-\contentsline {chapter}{Appendix II.\ Hardware Specifications and Parts Records}{79}{chapter*.80}%
-\contentsline {chapter}{Research\ Projects\ and\ Publications\ during\ Undergraduate\ Period}{88}{section*.94}%
-\contentsline {chapter}{Acknowledgements}{89}{section*.96}%
+\contentsline {section}{\numberline {5.1}Validation objectives and scope}{44}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Checkpoint selection and deployment configuration}{44}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}Selection criterion}{44}{subsection.5.2.1}%
+\contentsline {subsection}{\numberline {5.2.2}Deployment hardware}{45}{subsection.5.2.2}%
+\contentsline {section}{\numberline {5.3}Physical trial protocol and success definition}{45}{section.5.3}%
+\contentsline {section}{\numberline {5.4}Overall physical results}{46}{section.5.4}%
+\contentsline {section}{\numberline {5.5}Task-specific results and failure analysis}{47}{section.5.5}%
+\contentsline {subsection}{\numberline {5.5.1}Memory-module removal and tray placement}{47}{subsection.5.5.1}%
+\contentsline {subsection}{\numberline {5.5.2}Ring placement over the can}{47}{subsection.5.5.2}%
+\contentsline {subsection}{\numberline {5.5.3}Plug grasping and two-hole socket insertion}{48}{subsection.5.5.3}%
+\contentsline {section}{\numberline {5.6}Cross-task interpretation}{49}{section.5.6}%
+\contentsline {section}{\numberline {5.7}Validation limitations}{49}{section.5.7}%
+\contentsline {section}{\numberline {5.8}Validation summary}{50}{section.5.8}%
+\contentsline {chapter}{\numberline {Chapter 6}Discussion and conclusions}{51}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Discussion}{51}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Conclusions}{51}{section.6.2}%
+\contentsline {chapter}{References}{53}{chapter*.25}%
+\contentsline {chapter}{Appendix I.\ Documentation of Generated Concepts}{55}{chapter*.27}%
+\contentsline {chapter}{Appendix II.\ Hardware Specifications and Parts Records}{58}{chapter*.38}%
+\contentsline {chapter}{Research\ Projects\ and\ Publications\ during\ Undergraduate\ Period}{67}{section*.52}%
+\contentsline {chapter}{Acknowledgements}{68}{section*.54}%

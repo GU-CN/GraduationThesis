@@ -1,4 +1,5 @@
 % !TEX root = ../main.tex
+\setlength{\emergencystretch}{2em}
 
 \chapter{Validation results}\label{chap:validation}
 
@@ -146,7 +147,7 @@ The socket task succeeded in 13 of 25 trials, corresponding to 52\%. Twelve tria
     \textbf{Failure mode} & \textbf{Count} & \textbf{Share of socket failures} \\
     \midrule
     Left gripper did not acquire or retain the plug & 2 & 16.7\% \\
-    Plug was grasped but not accurately inserted into the two-hole socket & 10 & 83.3\% \\
+    Plug grasped, but two-hole insertion was inaccurate & 10 & 83.3\% \\
     \midrule
     \textbf{Total} & \textbf{12} & \textbf{100\%} \\
     \bottomrule
@@ -173,6 +174,8 @@ These limitations do not change the counted physical outcomes, but they define t
 
 \section{Validation summary}
 
-The 95,000-step checkpoint, selected by the minimum task-balanced macro flow-matching loss, was deployed on an NVIDIA GeForce RTX~5070~Ti and evaluated in 75 physical trials. The memory-module task achieved 25/25 successes, the ring task achieved 21/25, and the socket task achieved 13/25. The combined result was 59/75, or 78.7\%.
+The 95,000-step checkpoint, selected by the minimum task-balanced macro flow-matching loss, was deployed on an NVIDIA GeForce RTX 5070 Ti and evaluated in 75 physical trials. The memory-module task achieved 25/25 successes, the ring task achieved 21/25, and the socket task achieved 13/25. The combined result was 59/75, or 78.7\%.
 
 Failure analysis shows that ring failures were dominated by unsuccessful handle acquisition, while socket failures were dominated by inaccurate alignment and insertion into the two-hole socket. The RAM and ring tasks exceeded the 70\% task-execution target, but the socket task did not. The validation therefore confirms successful unified multi-task deployment and identifies precision plug insertion as the principal remaining performance bottleneck.
+
+\setlength{\emergencystretch}{0pt}
