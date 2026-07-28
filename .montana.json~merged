@@ -1,13 +1,18 @@
 {
   "id": "d435382c-f04e-49e6-90e5-7e8cb5807156",
+<<<<<<< Updated upstream
   "name": "1",
+=======
+  "name": "GU-CN/GraduationThesis",
+>>>>>>> Stashed changes
   "ownerId": "253bba64-1893-40a3-8713-7abe1418ad3d",
   "githubRepo": "GU-CN/GraduationThesis",
   "githubBranch": "cursor/five-authors-cover-a987",
   "mainFile": "main.tex",
   "createdAt": "2026-07-27T09:42:12.184Z",
-  "updatedAt": "2026-07-28T16:24:30.939Z",
-  "lastPullAt": "2026-07-28T16:24:24.830Z",
+<<<<<<< Updated upstream
+  "updatedAt": "2026-07-28T16:24:11.414Z",
+  "lastPullAt": "2026-07-27T16:25:39.715Z",
   "lastPushAt": "2026-07-28T16:17:46.750Z",
   "collaborators": [
     {
@@ -42,4 +47,8 @@
     "role": "write",
     "createdAt": "2026-07-27T14:28:04.928Z"
   }
+=======
+  "updatedAt": "2026-07-27T09:45:45.067Z",
+  "lastPullAt": "2026-07-27T09:45:44.258Z"
+>>>>>>> Stashed changes
 }
