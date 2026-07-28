@@ -2900,3 +2900,100 @@
     <bcf:datasource type="file" datatype="bibtex" glob="false">refs.bib</bcf:datasource>
   </bcf:bibdata>
   <bcf:section number="0">
+    <bcf:citekey order="1">rt2</bcf:citekey>
+    <bcf:citekey order="1">openvla</bcf:citekey>
+    <bcf:citekey order="1">rdt1b</bcf:citekey>
+    <bcf:citekey order="1">pi0</bcf:citekey>
+    <bcf:citekey order="2">transporter</bcf:citekey>
+    <bcf:citekey order="2">cliport</bcf:citekey>
+    <bcf:citekey order="2">peract</bcf:citekey>
+    <bcf:citekey order="3">bridgev2</bcf:citekey>
+    <bcf:citekey order="3">openx</bcf:citekey>
+    <bcf:citekey order="3">droid</bcf:citekey>
+    <bcf:citekey order="3">libero</bcf:citekey>
+    <bcf:citekey order="4">pi05</bcf:citekey>
+    <bcf:citekey order="4">openpi</bcf:citekey>
+    <bcf:citekey order="4">lerobot</bcf:citekey>
+    <bcf:citekey order="4">lerobotpi05</bcf:citekey>
+    <bcf:citekey order="5">robomimic</bcf:citekey>
+    <bcf:citekey order="5">mimicgen</bcf:citekey>
+    <bcf:citekey order="6">rvt</bcf:citekey>
+    <bcf:citekey order="6">dp3</bcf:citekey>
+    <bcf:citekey order="6">r3m</bcf:citekey>
+    <bcf:citekey order="7">gello</bcf:citekey>
+    <bcf:citekey order="8">umi</bcf:citekey>
+    <bcf:citekey order="9">act</bcf:citekey>
+    <bcf:citekey order="9">lerobot</bcf:citekey>
+    <bcf:citekey order="10">pi05</bcf:citekey>
+    <bcf:citekey order="10">openpi</bcf:citekey>
+    <bcf:citekey order="10">lerobotpi05</bcf:citekey>
+    <bcf:citekey order="11">gello</bcf:citekey>
+    <bcf:citekey order="12">pi05</bcf:citekey>
+    <bcf:citekey order="12">openpi</bcf:citekey>
+    <bcf:citekey order="12">lerobot</bcf:citekey>
+    <bcf:citekey order="12">lerobotpi05</bcf:citekey>
+    <bcf:citekey order="13">fr3datasheet</bcf:citekey>
+    <bcf:citekey order="13">fr3product</bcf:citekey>
+    <bcf:citekey order="13">frankafci</bcf:citekey>
+    <bcf:citekey order="14">realsensed435i</bcf:citekey>
+    <bcf:citekey order="15">realsensed405</bcf:citekey>
+    <bcf:citekey order="16">gello</bcf:citekey>
+    <bcf:citekey order="17">pico4ultra</bcf:citekey>
+    <bcf:citekey order="18">umi</bcf:citekey>
+    <bcf:citekey order="19">act</bcf:citekey>
+    <bcf:citekey order="20">diffusionpolicy</bcf:citekey>
+    <bcf:citekey order="21">pi05</bcf:citekey>
+    <bcf:citekey order="21">lerobotpi05</bcf:citekey>
+    <bcf:citekey order="22">fr3datasheet</bcf:citekey>
+    <bcf:citekey order="22">fr3product</bcf:citekey>
+    <bcf:citekey order="22">frankafci</bcf:citekey>
+    <bcf:citekey order="23">dynamixelxl330</bcf:citekey>
+    <bcf:citekey order="24">rt2</bcf:citekey>
+    <bcf:citekey order="25">openvla</bcf:citekey>
+    <bcf:citekey order="26">rdt1b</bcf:citekey>
+    <bcf:citekey order="27">pi0</bcf:citekey>
+    <bcf:citekey order="28">transporter</bcf:citekey>
+    <bcf:citekey order="29">cliport</bcf:citekey>
+    <bcf:citekey order="30">peract</bcf:citekey>
+    <bcf:citekey order="31">bridgev2</bcf:citekey>
+    <bcf:citekey order="32">openx</bcf:citekey>
+    <bcf:citekey order="33">droid</bcf:citekey>
+    <bcf:citekey order="34">libero</bcf:citekey>
+    <bcf:citekey order="35">pi05</bcf:citekey>
+    <bcf:citekey order="36">openpi</bcf:citekey>
+    <bcf:citekey order="37">lerobot</bcf:citekey>
+    <bcf:citekey order="38">lerobotpi05</bcf:citekey>
+    <bcf:citekey order="39">robomimic</bcf:citekey>
+    <bcf:citekey order="40">mimicgen</bcf:citekey>
+    <bcf:citekey order="41">rvt</bcf:citekey>
+    <bcf:citekey order="42">dp3</bcf:citekey>
+    <bcf:citekey order="43">r3m</bcf:citekey>
+    <bcf:citekey order="44">gello</bcf:citekey>
+    <bcf:citekey order="45">umi</bcf:citekey>
+    <bcf:citekey order="46">act</bcf:citekey>
+    <bcf:citekey order="47">fr3datasheet</bcf:citekey>
+    <bcf:citekey order="48">fr3product</bcf:citekey>
+    <bcf:citekey order="49">frankafci</bcf:citekey>
+    <bcf:citekey order="50">realsensed435i</bcf:citekey>
+    <bcf:citekey order="51">realsensed405</bcf:citekey>
+    <bcf:citekey order="52">pico4ultra</bcf:citekey>
+    <bcf:citekey order="53">diffusionpolicy</bcf:citekey>
+    <bcf:citekey order="54">dynamixelxl330</bcf:citekey>
+  </bcf:section>
+  <!-- SORTING TEMPLATES -->
+  <bcf:sortingtemplate name="none">
+    <bcf:sort order="1">
+      <bcf:sortitem order="1">citeorder</bcf:sortitem>
+    </bcf:sort>
+  </bcf:sortingtemplate>
+  <!-- DATALISTS -->
+  <bcf:datalist section="0"
+                name="none/global//global/global"
+                type="entry"
+                sortingtemplatename="none"
+                sortingnamekeytemplatename="global"
+                labelprefix=""
+                uniquenametemplatename="global"
+                labelalphanametemplatename="global">
+  </bcf:datalist>
+</bcf:controlfile>
