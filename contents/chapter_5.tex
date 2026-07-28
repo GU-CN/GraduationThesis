@@ -1,17 +1,178 @@
 % !TEX root = ../main.tex
 
 \chapter{Validation results}\label{chap:validation}
-……
 
-\section{Validation overview}
+\section{Validation objectives and scope}
 
-The validation procedure follows the DR3 engineering specifications in Chapter~\ref{chap:design-spec}. The purpose of validation is to check whether the integrated system satisfies the intended proof-of-concept behavior under bounded laboratory conditions. The evaluated workflow includes scene setup, synchronized sensing, state acquisition, policy inference, robot and gripper command execution, and completion assessment.
+The validation evaluates the final unified $\pi_{0.5}$ system described in Chapter~\ref{chap:final-design}. Its principal purpose is to determine whether one jointly trained checkpoint can execute the three documented bimanual tasks on the physical dual-FR3 workcell. The evaluation therefore separates two quantities that have different meanings:
+\begin{enumerate}
+  \item the offline normalized flow-matching loss used to select a checkpoint; and
+  \item the end-to-end physical task success rate measured after deployment.
+\end{enumerate}
+The first quantity measures agreement with held-out demonstration samples and is used only for model selection. The second measures whether a complete physical trial reaches the task-specific terminal condition in Table~\ref{tab:ch4-task-definitions}. A low validation loss is not treated as a substitute for physical task completion.
 
-The bimanual manipulation task has been completed on the integrated dual-arm setup. This result demonstrates that the selected hardware platform, teleoperation-derived data path, ACT-based policy module, and robot-side execution loop can be combined into a functioning bimanual manipulation system. The result should be interpreted within the defined project scope: the workspace, initial conditions, fixtures, and execution assumptions are controlled, and the system is not claimed to provide unrestricted open-world autonomy.
+The physical evaluation covers the three bounded task configurations used during final implementation: ring placement over a can, plug insertion into a two-hole socket, and memory-module removal from a motherboard followed by placement in a yellow tray. Each task was evaluated in 25 counted trials, giving 75 physical trials in total. The results establish performance within these prepared laboratory scenes; they do not by themselves demonstrate open-world object generalization, arbitrary language understanding, or production-line reliability.
 
-\section{Key data}
+\section{Checkpoint selection and deployment configuration}
+
+\subsection{Selection criterion}
+
+Chapter~\ref{chap:final-design} defines the checkpoint-selection procedure in Equation~\ref{eq:ch4-macro-flow-loss}. Validation was performed every 5,000 optimizer steps. For each validation point, the normalized flow-matching losses of the ring, socket, and RAM datasets were first calculated separately and then combined as the unweighted macro-average
+\[
+\mathcal L_{\mathrm{macro}}
+=
+\frac{
+\mathcal L_{\mathrm{ring}}
++
+\mathcal L_{\mathrm{socket}}
++
+\mathcal L_{\mathrm{ram}}
+}{3}.
+\]
+The checkpoint with the lowest recorded $\mathcal L_{\mathrm{macro}}$ was selected. Under this criterion, the best checkpoint occurred at 95,000 training steps. The model selected for physical deployment was therefore the 95,000-step unified checkpoint rather than the final 100,000-step training state.
+
+This selection preserves equal task importance. The ring dataset contains more frames than the other two datasets, but neither the training sampler nor the checkpoint-selection metric gives it greater task-level weight. The numerical per-task and macro loss values at 95,000 steps were not included in the supplied final result record and are therefore not invented in this chapter.
+
+\subsection{Deployment hardware}
+
+Training was performed on the RTX A6000 system documented in Chapter~\ref{chap:final-design}. Physical deployment used an NVIDIA GeForce RTX~5070~Ti. The deployed policy used the same three image inputs, 16-dimensional bilateral state, absolute 16-dimensional action representation, language-instruction interface, and \texttt{use\_relative\_actions=false} setting as the training configuration. It predicted a 50-step action chunk and the executor consumed ten steps before requesting an updated prediction.
+
+The deployment-GPU model is recorded to distinguish training compute from inference compute. End-to-end inference latency, GPU utilization, and the achieved policy-query period were not measured in the supplied evaluation record, so the nominal 5~Hz action cadence and approximately two-second executed chunk remain interface settings rather than measured latency results.
+
+\section{Physical trial protocol and success definition}
+
+For each trial, the prepared scene corresponded to one of the three fixed language instructions in Table~\ref{tab:ch4-task-definitions}. The same 95,000-step checkpoint was used for every task. Task identity was provided through the language instruction; separate task-specific checkpoints were not loaded.
+
+A trial was counted as an end-to-end success only when its complete terminal condition was achieved:
+\begin{itemize}
+  \item for the ring task, the can was repositioned and the released ring remained over the can;
+  \item for the socket task, the socket box was repositioned and the plug remained inserted in the two-hole socket; and
+  \item for the RAM task, the memory module was fully removed from the motherboard and remained inside the yellow tray.
+\end{itemize}
+Failures were categorized by the first task stage that prevented the terminal condition. Partial completion was retained for failure analysis but was not counted as end-to-end success.
+
+The current result record specifies the number of trials and their final outcomes, but it does not yet specify the reset tolerance, object-position randomization range, trial timeout, lighting variation, or elapsed completion time. Consequently, the results below are reported as descriptive success rates for the bounded setup rather than as estimates of performance over a formally defined distribution of initial conditions.
+
+\section{Overall physical results}
+
+For task $k$, the end-to-end success rate is
+\begin{equation}
+R_k=\frac{N^{\mathrm{success}}_k}{N^{\mathrm{trial}}_k}\times100\%.
+\label{eq:ch5-success-rate}
+\end{equation}
+Table~\ref{tab:ch5-physical-results} reports the resulting task-level values.
+
+\begin{table}[htbp]
+  \centering
+  \caption{End-to-end physical success rates using the 95,000-step unified checkpoint}
+  \label{tab:ch5-physical-results}
+  \small
+  \begin{tabularx}{\textwidth}{
+    >{\raggedright\arraybackslash}p{0.25\textwidth}
+    >{\centering\arraybackslash}p{0.16\textwidth}
+    >{\centering\arraybackslash}p{0.16\textwidth}
+    >{\centering\arraybackslash}p{0.16\textwidth}
+    X}
+    \toprule
+    \textbf{Task} & \textbf{Successful} & \textbf{Failed} & \textbf{Total} & \textbf{Success rate} \\
+    \midrule
+    Ring over can & 21 & 4 & 25 & 84\% \\
+    Plug into socket & 13 & 12 & 25 & 52\% \\
+    Memory-module removal & 25 & 0 & 25 & 100\% \\
+    \midrule
+    \textbf{All physical trials} & \textbf{59} & \textbf{16} & \textbf{75} & \textbf{78.7\%} \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+Because every task contains the same number of physical trials, the micro-average over all 75 trials and the unweighted macro-average of the three task success rates are both
+\[
+\frac{59}{75}\times100\%
+=
+\frac{84\%+52\%+100\%}{3}
+\approx78.7\%.
+\]
+This aggregate value is higher than the 70\% task-execution target in Table~\ref{tab:es}. However, the aggregate conceals a large task difference. The RAM and ring tasks individually exceed 70\%, whereas the socket task reaches only 52\%. The final system therefore does not satisfy the task-execution threshold uniformly across all three tasks.
+
+\section{Task-specific results and failure analysis}
+
+\subsection{Memory-module removal and tray placement}
+
+The RAM task succeeded in all 25 counted trials, giving an observed success rate of 100\%. In the successful sequence, the left arm pulled and stabilized the motherboard while the right arm removed the memory module and transferred it to the yellow tray. No end-to-end failure was recorded in the 25-trial set.
+
+This result shows that the selected demonstration data, bilateral role allocation, camera observations, compliant grippers, and unified checkpoint were sufficient for the evaluated motherboard configuration. The 25-out-of-25 result should nevertheless be interpreted as performance within the tested setup. A finite trial set with no observed failure does not establish a zero failure probability, and the current evaluation does not quantify sensitivity to motherboard pose, memory-module type, connector retention force, lighting, or camera displacement.
+
+\subsection{Ring placement over the can}
+
+The ring task succeeded in 21 of 25 trials, corresponding to 84\%. Four trials failed. Table~\ref{tab:ch5-ring-failures} separates the observed failure modes.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Observed failure modes in the ring task}
+  \label{tab:ch5-ring-failures}
+  \small
+  \begin{tabularx}{\textwidth}{X
+    >{\centering\arraybackslash}p{0.17\textwidth}
+    >{\centering\arraybackslash}p{0.22\textwidth}}
+    \toprule
+    \textbf{Failure mode} & \textbf{Count} & \textbf{Share of ring failures} \\
+    \midrule
+    Ring not successfully placed over the can & 1 & 25\% \\
+    Handle grasp failed because the ring or handle was skewed relative to the grasp approach & 2 & 50\% \\
+    Handle grasp failed because the ring base obstructed the approach & 1 & 25\% \\
+    \midrule
+    \textbf{Total} & \textbf{4} & \textbf{100\%} \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+Three of the four failures occurred before secure transport because the right gripper did not successfully acquire the ring handle. The remaining failure occurred at the ring-over-can placement stage. The observed distribution therefore identifies handle acquisition as the dominant bottleneck in this task, rather than the initial can-pushing operation.
+
+The two skew-related failures indicate sensitivity to the relative orientation between the handle and the demonstrated grasp approach. The obstruction failure shows that the ring base can remove the approach clearance required by the custom fingers. These observations motivate additional demonstrations around rotated or displaced handle configurations, explicit reset tolerances, and inspection of wrist-camera visibility near the ring base. They also provide a concrete basis for evaluating whether a revised finger profile or a more vertical pre-grasp approach would improve robustness; these changes are proposed from the observed failures and were not evaluated in the present trial set.
+
+\subsection{Plug grasping and two-hole socket insertion}
+
+The socket task succeeded in 13 of 25 trials, corresponding to 52\%. Twelve trials failed. Table~\ref{tab:ch5-socket-failures} reports the two observed failure categories.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Observed failure modes in the socket task}
+  \label{tab:ch5-socket-failures}
+  \small
+  \begin{tabularx}{\textwidth}{X
+    >{\centering\arraybackslash}p{0.17\textwidth}
+    >{\centering\arraybackslash}p{0.24\textwidth}}
+    \toprule
+    \textbf{Failure mode} & \textbf{Count} & \textbf{Share of socket failures} \\
+    \midrule
+    Left gripper did not acquire or retain the plug & 2 & 16.7\% \\
+    Plug was grasped but not accurately inserted into the two-hole socket & 10 & 83.3\% \\
+    \midrule
+    \textbf{Total} & \textbf{12} & \textbf{100\%} \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+The dominant failure is constrained insertion rather than plug acquisition. Ten of the twelve failures reached the stage at which the plug had been grasped but did not enter the two-hole socket accurately enough to satisfy the terminal condition. This is consistent with the tolerance analysis in Section~4.2.6: the insertion requires both lateral alignment of two pins or prongs with their corresponding holes and sufficiently small angular error through the insertion motion.
+
+The result does not by itself identify a single root cause. Possible contributors include residual socket-box pose variation after the right-arm push, plug pose variation inside the compliant left gripper, limited visual information at the contact point, and the temporal interval over which ten predicted actions are executed before replanning. These are engineering hypotheses inferred from the failure stage, not measured causal conclusions. Confirming them would require trial-level video review, socket and plug geometry measurements, and preferably logging of the wrist view and commanded joint targets immediately before contact.
+
+\section{Cross-task interpretation}
+
+The results demonstrate that one 95,000-step $\pi_{0.5}$ checkpoint can produce successful physical executions for all three language-selected tasks without loading separate policies. Performance is nevertheless task dependent. The RAM task was fully successful in the observed trial set, the ring task was largely successful but sensitive to handle acquisition, and the socket task remained limited by precision insertion.
+
+The failure distribution also separates gross bimanual sequencing from local contact precision. No failure category in the supplied record was assigned to choosing the wrong arm role or loading the wrong task-specific checkpoint. The observed failures instead occur at local grasp or placement/insertion stages. This supports the feasibility of the unified bilateral action interface while showing that unified task representation does not remove the need for task-specific contact robustness.
+
+The current three scenes are visually distinct and each scene is paired with its expected instruction. Consequently, these trials validate deployment of a language-conditioned unified checkpoint, but they do not isolate how strongly the learned behavior depends on the language input. A separate instruction-sensitivity experiment using paraphrased, exchanged, or deliberately mismatched instructions would be required to distinguish language grounding from task recognition based primarily on scene appearance.
+
+\section{Validation limitations}
+
+Four limitations constrain interpretation of the reported percentages. First, the physical record does not yet define the distribution of initial object poses or the permitted reset tolerance. Second, trial duration and end-to-end inference latency were not recorded, so speed and real-time performance cannot be compared quantitatively with the design goals. Third, the evaluation contains one selected checkpoint and no ACT, single-task, or alternative-checkpoint baseline; it therefore demonstrates final-system performance but not the superiority of $\pi_{0.5}$ over the DR3 baseline. Fourth, the exact normalized validation losses at 95,000 steps are not yet included, so the checkpoint-selection decision is traceable by method and step but not yet by its numerical loss table or curve.
+
+These limitations do not change the counted physical outcomes, but they define the boundary of the supported claims. The strongest supported conclusion is that the unified checkpoint executed all three scoped tasks on the physical dual-arm setup with task-dependent reliability. Broader claims about generalization, timing, language sensitivity, or production readiness require the additional measurements identified above.
 
 \section{Validation summary}
 
-The completed validation confirms the main system-level objective of the project: a dual-arm FR3 manipulation platform can execute the scoped bimanual manipulation workflow using the selected data and policy architecture. The most important validation outcome is the integration of the complete chain from demonstration collection and dataset preparation to learned policy execution on the real robot. Detailed task descriptions, trial counts, and quantitative measurements are reserved for the blank key-data section.
+The 95,000-step checkpoint, selected by the minimum task-balanced macro flow-matching loss, was deployed on an NVIDIA GeForce RTX~5070~Ti and evaluated in 75 physical trials. The memory-module task achieved 25/25 successes, the ring task achieved 21/25, and the socket task achieved 13/25. The combined result was 59/75, or 78.7\%.
 
+Failure analysis shows that ring failures were dominated by unsuccessful handle acquisition, while socket failures were dominated by inaccurate alignment and insertion into the two-hole socket. The RAM and ring tasks exceeded the 70\% task-execution target, but the socket task did not. The validation therefore confirms successful unified multi-task deployment and identifies precision plug insertion as the principal remaining performance bottleneck.
