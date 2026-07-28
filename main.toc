@@ -72,14 +72,14 @@
 \contentsline {subsection}{\numberline {4.3.12}System operation}{36}{subsection.4.3.12}%
 \contentsline {subsubsection}{\numberline {4.3.12.1}Pre-run checks}{36}{subsubsection.4.3.12.1}%
 \contentsline {subsubsection}{\numberline {4.3.12.2}Collection run}{36}{subsubsection.4.3.12.2}%
-\contentsline {subsubsection}{\numberline {4.3.12.3}Policy dry run}{37}{subsubsection.4.3.12.3}%
+\contentsline {subsubsection}{\numberline {4.3.12.3}Policy dry run}{36}{subsubsection.4.3.12.3}%
 \contentsline {subsubsection}{\numberline {4.3.12.4}Autonomous run}{37}{subsubsection.4.3.12.4}%
 \contentsline {subsection}{\numberline {4.3.13}Parts and components}{37}{subsection.4.3.13}%
-\contentsline {section}{\numberline {4.4}Manufacturing and implementation plan}{37}{section.4.4}%
-\contentsline {subsection}{\numberline {4.4.1}Implementation scope}{37}{subsection.4.4.1}%
+\contentsline {section}{\numberline {4.4}Manufacturing and implementation plan}{38}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Implementation scope}{38}{subsection.4.4.1}%
 \contentsline {subsection}{\numberline {4.4.2}Materials and manufacturing processes}{38}{subsection.4.4.2}%
 \contentsline {subsection}{\numberline {4.4.3}Gripper fabrication and inspection}{38}{subsection.4.4.3}%
-\contentsline {subsection}{\numberline {4.4.4}GELLO assembly and calibration}{40}{subsection.4.4.4}%
+\contentsline {subsection}{\numberline {4.4.4}GELLO assembly and calibration}{38}{subsection.4.4.4}%
 \contentsline {subsection}{\numberline {4.4.5}Camera and fixture implementation}{40}{subsection.4.4.5}%
 \contentsline {subsection}{\numberline {4.4.6}Software implementation}{40}{subsection.4.4.6}%
 \contentsline {subsection}{\numberline {4.4.7}System integration sequence}{41}{subsection.4.4.7}%
@@ -101,17 +101,16 @@
 \contentsline {section}{\numberline {5.8}Validation summary}{50}{section.5.8}%
 \contentsline {chapter}{\numberline {Chapter 6}Discussion and conclusions}{51}{chapter.6}%
 \contentsline {section}{\numberline {6.1}Discussion}{51}{section.6.1}%
-\contentsline {section}{\numberline {6.2}Conclusions}{51}{section.6.2}%
-\contentsline {chapter}{\numberline {Chapter 7}Future Work}{53}{chapter.7}%
-\contentsline {section}{\numberline {7.1}Improve contact-rich task performance}{53}{section.7.1}%
-\contentsline {section}{\numberline {7.2}Develop autonomous failure detection and recovery}{54}{section.7.2}%
-\contentsline {section}{\numberline {7.3}Expand data coverage and model evaluation}{54}{section.7.3}%
-\contentsline {section}{\numberline {7.4}Improve language conditioning and task generalization}{55}{section.7.4}%
-\contentsline {section}{\numberline {7.5}Close mechanical, sensing, and timing documentation gaps}{55}{section.7.5}%
-\contentsline {section}{\numberline {7.6}Prepare for a more reproducible and deployable system}{56}{section.7.6}%
-\contentsline {section}{\numberline {7.7}Recommended continuation sequence}{57}{section.7.7}%
-\contentsline {chapter}{References}{58}{chapter*.25}%
-\contentsline {chapter}{Appendix I.\ Documentation of Generated Concepts}{60}{chapter*.27}%
-\contentsline {chapter}{Appendix II.\ Hardware Specifications and Parts Records}{63}{chapter*.38}%
-\contentsline {chapter}{Research\ Projects\ and\ Publications\ during\ Undergraduate\ Period}{72}{section*.52}%
-\contentsline {chapter}{Acknowledgements}{73}{section*.54}%
+\contentsline {section}{\numberline {6.2}Conclusions}{53}{section.6.2}%
+\contentsline {chapter}{\numberline {Chapter 7}Future Work}{54}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Improve contact-rich task performance}{54}{section.7.1}%
+\contentsline {section}{\numberline {7.2}Develop autonomous failure detection and recovery}{55}{section.7.2}%
+\contentsline {section}{\numberline {7.3}Expand data coverage and model evaluation}{55}{section.7.3}%
+\contentsline {section}{\numberline {7.4}Improve language conditioning and task generalization}{56}{section.7.4}%
+\contentsline {section}{\numberline {7.5}Close mechanical, sensing, and timing documentation gaps}{56}{section.7.5}%
+\contentsline {section}{\numberline {7.6}Prepare for a more reproducible and deployable system}{57}{section.7.6}%
+\contentsline {section}{\numberline {7.7}Recommended continuation sequence}{58}{section.7.7}%
+\contentsline {chapter}{Appendix I.\ Documentation of Generated Concepts}{59}{chapter*.26}%
+\contentsline {chapter}{Appendix II.\ Hardware Specifications and Parts Records}{62}{chapter*.37}%
+\contentsline {chapter}{Research\ Projects\ and\ Publications\ during\ Undergraduate\ Period}{71}{section*.51}%
+\contentsline {chapter}{Acknowledgements}{72}{section*.53}%
