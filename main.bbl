@@ -604,51 +604,196 @@
       \endverb
       \keyw{libero}
     \endentry
-    \entry{act}{inproceedings}{}
+    \entry{pi05}{article}{}
       \true{moreauthor}
       \true{morelabelname}
       \name{author}{1}{}{%
-        {{hash=ca261c82abd59f3b483329f40cc75b16}{%
-           family={Zhao},
-           familyi={Z\bibinitperiod},
-           given={Tony\bibnamedelima Z.},
-           giveni={T\bibinitperiod\bibinitdelim Z\bibinitperiod}}}%
+        {{hash=bcb57c3127a0622998db4b0f0594c985}{%
+           family={Black},
+           familyi={B\bibinitperiod},
+           given={Kevin},
+           giveni={K\bibinitperiod}}}%
       }
       \true{morenamea}
       \name{namea}{1}{}{%
-        {{hash=ca261c82abd59f3b483329f40cc75b16}{%
-           family={Zhao},
-           familyi={Z\bibinitperiod},
-           given={Tony\bibnamedelima Z.},
-           giveni={T\bibinitperiod\bibinitdelim Z\bibinitperiod}}}%
+        {{hash=bcb57c3127a0622998db4b0f0594c985}{%
+           family={Black},
+           familyi={B\bibinitperiod},
+           given={Kevin},
+           giveni={K\bibinitperiod}}}%
       }
       \list{language}{1}{%
         {english}%
       }
-      \strng{namehash}{c40d7a33ea959748c3b7bd5eb45befb7}
-      \strng{fullhash}{c40d7a33ea959748c3b7bd5eb45befb7}
-      \strng{bibnamehash}{c40d7a33ea959748c3b7bd5eb45befb7}
-      \strng{authorbibnamehash}{c40d7a33ea959748c3b7bd5eb45befb7}
-      \strng{authornamehash}{c40d7a33ea959748c3b7bd5eb45befb7}
-      \strng{authorfullhash}{c40d7a33ea959748c3b7bd5eb45befb7}
-      \strng{nameabibnamehash}{c40d7a33ea959748c3b7bd5eb45befb7}
-      \strng{nameanamehash}{c40d7a33ea959748c3b7bd5eb45befb7}
-      \strng{nameafullhash}{c40d7a33ea959748c3b7bd5eb45befb7}
+      \strng{namehash}{d5f674d34021cbacd076b08dd03aaa1b}
+      \strng{fullhash}{d5f674d34021cbacd076b08dd03aaa1b}
+      \strng{bibnamehash}{d5f674d34021cbacd076b08dd03aaa1b}
+      \strng{authorbibnamehash}{d5f674d34021cbacd076b08dd03aaa1b}
+      \strng{authornamehash}{d5f674d34021cbacd076b08dd03aaa1b}
+      \strng{authorfullhash}{d5f674d34021cbacd076b08dd03aaa1b}
+      \strng{nameabibnamehash}{d5f674d34021cbacd076b08dd03aaa1b}
+      \strng{nameanamehash}{d5f674d34021cbacd076b08dd03aaa1b}
+      \strng{nameafullhash}{d5f674d34021cbacd076b08dd03aaa1b}
+      \field{extraname}{2}
       \field{sortinit}{4}
       \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{booktitle}{Robotics: Science and Systems (RSS)}
+      \field{eprinttype}{arxiv}
+      \field{journaltitle}{arXiv preprint}
       \field{langid}{english}
       \field{languageid}{english}
       \field{lansortorder}{4}
-      \field{title}{Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware}
-      \field{usera}{C}
+      \field{title}{{$\pi_{0.5}$}: A Vision-Language-Action Model with Open-World Generalization}
+      \field{usera}{J}
       \field{userd}{english}
       \field{userf}{english}
-      \field{year}{2023}
+      \field{year}{2025}
       \field{dateera}{ce}
-      \keyw{act}
+      \verb{eprint}
+      \verb 2504.16054
+      \endverb
+      \keyw{pi05}
+    \endentry
+    \entry{openpi}{online}{}
+      \name{author}{1}{}{%
+        {{hash=6e03797b05d15b8b0aa94a3927c1ee3b}{%
+           family={{Physical Intelligence}},
+           familyi={P\bibinitperiod}}}%
+      }
+      \name{namea}{1}{}{%
+        {{hash=6e03797b05d15b8b0aa94a3927c1ee3b}{%
+           family={{Physical Intelligence}},
+           familyi={P\bibinitperiod}}}%
+      }
+      \list{language}{1}{%
+        {english}%
+      }
+      \strng{namehash}{6e03797b05d15b8b0aa94a3927c1ee3b}
+      \strng{fullhash}{6e03797b05d15b8b0aa94a3927c1ee3b}
+      \strng{bibnamehash}{6e03797b05d15b8b0aa94a3927c1ee3b}
+      \strng{authorbibnamehash}{6e03797b05d15b8b0aa94a3927c1ee3b}
+      \strng{authornamehash}{6e03797b05d15b8b0aa94a3927c1ee3b}
+      \strng{authorfullhash}{6e03797b05d15b8b0aa94a3927c1ee3b}
+      \strng{nameabibnamehash}{6e03797b05d15b8b0aa94a3927c1ee3b}
+      \strng{nameanamehash}{6e03797b05d15b8b0aa94a3927c1ee3b}
+      \strng{nameafullhash}{6e03797b05d15b8b0aa94a3927c1ee3b}
+      \field{sortinit}{4}
+      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{langid}{english}
+      \field{languageid}{english}
+      \field{lansortorder}{4}
+      \field{title}{{OpenPI}: Open-Source Models and Packages for Robotics}
+      \field{urlday}{27}
+      \field{urlmonth}{7}
+      \field{urlyear}{2026}
+      \field{usera}{EB}
+      \field{userd}{english}
+      \field{userf}{english}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://github.com/Physical-Intelligence/openpi
+      \endverb
+      \verb{url}
+      \verb https://github.com/Physical-Intelligence/openpi
+      \endverb
+      \keyw{openpi}
+    \endentry
+    \entry{lerobot}{online}{}
+      \name{author}{1}{}{%
+        {{hash=e0b6bb846c6a3e0649ce0e3cd9355df3}{%
+           family={{Hugging Face}},
+           familyi={H\bibinitperiod}}}%
+      }
+      \name{namea}{1}{}{%
+        {{hash=e0b6bb846c6a3e0649ce0e3cd9355df3}{%
+           family={{Hugging Face}},
+           familyi={H\bibinitperiod}}}%
+      }
+      \list{language}{1}{%
+        {english}%
+      }
+      \strng{namehash}{e0b6bb846c6a3e0649ce0e3cd9355df3}
+      \strng{fullhash}{e0b6bb846c6a3e0649ce0e3cd9355df3}
+      \strng{bibnamehash}{e0b6bb846c6a3e0649ce0e3cd9355df3}
+      \strng{authorbibnamehash}{e0b6bb846c6a3e0649ce0e3cd9355df3}
+      \strng{authornamehash}{e0b6bb846c6a3e0649ce0e3cd9355df3}
+      \strng{authorfullhash}{e0b6bb846c6a3e0649ce0e3cd9355df3}
+      \strng{nameabibnamehash}{e0b6bb846c6a3e0649ce0e3cd9355df3}
+      \strng{nameanamehash}{e0b6bb846c6a3e0649ce0e3cd9355df3}
+      \strng{nameafullhash}{e0b6bb846c6a3e0649ce0e3cd9355df3}
+      \field{extraname}{1}
+      \field{sortinit}{4}
+      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{langid}{english}
+      \field{languageid}{english}
+      \field{lansortorder}{4}
+      \field{title}{{LeRobot}: Making AI for Robotics More Accessible with End-to-End Learning}
+      \field{urlday}{27}
+      \field{urlmonth}{7}
+      \field{urlyear}{2026}
+      \field{usera}{EB}
+      \field{userd}{english}
+      \field{userf}{english}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://github.com/huggingface/lerobot
+      \endverb
+      \verb{url}
+      \verb https://github.com/huggingface/lerobot
+      \endverb
+      \keyw{lerobot}
+    \endentry
+    \entry{lerobotpi05}{online}{}
+      \name{author}{1}{}{%
+        {{hash=e0b6bb846c6a3e0649ce0e3cd9355df3}{%
+           family={{Hugging Face}},
+           familyi={H\bibinitperiod}}}%
+      }
+      \name{namea}{1}{}{%
+        {{hash=e0b6bb846c6a3e0649ce0e3cd9355df3}{%
+           family={{Hugging Face}},
+           familyi={H\bibinitperiod}}}%
+      }
+      \list{language}{1}{%
+        {english}%
+      }
+      \strng{namehash}{e0b6bb846c6a3e0649ce0e3cd9355df3}
+      \strng{fullhash}{e0b6bb846c6a3e0649ce0e3cd9355df3}
+      \strng{bibnamehash}{e0b6bb846c6a3e0649ce0e3cd9355df3}
+      \strng{authorbibnamehash}{e0b6bb846c6a3e0649ce0e3cd9355df3}
+      \strng{authornamehash}{e0b6bb846c6a3e0649ce0e3cd9355df3}
+      \strng{authorfullhash}{e0b6bb846c6a3e0649ce0e3cd9355df3}
+      \strng{nameabibnamehash}{e0b6bb846c6a3e0649ce0e3cd9355df3}
+      \strng{nameanamehash}{e0b6bb846c6a3e0649ce0e3cd9355df3}
+      \strng{nameafullhash}{e0b6bb846c6a3e0649ce0e3cd9355df3}
+      \field{extraname}{2}
+      \field{sortinit}{4}
+      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{langid}{english}
+      \field{languageid}{english}
+      \field{lansortorder}{4}
+      \field{title}{{$\pi_{0.5}$ (Pi05) Policy in LeRobot}}
+      \field{urlday}{27}
+      \field{urlmonth}{7}
+      \field{urlyear}{2026}
+      \field{usera}{EB}
+      \field{userd}{english}
+      \field{userf}{english}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://github.com/huggingface/lerobot/blob/main/docs/source/pi05.mdx
+      \endverb
+      \verb{url}
+      \verb https://github.com/huggingface/lerobot/blob/main/docs/source/pi05.mdx
+      \endverb
+      \keyw{lerobotpi05}
     \endentry
     \entry{robomimic}{inproceedings}{}
       \true{moreauthor}
@@ -1077,196 +1222,51 @@
       \endverb
       \keyw{umi}
     \endentry
-    \entry{lerobot}{online}{}
+    \entry{act}{inproceedings}{}
+      \true{moreauthor}
+      \true{morelabelname}
       \name{author}{1}{}{%
-        {{hash=e0b6bb846c6a3e0649ce0e3cd9355df3}{%
-           family={{Hugging Face}},
-           familyi={H\bibinitperiod}}}%
+        {{hash=ca261c82abd59f3b483329f40cc75b16}{%
+           family={Zhao},
+           familyi={Z\bibinitperiod},
+           given={Tony\bibnamedelima Z.},
+           giveni={T\bibinitperiod\bibinitdelim Z\bibinitperiod}}}%
       }
+      \true{morenamea}
       \name{namea}{1}{}{%
-        {{hash=e0b6bb846c6a3e0649ce0e3cd9355df3}{%
-           family={{Hugging Face}},
-           familyi={H\bibinitperiod}}}%
+        {{hash=ca261c82abd59f3b483329f40cc75b16}{%
+           family={Zhao},
+           familyi={Z\bibinitperiod},
+           given={Tony\bibnamedelima Z.},
+           giveni={T\bibinitperiod\bibinitdelim Z\bibinitperiod}}}%
       }
       \list{language}{1}{%
         {english}%
       }
-      \strng{namehash}{e0b6bb846c6a3e0649ce0e3cd9355df3}
-      \strng{fullhash}{e0b6bb846c6a3e0649ce0e3cd9355df3}
-      \strng{bibnamehash}{e0b6bb846c6a3e0649ce0e3cd9355df3}
-      \strng{authorbibnamehash}{e0b6bb846c6a3e0649ce0e3cd9355df3}
-      \strng{authornamehash}{e0b6bb846c6a3e0649ce0e3cd9355df3}
-      \strng{authorfullhash}{e0b6bb846c6a3e0649ce0e3cd9355df3}
-      \strng{nameabibnamehash}{e0b6bb846c6a3e0649ce0e3cd9355df3}
-      \strng{nameanamehash}{e0b6bb846c6a3e0649ce0e3cd9355df3}
-      \strng{nameafullhash}{e0b6bb846c6a3e0649ce0e3cd9355df3}
-      \field{extraname}{1}
+      \strng{namehash}{c40d7a33ea959748c3b7bd5eb45befb7}
+      \strng{fullhash}{c40d7a33ea959748c3b7bd5eb45befb7}
+      \strng{bibnamehash}{c40d7a33ea959748c3b7bd5eb45befb7}
+      \strng{authorbibnamehash}{c40d7a33ea959748c3b7bd5eb45befb7}
+      \strng{authornamehash}{c40d7a33ea959748c3b7bd5eb45befb7}
+      \strng{authorfullhash}{c40d7a33ea959748c3b7bd5eb45befb7}
+      \strng{nameabibnamehash}{c40d7a33ea959748c3b7bd5eb45befb7}
+      \strng{nameanamehash}{c40d7a33ea959748c3b7bd5eb45befb7}
+      \strng{nameafullhash}{c40d7a33ea959748c3b7bd5eb45befb7}
       \field{sortinit}{9}
       \field{sortinithash}{0a5ebc79d83c96b6579069544c73c7d4}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
+      \field{booktitle}{Robotics: Science and Systems (RSS)}
       \field{langid}{english}
       \field{languageid}{english}
       \field{lansortorder}{4}
-      \field{title}{{LeRobot}: Making AI for Robotics More Accessible with End-to-End Learning}
-      \field{urlday}{27}
-      \field{urlmonth}{7}
-      \field{urlyear}{2026}
-      \field{usera}{EB}
+      \field{title}{Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware}
+      \field{usera}{C}
       \field{userd}{english}
       \field{userf}{english}
-      \field{urldateera}{ce}
-      \verb{urlraw}
-      \verb https://github.com/huggingface/lerobot
-      \endverb
-      \verb{url}
-      \verb https://github.com/huggingface/lerobot
-      \endverb
-      \keyw{lerobot}
-    \endentry
-    \entry{pi05}{article}{}
-      \true{moreauthor}
-      \true{morelabelname}
-      \name{author}{1}{}{%
-        {{hash=bcb57c3127a0622998db4b0f0594c985}{%
-           family={Black},
-           familyi={B\bibinitperiod},
-           given={Kevin},
-           giveni={K\bibinitperiod}}}%
-      }
-      \true{morenamea}
-      \name{namea}{1}{}{%
-        {{hash=bcb57c3127a0622998db4b0f0594c985}{%
-           family={Black},
-           familyi={B\bibinitperiod},
-           given={Kevin},
-           giveni={K\bibinitperiod}}}%
-      }
-      \list{language}{1}{%
-        {english}%
-      }
-      \strng{namehash}{d5f674d34021cbacd076b08dd03aaa1b}
-      \strng{fullhash}{d5f674d34021cbacd076b08dd03aaa1b}
-      \strng{bibnamehash}{d5f674d34021cbacd076b08dd03aaa1b}
-      \strng{authorbibnamehash}{d5f674d34021cbacd076b08dd03aaa1b}
-      \strng{authornamehash}{d5f674d34021cbacd076b08dd03aaa1b}
-      \strng{authorfullhash}{d5f674d34021cbacd076b08dd03aaa1b}
-      \strng{nameabibnamehash}{d5f674d34021cbacd076b08dd03aaa1b}
-      \strng{nameanamehash}{d5f674d34021cbacd076b08dd03aaa1b}
-      \strng{nameafullhash}{d5f674d34021cbacd076b08dd03aaa1b}
-      \field{extraname}{2}
-      \field{sortinit}{1}
-      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{eprinttype}{arxiv}
-      \field{journaltitle}{arXiv preprint}
-      \field{langid}{english}
-      \field{languageid}{english}
-      \field{lansortorder}{4}
-      \field{title}{{$\pi_{0.5}$}: A Vision-Language-Action Model with Open-World Generalization}
-      \field{usera}{J}
-      \field{userd}{english}
-      \field{userf}{english}
-      \field{year}{2025}
+      \field{year}{2023}
       \field{dateera}{ce}
-      \verb{eprint}
-      \verb 2504.16054
-      \endverb
-      \keyw{pi05}
-    \endentry
-    \entry{openpi}{online}{}
-      \name{author}{1}{}{%
-        {{hash=6e03797b05d15b8b0aa94a3927c1ee3b}{%
-           family={{Physical Intelligence}},
-           familyi={P\bibinitperiod}}}%
-      }
-      \name{namea}{1}{}{%
-        {{hash=6e03797b05d15b8b0aa94a3927c1ee3b}{%
-           family={{Physical Intelligence}},
-           familyi={P\bibinitperiod}}}%
-      }
-      \list{language}{1}{%
-        {english}%
-      }
-      \strng{namehash}{6e03797b05d15b8b0aa94a3927c1ee3b}
-      \strng{fullhash}{6e03797b05d15b8b0aa94a3927c1ee3b}
-      \strng{bibnamehash}{6e03797b05d15b8b0aa94a3927c1ee3b}
-      \strng{authorbibnamehash}{6e03797b05d15b8b0aa94a3927c1ee3b}
-      \strng{authornamehash}{6e03797b05d15b8b0aa94a3927c1ee3b}
-      \strng{authorfullhash}{6e03797b05d15b8b0aa94a3927c1ee3b}
-      \strng{nameabibnamehash}{6e03797b05d15b8b0aa94a3927c1ee3b}
-      \strng{nameanamehash}{6e03797b05d15b8b0aa94a3927c1ee3b}
-      \strng{nameafullhash}{6e03797b05d15b8b0aa94a3927c1ee3b}
-      \field{sortinit}{1}
-      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{langid}{english}
-      \field{languageid}{english}
-      \field{lansortorder}{4}
-      \field{title}{{OpenPI}: Open-Source Models and Packages for Robotics}
-      \field{urlday}{27}
-      \field{urlmonth}{7}
-      \field{urlyear}{2026}
-      \field{usera}{EB}
-      \field{userd}{english}
-      \field{userf}{english}
-      \field{urldateera}{ce}
-      \verb{urlraw}
-      \verb https://github.com/Physical-Intelligence/openpi
-      \endverb
-      \verb{url}
-      \verb https://github.com/Physical-Intelligence/openpi
-      \endverb
-      \keyw{openpi}
-    \endentry
-    \entry{lerobotpi05}{online}{}
-      \name{author}{1}{}{%
-        {{hash=e0b6bb846c6a3e0649ce0e3cd9355df3}{%
-           family={{Hugging Face}},
-           familyi={H\bibinitperiod}}}%
-      }
-      \name{namea}{1}{}{%
-        {{hash=e0b6bb846c6a3e0649ce0e3cd9355df3}{%
-           family={{Hugging Face}},
-           familyi={H\bibinitperiod}}}%
-      }
-      \list{language}{1}{%
-        {english}%
-      }
-      \strng{namehash}{e0b6bb846c6a3e0649ce0e3cd9355df3}
-      \strng{fullhash}{e0b6bb846c6a3e0649ce0e3cd9355df3}
-      \strng{bibnamehash}{e0b6bb846c6a3e0649ce0e3cd9355df3}
-      \strng{authorbibnamehash}{e0b6bb846c6a3e0649ce0e3cd9355df3}
-      \strng{authornamehash}{e0b6bb846c6a3e0649ce0e3cd9355df3}
-      \strng{authorfullhash}{e0b6bb846c6a3e0649ce0e3cd9355df3}
-      \strng{nameabibnamehash}{e0b6bb846c6a3e0649ce0e3cd9355df3}
-      \strng{nameanamehash}{e0b6bb846c6a3e0649ce0e3cd9355df3}
-      \strng{nameafullhash}{e0b6bb846c6a3e0649ce0e3cd9355df3}
-      \field{extraname}{2}
-      \field{sortinit}{1}
-      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{langid}{english}
-      \field{languageid}{english}
-      \field{lansortorder}{4}
-      \field{title}{{$\pi_{0.5}$ (Pi05) Policy in LeRobot}}
-      \field{urlday}{27}
-      \field{urlmonth}{7}
-      \field{urlyear}{2026}
-      \field{usera}{EB}
-      \field{userd}{english}
-      \field{userf}{english}
-      \field{urldateera}{ce}
-      \verb{urlraw}
-      \verb https://github.com/huggingface/lerobot/blob/main/docs/source/pi05.mdx
-      \endverb
-      \verb{url}
-      \verb https://github.com/huggingface/lerobot/blob/main/docs/source/pi05.mdx
-      \endverb
-      \keyw{lerobotpi05}
+      \keyw{act}
     \endentry
     \entry{fr3datasheet}{online}{}
       \name{author}{1}{}{%
