@@ -3,7 +3,7 @@
   "main.xdv" 1785262794 1809288 174b3519f02f3e0486767ca67530dde0 "xelatex"
   (generated)
   "main.pdf"
-["xelatex"] 1785263051 "main.tex" "main.xdv" "main" 1785263058
+["xelatex"] 1785263389 "main.tex" "main.xdv" "main" 1785263389
   "/etc/texmf/web2c/texmf.cnf" 1776155638 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/adobe/zapfding/pzdr.tfm" 1136768653 1528 f853c4d1b4e0550255e02831fdc8496f ""
@@ -112,7 +112,7 @@
   "/var/lib/texmf/web2c/xetex/xelatex.fmt" 1785143751 3644544 92ac6f140a34cdeff97a2f1b2dafed9c ""
   "main.aux" 1785262794 34212 c4a947771161aef0610dd71d12de1c2e ""
   "main.tex" 1785262781 3919 bc64ddecb66bb4bd12a1cd4fcabbef2b ""
-  "setup.tex" 1785263048 9362 936d605d1bf7990a732748820e85ce46 ""
+  "setup.tex" 1785263386 9308 39fd886d902b504c0b48e9aea4c8e4e2 ""
   "texmf/tex/latex/sjtutex/fd/sjtu-cjk-font-fandol-zh.def" 1785145332 1971 91d00e7586695c7a136a6bd5109f5322 ""
   "texmf/tex/latex/sjtutex/fd/sjtu-cjk-font-fandol.def" 1785145332 1352 86b0c5cd167ab4489513f1dd9418f1e8 ""
   "texmf/tex/latex/sjtutex/fd/sjtu-math-font-newtx.def" 1785145332 1841 efd7f4ddae95e00184ef1b66a63950ed ""
