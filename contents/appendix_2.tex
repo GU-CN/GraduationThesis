@@ -762,3 +762,767 @@ Table~\ref{tab:app-parts-components} preserves the complete system composition. 
   \bottomrule
 \end{longtable}
 \endgroup
+% !TEX root = ../main.tex
+
+\appchapter{Hardware Specifications and Parts Records}\label{chap:hardware-records}
+\addcontentsline{toc}{chapter}{Appendix II.\ Hardware Specifications and Parts Records}
+
+\section*{Purpose}
+
+This appendix collects manufacturer reference parameters, component-level construction details, engineering drawings, and the complete parts record. These items support procurement, maintenance, replication, and hardware verification, but they are separated from Chapter~4 so that the main engineering analysis remains focused on design suitability, workspace, contact tolerance, sensing coverage, learning interfaces, and system operation.
+
+\section*{Franka Research 3 reference parameters}
+
+Chapter~4 retains the four FR3 characteristics that directly justify the selected workcell: seven degrees of freedom, a 3~kg nominal payload, an 855~mm maximum reach, and link-side torque sensing in all seven axes. Table~\ref{tab:app-fr3-vendor-parameters} preserves the broader manufacturer parameter set used during DR3~\cite{fr3datasheet,fr3product,frankafci}.
+
+\begin{table}[htbp]
+  \centering
+  \caption{FR3 manufacturer reference parameters used in the hardware record}
+  \label{tab:app-fr3-vendor-parameters}
+  \small
+  \begin{tabularx}{\textwidth}{p{0.28\textwidth}X}
+    \toprule
+    \textbf{Parameter} & \textbf{Reference value or interface} \\
+    \midrule
+    Degrees of freedom & 7 \\
+    Nominal payload & 3~kg \\
+    Maximum reach & 855~mm \\
+    Force/torque sensing & Link-side torque sensing in all seven axes \\
+    Joint position limits & A1 and A3: \(-166^\circ\) to \(166^\circ\); A2: \(-105^\circ\) to \(105^\circ\); A4: \(-176^\circ\) to \(-7^\circ\); A5: \(-165^\circ\) to \(165^\circ\); A6: \(25^\circ\) to \(265^\circ\); A7: \(-175^\circ\) to \(175^\circ\) \\
+    Mounting flange & DIN ISO 9409-1-A50 \\
+    Installation position & Upright \\
+    Weight in the DR3 reference sheet & Approximately 17.8~kg; the value should be checked against the exact hardware and datasheet revision used in the laboratory \\
+    Protection rating & IP40 \\
+    Ambient temperature & \(+5^\circ\mathrm{C}\) to \(+45^\circ\mathrm{C}\) \\
+    Air humidity & 20--80\%, non-condensing \\
+    Primary interfaces & Ethernet (TCP/IP), control connector, end-effector connector, and safety-rated inputs \\
+    Project control boundary & High-level absolute targets are supplied through the project interface; low-level execution and manufacturer protection remain active \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+Figure~\ref{fig:app-fr3-overview} records the arm appearance, joint-axis convention, and principal link dimensions. Figure~\ref{fig:app-fr3-configuration} preserves the complete DR3 parameter graphic. The workspace envelope remains in Figure~\ref{fig:ch4-fr3-workspace} because it is used directly in the main shared-workspace analysis.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.90\textwidth]{dr3-report/imgs/franka_fr3.png}
+  \caption{FR3 arm, joint-axis convention, and principal kinematic dimensions retained as a hardware reference.}
+  \label{fig:app-fr3-overview}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.94\textwidth]{dr3-report/imgs/fr3_config.png}
+  \caption{FR3 joint limits, mounting, environmental, and controller-interface parameters documented during DR3.}
+  \label{fig:app-fr3-configuration}
+\end{figure}
+
+\clearpage
+\section*{GELLO component-level construction}
+
+The final bilateral demonstration system uses one GELLO leader for each FR3 follower. Each leader supplies seven arm channels and one gripper-related channel. Table~\ref{tab:app-gello-components} lists the per-leader construction and the corresponding total for the dual-arm system.
+
+\begin{table}[htbp]
+  \centering
+  \caption{GELLO component-level construction}
+  \label{tab:app-gello-components}
+  \small
+  \begin{tabularx}{\textwidth}{p{0.30\textwidth}p{0.18\textwidth}p{0.18\textwidth}X}
+    \toprule
+    \textbf{Component} & \textbf{Per leader} & \textbf{Dual total} & \textbf{Function} \\
+    \midrule
+    DYNAMIXEL XL330-M288-T & 7 & 14 & Measures the seven leader-arm joint channels \\
+    DYNAMIXEL XL330-M077-T & 1 & 2 & Provides the gripper-related input channel \\
+    ZNJ integrated control board & 1 & 2 & Reads and communicates the leader actuator states \\
+    Switched-mode power supply & 1, 5~V 5~A & 2 & Supplies the leader electronics and actuator bus \\
+    FPX330-H101 structural kit & 1 set & 2 sets & Provides the modular leader structure \\
+    Printed links, brackets, and interfaces & 1 set & 2 sets & Completes the leader geometry, base, and Franka-compatible gripper input \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+The XL330 reference properties used during hardware selection are summarized in Table~\ref{tab:app-xl330-reference}. They are component specifications rather than follower-robot requirements: the leader is used to measure and publish operator motion, not to reproduce the payload or torque capability of the FR3.
+
+\begin{table}[htbp]
+  \centering
+  \caption{DYNAMIXEL XL330 series reference properties}
+  \label{tab:app-xl330-reference}
+  \small
+  \begin{tabularx}{\textwidth}{p{0.28\textwidth}X}
+    \toprule
+    \textbf{Property} & \textbf{Reference value} \\
+    \midrule
+    Input-voltage range & 3.7--6~V \\
+    Recommended supply & 5~V \\
+    Approximate dimensions & \(20\times34\times26~\mathrm{mm}\) \\
+    Approximate mass & 18~g per actuator \\
+    Supported control modes & Position, extended position, velocity, PWM, current, and current-based position modes \\
+    Selected variants & M288 for the seven arm joints and M077 for the gripper-related joint \\
+    Source & ROBOTIS XL330 documentation~\cite{dynamixelxl330} \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.50\textwidth]{dr3-report/imgs/gello.png}
+  \caption{GELLO--Franka leader device retained as the component-level teleoperation reference.}
+  \label{fig:app-gello}
+\end{figure}
+
+\clearpage
+\section*{Compliant gripper drawing and fabrication reference}
+
+Each gripper assembly uses two identical TPU~64D fingers, giving four fingers in the dual-arm system. One finger has an overall bounding box of \(123.36\times25.80\times40.00~\mathrm{mm}\), corresponding to \(L/T\approx4.78\) and \(L/H\approx3.08\). It is screw mounted, with a reinforced attachment region and a tapered ribbed body.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Compliant-finger fabrication reference}
+  \label{tab:app-gripper-reference}
+  \small
+  \begin{tabularx}{\textwidth}{p{0.28\textwidth}X}
+    \toprule
+    \textbf{Item} & \textbf{Recorded design information} \\
+    \midrule
+    Material & TPU, Shore hardness 64D \\
+    Overall size & \(123.36\times25.80\times40.00~\mathrm{mm}\) per finger \\
+    Quantity & Two fingers per gripper; four fingers for the dual-arm workcell \\
+    Attachment & Screw-mounted reinforced base \\
+    Contact geometry & Elongated tapered profile with repeated compliant ribs \\
+    Intended function & Passive accommodation of object-shape and pose variation during grasping and contact \\
+    Required inspection & Rib tearing, permanent bending, hole damage, paired-finger symmetry, screw retention, and opening clearance \\
+    Unreported quantities & Print orientation, infill, wall count, print mass and time, calibrated force--deflection curve, fatigue life, and contact load \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.96\textwidth]{dr3-report/imgs/soft_gripper_finger_three_views.png}
+  \caption{Orthographic views of one TPU~64D compliant gripper finger and its overall dimensions.}
+  \label{fig:app-gripper-three-view}
+\end{figure}
+
+\clearpage
+\section*{Complete parts and components record}
+
+Table~\ref{tab:app-parts-components} preserves the complete system composition. Chapter~4 contains only a system-level summary so that component model numbers and procurement-oriented details do not interrupt the engineering argument.
+
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{2.5pt}
+\renewcommand{\arraystretch}{1.08}
+\begin{longtable}{
+  >{\centering\arraybackslash}p{0.045\textwidth}
+  >{\raggedright\arraybackslash}p{0.22\textwidth}
+  >{\raggedright\arraybackslash}p{0.31\textwidth}
+  >{\centering\arraybackslash}p{0.09\textwidth}
+  >{\raggedright\arraybackslash}p{0.25\textwidth}}
+  \caption{Complete parts and components record for the bimanual system}
+  \label{tab:app-parts-components}\\
+  \toprule
+  \textbf{No.} & \textbf{Part or component} & \textbf{Specification} & \textbf{Qty.} & \textbf{Purpose} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{No.} & \textbf{Part or component} & \textbf{Specification} & \textbf{Qty.} & \textbf{Purpose} \\
+  \midrule
+  \endhead
+  1 & Franka Research~3 arm & 7-DoF, 3~kg nominal payload, 855~mm maximum reach, joint torque sensing & 2 & Left and right follower manipulation \\
+  2 & FR3 controller and robot interface & Manufacturer controller, network interface, low-level protection, FCI/ROS~2 integration & 2 sets & State feedback and admissible joint-target execution \\
+  3 & Custom gripper assembly & Project gripper with two screw-mounted compliant fingers & 2 & One end effector per arm \\
+  4 & Compliant finger & TPU~64D, \(123.36\times25.80\times40.00~\mathrm{mm}\), tapered and ribbed & 4 & Object contact with passive geometric tolerance \\
+  5 & Wrist camera & Intel RealSense D405, short-range RGB/depth device; RGB used by policy & 2 & Left- and right-wrist close-range observation \\
+  6 & Overhead camera & Intel RealSense D435i; RGB used by policy & 1 & Global shared-workspace observation \\
+  7 & GELLO leader assembly & 7 arm channels plus 1 gripper channel & 2 & Bilateral human demonstration input \\
+  8 & DYNAMIXEL XL330-M288-T & 3.7--6~V actuator module; 5~V recommended & 14 & Seven arm joints per GELLO leader \\
+  9 & DYNAMIXEL XL330-M077-T & 3.7--6~V actuator module; 5~V recommended & 2 & Gripper-related channel on each GELLO leader \\
+  10 & GELLO control board & ZNJ integrated control board & 2 & Reads and communicates leader joint positions \\
+  11 & GELLO power supply & 5~V, 5~A switched-mode supply & 2 & Leader-device electrical supply \\
+  12 & GELLO structural kit & FPX330-H101 with project 3D-printed links and brackets & 2 sets & Leader mechanism and mounting \\
+  13 & Camera mounts and cable routing & Fixed overhead mount and two wrist mounts & 1 set & Preserves camera identity, pose, and cable clearance \\
+  14 & Training workstation & NVIDIA RTX A6000, 48~GB; physical GPU~1 used & 1 & Joint $\pi_{0.5}$ fine-tuning and validation \\
+  15 & Network and ROS~2 bridge host & Project-configured communication and packet-assembly system & 1 set & Connects robots, grippers, cameras, recorder, and policy \\
+  16 & LeRobot software environment & LeRobot~0.5.2 with local changes; Dataset v3.0 & 1 config. & Recording, preprocessing, training, and deployment \\
+  17 & Can and handled ring & Task~1 objects & 1 set & Repositioning, grasp, and ring placement \\
+  18 & Socket box and plug & Electrically unpowered insertion task fixture and matching plug & 1 set & Repositioning and constrained insertion \\
+  19 & Motherboard, memory module, and tray & Task~3 objects; yellow destination tray & 1 set & Stabilization, extraction, transport, and placement \\
+  20 & Task fixtures and reset references & Printed or manually assembled positioning aids & 3 sets & Repeatable task initialization and terminal-state inspection \\
+  21 & Safety equipment & Physical emergency stop, manufacturer protective functions, supervised operation & 1 set & Deterministic stop and operator protection \\
+  22 & Data storage & Storage for 119,650 frames, three-view video, checkpoints, and logs & 1 set & Dataset and experiment traceability \\
+  \bottomrule
+\end{longtable}
+\endgroup
+% !TEX root = ../main.tex
+
+\appchapter{Hardware Specifications and Parts Records}\label{chap:hardware-records}
+\addcontentsline{toc}{chapter}{Appendix II.\ Hardware Specifications and Parts Records}
+
+\section*{Purpose}
+
+This appendix collects manufacturer reference parameters, component-level construction details, engineering drawings, and the complete parts record. These items support procurement, maintenance, replication, and hardware verification, but they are separated from Chapter~4 so that the main engineering analysis remains focused on design suitability, workspace, contact tolerance, sensing coverage, learning interfaces, and system operation.
+
+\section*{Franka Research 3 reference parameters}
+
+Chapter~4 retains the four FR3 characteristics that directly justify the selected workcell: seven degrees of freedom, a 3~kg nominal payload, an 855~mm maximum reach, and link-side torque sensing in all seven axes. Table~\ref{tab:app-fr3-vendor-parameters} preserves the broader manufacturer parameter set used during DR3~\cite{fr3datasheet,fr3product,frankafci}.
+
+\begin{table}[htbp]
+  \centering
+  \caption{FR3 manufacturer reference parameters used in the hardware record}
+  \label{tab:app-fr3-vendor-parameters}
+  \small
+  \begin{tabularx}{\textwidth}{p{0.28\textwidth}X}
+    \toprule
+    \textbf{Parameter} & \textbf{Reference value or interface} \\
+    \midrule
+    Degrees of freedom & 7 \\
+    Nominal payload & 3~kg \\
+    Maximum reach & 855~mm \\
+    Force/torque sensing & Link-side torque sensing in all seven axes \\
+    Joint position limits & A1 and A3: \(-166^\circ\) to \(166^\circ\); A2: \(-105^\circ\) to \(105^\circ\); A4: \(-176^\circ\) to \(-7^\circ\); A5: \(-165^\circ\) to \(165^\circ\); A6: \(25^\circ\) to \(265^\circ\); A7: \(-175^\circ\) to \(175^\circ\) \\
+    Mounting flange & DIN ISO 9409-1-A50 \\
+    Installation position & Upright \\
+    Weight in the DR3 reference sheet & Approximately 17.8~kg; the value should be checked against the exact hardware and datasheet revision used in the laboratory \\
+    Protection rating & IP40 \\
+    Ambient temperature & \(+5^\circ\mathrm{C}\) to \(+45^\circ\mathrm{C}\) \\
+    Air humidity & 20--80\%, non-condensing \\
+    Primary interfaces & Ethernet (TCP/IP), control connector, end-effector connector, and safety-rated inputs \\
+    Project control boundary & High-level absolute targets are supplied through the project interface; low-level execution and manufacturer protection remain active \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+Figure~\ref{fig:app-fr3-overview} records the arm appearance, joint-axis convention, and principal link dimensions. Figure~\ref{fig:app-fr3-configuration} preserves the complete DR3 parameter graphic. The workspace envelope remains in Figure~\ref{fig:ch4-fr3-workspace} because it is used directly in the main shared-workspace analysis.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.90\textwidth]{dr3-report/imgs/franka_fr3.png}
+  \caption{FR3 arm, joint-axis convention, and principal kinematic dimensions retained as a hardware reference.}
+  \label{fig:app-fr3-overview}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.94\textwidth]{dr3-report/imgs/fr3_config.png}
+  \caption{FR3 joint limits, mounting, environmental, and controller-interface parameters documented during DR3.}
+  \label{fig:app-fr3-configuration}
+\end{figure}
+
+\clearpage
+\section*{GELLO component-level construction}
+
+The final bilateral demonstration system uses one GELLO leader for each FR3 follower. Each leader supplies seven arm channels and one gripper-related channel. Table~\ref{tab:app-gello-components} lists the per-leader construction and the corresponding total for the dual-arm system.
+
+\begin{table}[htbp]
+  \centering
+  \caption{GELLO component-level construction}
+  \label{tab:app-gello-components}
+  \small
+  \begin{tabularx}{\textwidth}{p{0.30\textwidth}p{0.18\textwidth}p{0.18\textwidth}X}
+    \toprule
+    \textbf{Component} & \textbf{Per leader} & \textbf{Dual total} & \textbf{Function} \\
+    \midrule
+    DYNAMIXEL XL330-M288-T & 7 & 14 & Measures the seven leader-arm joint channels \\
+    DYNAMIXEL XL330-M077-T & 1 & 2 & Provides the gripper-related input channel \\
+    ZNJ integrated control board & 1 & 2 & Reads and communicates the leader actuator states \\
+    Switched-mode power supply & 1, 5~V 5~A & 2 & Supplies the leader electronics and actuator bus \\
+    FPX330-H101 structural kit & 1 set & 2 sets & Provides the modular leader structure \\
+    Printed links, brackets, and interfaces & 1 set & 2 sets & Completes the leader geometry, base, and Franka-compatible gripper input \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+The XL330 reference properties used during hardware selection are summarized in Table~\ref{tab:app-xl330-reference}. They are component specifications rather than follower-robot requirements: the leader is used to measure and publish operator motion, not to reproduce the payload or torque capability of the FR3.
+
+\begin{table}[htbp]
+  \centering
+  \caption{DYNAMIXEL XL330 series reference properties}
+  \label{tab:app-xl330-reference}
+  \small
+  \begin{tabularx}{\textwidth}{p{0.28\textwidth}X}
+    \toprule
+    \textbf{Property} & \textbf{Reference value} \\
+    \midrule
+    Input-voltage range & 3.7--6~V \\
+    Recommended supply & 5~V \\
+    Approximate dimensions & \(20\times34\times26~\mathrm{mm}\) \\
+    Approximate mass & 18~g per actuator \\
+    Supported control modes & Position, extended position, velocity, PWM, current, and current-based position modes \\
+    Selected variants & M288 for the seven arm joints and M077 for the gripper-related joint \\
+    Source & ROBOTIS XL330 documentation~\cite{dynamixelxl330} \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.50\textwidth]{dr3-report/imgs/gello.png}
+  \caption{GELLO--Franka leader device retained as the component-level teleoperation reference.}
+  \label{fig:app-gello}
+\end{figure}
+
+\clearpage
+\section*{Compliant gripper drawing and fabrication reference}
+
+Each gripper assembly uses two identical TPU~64D fingers, giving four fingers in the dual-arm system. One finger has an overall bounding box of \(123.36\times25.80\times40.00~\mathrm{mm}\), corresponding to \(L/T\approx4.78\) and \(L/H\approx3.08\). It is screw mounted, with a reinforced attachment region and a tapered ribbed body.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Compliant-finger fabrication reference}
+  \label{tab:app-gripper-reference}
+  \small
+  \begin{tabularx}{\textwidth}{p{0.28\textwidth}X}
+    \toprule
+    \textbf{Item} & \textbf{Recorded design information} \\
+    \midrule
+    Material & TPU, Shore hardness 64D \\
+    Overall size & \(123.36\times25.80\times40.00~\mathrm{mm}\) per finger \\
+    Quantity & Two fingers per gripper; four fingers for the dual-arm workcell \\
+    Attachment & Screw-mounted reinforced base \\
+    Contact geometry & Elongated tapered profile with repeated compliant ribs \\
+    Intended function & Passive accommodation of object-shape and pose variation during grasping and contact \\
+    Required inspection & Rib tearing, permanent bending, hole damage, paired-finger symmetry, screw retention, and opening clearance \\
+    Unreported quantities & Print orientation, infill, wall count, print mass and time, calibrated force--deflection curve, fatigue life, and contact load \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.96\textwidth]{dr3-report/imgs/soft_gripper_finger_three_views.png}
+  \caption{Orthographic views of one TPU~64D compliant gripper finger and its overall dimensions.}
+  \label{fig:app-gripper-three-view}
+\end{figure}
+
+\clearpage
+\section*{Complete parts and components record}
+
+Table~\ref{tab:app-parts-components} preserves the complete system composition. Chapter~4 contains only a system-level summary so that component model numbers and procurement-oriented details do not interrupt the engineering argument.
+
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{2.5pt}
+\renewcommand{\arraystretch}{1.08}
+\begin{longtable}{
+  >{\centering\arraybackslash}p{0.045\textwidth}
+  >{\raggedright\arraybackslash}p{0.22\textwidth}
+  >{\raggedright\arraybackslash}p{0.31\textwidth}
+  >{\centering\arraybackslash}p{0.09\textwidth}
+  >{\raggedright\arraybackslash}p{0.25\textwidth}}
+  \caption{Complete parts and components record for the bimanual system}
+  \label{tab:app-parts-components}\\
+  \toprule
+  \textbf{No.} & \textbf{Part or component} & \textbf{Specification} & \textbf{Qty.} & \textbf{Purpose} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{No.} & \textbf{Part or component} & \textbf{Specification} & \textbf{Qty.} & \textbf{Purpose} \\
+  \midrule
+  \endhead
+  1 & Franka Research~3 arm & 7-DoF, 3~kg nominal payload, 855~mm maximum reach, joint torque sensing & 2 & Left and right follower manipulation \\
+  2 & FR3 controller and robot interface & Manufacturer controller, network interface, low-level protection, FCI/ROS~2 integration & 2 sets & State feedback and admissible joint-target execution \\
+  3 & Custom gripper assembly & Project gripper with two screw-mounted compliant fingers & 2 & One end effector per arm \\
+  4 & Compliant finger & TPU~64D, \(123.36\times25.80\times40.00~\mathrm{mm}\), tapered and ribbed & 4 & Object contact with passive geometric tolerance \\
+  5 & Wrist camera & Intel RealSense D405, short-range RGB/depth device; RGB used by policy & 2 & Left- and right-wrist close-range observation \\
+  6 & Overhead camera & Intel RealSense D435i; RGB used by policy & 1 & Global shared-workspace observation \\
+  7 & GELLO leader assembly & 7 arm channels plus 1 gripper channel & 2 & Bilateral human demonstration input \\
+  8 & DYNAMIXEL XL330-M288-T & 3.7--6~V actuator module; 5~V recommended & 14 & Seven arm joints per GELLO leader \\
+  9 & DYNAMIXEL XL330-M077-T & 3.7--6~V actuator module; 5~V recommended & 2 & Gripper-related channel on each GELLO leader \\
+  10 & GELLO control board & ZNJ integrated control board & 2 & Reads and communicates leader joint positions \\
+  11 & GELLO power supply & 5~V, 5~A switched-mode supply & 2 & Leader-device electrical supply \\
+  12 & GELLO structural kit & FPX330-H101 with project 3D-printed links and brackets & 2 sets & Leader mechanism and mounting \\
+  13 & Camera mounts and cable routing & Fixed overhead mount and two wrist mounts & 1 set & Preserves camera identity, pose, and cable clearance \\
+  14 & Training workstation & NVIDIA RTX A6000, 48~GB; physical GPU~1 used & 1 & Joint $\pi_{0.5}$ fine-tuning and validation \\
+  15 & Network and ROS~2 bridge host & Project-configured communication and packet-assembly system & 1 set & Connects robots, grippers, cameras, recorder, and policy \\
+  16 & LeRobot software environment & LeRobot~0.5.2 with local changes; Dataset v3.0 & 1 config. & Recording, preprocessing, training, and deployment \\
+  17 & Can and handled ring & Task~1 objects & 1 set & Repositioning, grasp, and ring placement \\
+  18 & Socket box and plug & Electrically unpowered insertion task fixture and matching plug & 1 set & Repositioning and constrained insertion \\
+  19 & Motherboard, memory module, and tray & Task~3 objects; yellow destination tray & 1 set & Stabilization, extraction, transport, and placement \\
+  20 & Task fixtures and reset references & Printed or manually assembled positioning aids & 3 sets & Repeatable task initialization and terminal-state inspection \\
+  21 & Safety equipment & Physical emergency stop, manufacturer protective functions, supervised operation & 1 set & Deterministic stop and operator protection \\
+  22 & Data storage & Storage for 119,650 frames, three-view video, checkpoints, and logs & 1 set & Dataset and experiment traceability \\
+  \bottomrule
+\end{longtable}
+\endgroup
+% !TEX root = ../main.tex
+
+\appchapter{Hardware Specifications and Parts Records}\label{chap:hardware-records}
+\addcontentsline{toc}{chapter}{Appendix II.\ Hardware Specifications and Parts Records}
+
+\section*{Purpose}
+
+This appendix collects manufacturer reference parameters, component-level construction details, engineering drawings, and the complete parts record. These items support procurement, maintenance, replication, and hardware verification, but they are separated from Chapter~4 so that the main engineering analysis remains focused on design suitability, workspace, contact tolerance, sensing coverage, learning interfaces, and system operation.
+
+\section*{Franka Research 3 reference parameters}
+
+Chapter~4 retains the four FR3 characteristics that directly justify the selected workcell: seven degrees of freedom, a 3~kg nominal payload, an 855~mm maximum reach, and link-side torque sensing in all seven axes. Table~\ref{tab:app-fr3-vendor-parameters} preserves the broader manufacturer parameter set used during DR3~\cite{fr3datasheet,fr3product,frankafci}.
+
+\begin{table}[htbp]
+  \centering
+  \caption{FR3 manufacturer reference parameters used in the hardware record}
+  \label{tab:app-fr3-vendor-parameters}
+  \small
+  \begin{tabularx}{\textwidth}{p{0.28\textwidth}X}
+    \toprule
+    \textbf{Parameter} & \textbf{Reference value or interface} \\
+    \midrule
+    Degrees of freedom & 7 \\
+    Nominal payload & 3~kg \\
+    Maximum reach & 855~mm \\
+    Force/torque sensing & Link-side torque sensing in all seven axes \\
+    Joint position limits & A1 and A3: \(-166^\circ\) to \(166^\circ\); A2: \(-105^\circ\) to \(105^\circ\); A4: \(-176^\circ\) to \(-7^\circ\); A5: \(-165^\circ\) to \(165^\circ\); A6: \(25^\circ\) to \(265^\circ\); A7: \(-175^\circ\) to \(175^\circ\) \\
+    Mounting flange & DIN ISO 9409-1-A50 \\
+    Installation position & Upright \\
+    Weight in the DR3 reference sheet & Approximately 17.8~kg; the value should be checked against the exact hardware and datasheet revision used in the laboratory \\
+    Protection rating & IP40 \\
+    Ambient temperature & \(+5^\circ\mathrm{C}\) to \(+45^\circ\mathrm{C}\) \\
+    Air humidity & 20--80\%, non-condensing \\
+    Primary interfaces & Ethernet (TCP/IP), control connector, end-effector connector, and safety-rated inputs \\
+    Project control boundary & High-level absolute targets are supplied through the project interface; low-level execution and manufacturer protection remain active \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+Figure~\ref{fig:app-fr3-overview} records the arm appearance, joint-axis convention, and principal link dimensions. Figure~\ref{fig:app-fr3-configuration} preserves the complete DR3 parameter graphic. The workspace envelope remains in Figure~\ref{fig:ch4-fr3-workspace} because it is used directly in the main shared-workspace analysis.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.90\textwidth]{dr3-report/imgs/franka_fr3.png}
+  \caption{FR3 arm, joint-axis convention, and principal kinematic dimensions retained as a hardware reference.}
+  \label{fig:app-fr3-overview}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.94\textwidth]{dr3-report/imgs/fr3_config.png}
+  \caption{FR3 joint limits, mounting, environmental, and controller-interface parameters documented during DR3.}
+  \label{fig:app-fr3-configuration}
+\end{figure}
+
+\clearpage
+\section*{GELLO component-level construction}
+
+The final bilateral demonstration system uses one GELLO leader for each FR3 follower. Each leader supplies seven arm channels and one gripper-related channel. Table~\ref{tab:app-gello-components} lists the per-leader construction and the corresponding total for the dual-arm system.
+
+\begin{table}[htbp]
+  \centering
+  \caption{GELLO component-level construction}
+  \label{tab:app-gello-components}
+  \small
+  \begin{tabularx}{\textwidth}{p{0.30\textwidth}p{0.18\textwidth}p{0.18\textwidth}X}
+    \toprule
+    \textbf{Component} & \textbf{Per leader} & \textbf{Dual total} & \textbf{Function} \\
+    \midrule
+    DYNAMIXEL XL330-M288-T & 7 & 14 & Measures the seven leader-arm joint channels \\
+    DYNAMIXEL XL330-M077-T & 1 & 2 & Provides the gripper-related input channel \\
+    ZNJ integrated control board & 1 & 2 & Reads and communicates the leader actuator states \\
+    Switched-mode power supply & 1, 5~V 5~A & 2 & Supplies the leader electronics and actuator bus \\
+    FPX330-H101 structural kit & 1 set & 2 sets & Provides the modular leader structure \\
+    Printed links, brackets, and interfaces & 1 set & 2 sets & Completes the leader geometry, base, and Franka-compatible gripper input \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+The XL330 reference properties used during hardware selection are summarized in Table~\ref{tab:app-xl330-reference}. They are component specifications rather than follower-robot requirements: the leader is used to measure and publish operator motion, not to reproduce the payload or torque capability of the FR3.
+
+\begin{table}[htbp]
+  \centering
+  \caption{DYNAMIXEL XL330 series reference properties}
+  \label{tab:app-xl330-reference}
+  \small
+  \begin{tabularx}{\textwidth}{p{0.28\textwidth}X}
+    \toprule
+    \textbf{Property} & \textbf{Reference value} \\
+    \midrule
+    Input-voltage range & 3.7--6~V \\
+    Recommended supply & 5~V \\
+    Approximate dimensions & \(20\times34\times26~\mathrm{mm}\) \\
+    Approximate mass & 18~g per actuator \\
+    Supported control modes & Position, extended position, velocity, PWM, current, and current-based position modes \\
+    Selected variants & M288 for the seven arm joints and M077 for the gripper-related joint \\
+    Source & ROBOTIS XL330 documentation~\cite{dynamixelxl330} \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.50\textwidth]{dr3-report/imgs/gello.png}
+  \caption{GELLO--Franka leader device retained as the component-level teleoperation reference.}
+  \label{fig:app-gello}
+\end{figure}
+
+\clearpage
+\section*{Compliant gripper drawing and fabrication reference}
+
+Each gripper assembly uses two identical TPU~64D fingers, giving four fingers in the dual-arm system. One finger has an overall bounding box of \(123.36\times25.80\times40.00~\mathrm{mm}\), corresponding to \(L/T\approx4.78\) and \(L/H\approx3.08\). It is screw mounted, with a reinforced attachment region and a tapered ribbed body.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Compliant-finger fabrication reference}
+  \label{tab:app-gripper-reference}
+  \small
+  \begin{tabularx}{\textwidth}{p{0.28\textwidth}X}
+    \toprule
+    \textbf{Item} & \textbf{Recorded design information} \\
+    \midrule
+    Material & TPU, Shore hardness 64D \\
+    Overall size & \(123.36\times25.80\times40.00~\mathrm{mm}\) per finger \\
+    Quantity & Two fingers per gripper; four fingers for the dual-arm workcell \\
+    Attachment & Screw-mounted reinforced base \\
+    Contact geometry & Elongated tapered profile with repeated compliant ribs \\
+    Intended function & Passive accommodation of object-shape and pose variation during grasping and contact \\
+    Required inspection & Rib tearing, permanent bending, hole damage, paired-finger symmetry, screw retention, and opening clearance \\
+    Unreported quantities & Print orientation, infill, wall count, print mass and time, calibrated force--deflection curve, fatigue life, and contact load \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.96\textwidth]{dr3-report/imgs/soft_gripper_finger_three_views.png}
+  \caption{Orthographic views of one TPU~64D compliant gripper finger and its overall dimensions.}
+  \label{fig:app-gripper-three-view}
+\end{figure}
+
+\clearpage
+\section*{Complete parts and components record}
+
+Table~\ref{tab:app-parts-components} preserves the complete system composition. Chapter~4 contains only a system-level summary so that component model numbers and procurement-oriented details do not interrupt the engineering argument.
+
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{2.5pt}
+\renewcommand{\arraystretch}{1.08}
+\begin{longtable}{
+  >{\centering\arraybackslash}p{0.045\textwidth}
+  >{\raggedright\arraybackslash}p{0.22\textwidth}
+  >{\raggedright\arraybackslash}p{0.31\textwidth}
+  >{\centering\arraybackslash}p{0.09\textwidth}
+  >{\raggedright\arraybackslash}p{0.25\textwidth}}
+  \caption{Complete parts and components record for the bimanual system}
+  \label{tab:app-parts-components}\\
+  \toprule
+  \textbf{No.} & \textbf{Part or component} & \textbf{Specification} & \textbf{Qty.} & \textbf{Purpose} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{No.} & \textbf{Part or component} & \textbf{Specification} & \textbf{Qty.} & \textbf{Purpose} \\
+  \midrule
+  \endhead
+  1 & Franka Research~3 arm & 7-DoF, 3~kg nominal payload, 855~mm maximum reach, joint torque sensing & 2 & Left and right follower manipulation \\
+  2 & FR3 controller and robot interface & Manufacturer controller, network interface, low-level protection, FCI/ROS~2 integration & 2 sets & State feedback and admissible joint-target execution \\
+  3 & Custom gripper assembly & Project gripper with two screw-mounted compliant fingers & 2 & One end effector per arm \\
+  4 & Compliant finger & TPU~64D, \(123.36\times25.80\times40.00~\mathrm{mm}\), tapered and ribbed & 4 & Object contact with passive geometric tolerance \\
+  5 & Wrist camera & Intel RealSense D405, short-range RGB/depth device; RGB used by policy & 2 & Left- and right-wrist close-range observation \\
+  6 & Overhead camera & Intel RealSense D435i; RGB used by policy & 1 & Global shared-workspace observation \\
+  7 & GELLO leader assembly & 7 arm channels plus 1 gripper channel & 2 & Bilateral human demonstration input \\
+  8 & DYNAMIXEL XL330-M288-T & 3.7--6~V actuator module; 5~V recommended & 14 & Seven arm joints per GELLO leader \\
+  9 & DYNAMIXEL XL330-M077-T & 3.7--6~V actuator module; 5~V recommended & 2 & Gripper-related channel on each GELLO leader \\
+  10 & GELLO control board & ZNJ integrated control board & 2 & Reads and communicates leader joint positions \\
+  11 & GELLO power supply & 5~V, 5~A switched-mode supply & 2 & Leader-device electrical supply \\
+  12 & GELLO structural kit & FPX330-H101 with project 3D-printed links and brackets & 2 sets & Leader mechanism and mounting \\
+  13 & Camera mounts and cable routing & Fixed overhead mount and two wrist mounts & 1 set & Preserves camera identity, pose, and cable clearance \\
+  14 & Training workstation & NVIDIA RTX A6000, 48~GB; physical GPU~1 used & 1 & Joint $\pi_{0.5}$ fine-tuning and validation \\
+  15 & Network and ROS~2 bridge host & Project-configured communication and packet-assembly system & 1 set & Connects robots, grippers, cameras, recorder, and policy \\
+  16 & LeRobot software environment & LeRobot~0.5.2 with local changes; Dataset v3.0 & 1 config. & Recording, preprocessing, training, and deployment \\
+  17 & Can and handled ring & Task~1 objects & 1 set & Repositioning, grasp, and ring placement \\
+  18 & Socket box and plug & Electrically unpowered insertion task fixture and matching plug & 1 set & Repositioning and constrained insertion \\
+  19 & Motherboard, memory module, and tray & Task~3 objects; yellow destination tray & 1 set & Stabilization, extraction, transport, and placement \\
+  20 & Task fixtures and reset references & Printed or manually assembled positioning aids & 3 sets & Repeatable task initialization and terminal-state inspection \\
+  21 & Safety equipment & Physical emergency stop, manufacturer protective functions, supervised operation & 1 set & Deterministic stop and operator protection \\
+  22 & Data storage & Storage for 119,650 frames, three-view video, checkpoints, and logs & 1 set & Dataset and experiment traceability \\
+  \bottomrule
+\end{longtable}
+\endgroup
+% !TEX root = ../main.tex
+
+\appchapter{Hardware Specifications and Parts Records}\label{chap:hardware-records}
+\addcontentsline{toc}{chapter}{Appendix II.\ Hardware Specifications and Parts Records}
+
+\section*{Purpose}
+
+This appendix collects manufacturer reference parameters, component-level construction details, engineering drawings, and the complete parts record. These items support procurement, maintenance, replication, and hardware verification, but they are separated from Chapter~4 so that the main engineering analysis remains focused on design suitability, workspace, contact tolerance, sensing coverage, learning interfaces, and system operation.
+
+\section*{Franka Research 3 reference parameters}
+
+Chapter~4 retains the four FR3 characteristics that directly justify the selected workcell: seven degrees of freedom, a 3~kg nominal payload, an 855~mm maximum reach, and link-side torque sensing in all seven axes. Table~\ref{tab:app-fr3-vendor-parameters} preserves the broader manufacturer parameter set used during DR3~\cite{fr3datasheet,fr3product,frankafci}.
+
+\begin{table}[htbp]
+  \centering
+  \caption{FR3 manufacturer reference parameters used in the hardware record}
+  \label{tab:app-fr3-vendor-parameters}
+  \small
+  \begin{tabularx}{\textwidth}{p{0.28\textwidth}X}
+    \toprule
+    \textbf{Parameter} & \textbf{Reference value or interface} \\
+    \midrule
+    Degrees of freedom & 7 \\
+    Nominal payload & 3~kg \\
+    Maximum reach & 855~mm \\
+    Force/torque sensing & Link-side torque sensing in all seven axes \\
+    Joint position limits & A1 and A3: \(-166^\circ\) to \(166^\circ\); A2: \(-105^\circ\) to \(105^\circ\); A4: \(-176^\circ\) to \(-7^\circ\); A5: \(-165^\circ\) to \(165^\circ\); A6: \(25^\circ\) to \(265^\circ\); A7: \(-175^\circ\) to \(175^\circ\) \\
+    Mounting flange & DIN ISO 9409-1-A50 \\
+    Installation position & Upright \\
+    Weight in the DR3 reference sheet & Approximately 17.8~kg; the value should be checked against the exact hardware and datasheet revision used in the laboratory \\
+    Protection rating & IP40 \\
+    Ambient temperature & \(+5^\circ\mathrm{C}\) to \(+45^\circ\mathrm{C}\) \\
+    Air humidity & 20--80\%, non-condensing \\
+    Primary interfaces & Ethernet (TCP/IP), control connector, end-effector connector, and safety-rated inputs \\
+    Project control boundary & High-level absolute targets are supplied through the project interface; low-level execution and manufacturer protection remain active \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+Figure~\ref{fig:app-fr3-overview} records the arm appearance, joint-axis convention, and principal link dimensions. Figure~\ref{fig:app-fr3-configuration} preserves the complete DR3 parameter graphic. The workspace envelope remains in Figure~\ref{fig:ch4-fr3-workspace} because it is used directly in the main shared-workspace analysis.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.90\textwidth]{dr3-report/imgs/franka_fr3.png}
+  \caption{FR3 arm, joint-axis convention, and principal kinematic dimensions retained as a hardware reference.}
+  \label{fig:app-fr3-overview}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.94\textwidth]{dr3-report/imgs/fr3_config.png}
+  \caption{FR3 joint limits, mounting, environmental, and controller-interface parameters documented during DR3.}
+  \label{fig:app-fr3-configuration}
+\end{figure}
+
+\clearpage
+\section*{GELLO component-level construction}
+
+The final bilateral demonstration system uses one GELLO leader for each FR3 follower. Each leader supplies seven arm channels and one gripper-related channel. Table~\ref{tab:app-gello-components} lists the per-leader construction and the corresponding total for the dual-arm system.
+
+\begin{table}[htbp]
+  \centering
+  \caption{GELLO component-level construction}
+  \label{tab:app-gello-components}
+  \small
+  \begin{tabularx}{\textwidth}{p{0.30\textwidth}p{0.18\textwidth}p{0.18\textwidth}X}
+    \toprule
+    \textbf{Component} & \textbf{Per leader} & \textbf{Dual total} & \textbf{Function} \\
+    \midrule
+    DYNAMIXEL XL330-M288-T & 7 & 14 & Measures the seven leader-arm joint channels \\
+    DYNAMIXEL XL330-M077-T & 1 & 2 & Provides the gripper-related input channel \\
+    ZNJ integrated control board & 1 & 2 & Reads and communicates the leader actuator states \\
+    Switched-mode power supply & 1, 5~V 5~A & 2 & Supplies the leader electronics and actuator bus \\
+    FPX330-H101 structural kit & 1 set & 2 sets & Provides the modular leader structure \\
+    Printed links, brackets, and interfaces & 1 set & 2 sets & Completes the leader geometry, base, and Franka-compatible gripper input \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+The XL330 reference properties used during hardware selection are summarized in Table~\ref{tab:app-xl330-reference}. They are component specifications rather than follower-robot requirements: the leader is used to measure and publish operator motion, not to reproduce the payload or torque capability of the FR3.
+
+\begin{table}[htbp]
+  \centering
+  \caption{DYNAMIXEL XL330 series reference properties}
+  \label{tab:app-xl330-reference}
+  \small
+  \begin{tabularx}{\textwidth}{p{0.28\textwidth}X}
+    \toprule
+    \textbf{Property} & \textbf{Reference value} \\
+    \midrule
+    Input-voltage range & 3.7--6~V \\
+    Recommended supply & 5~V \\
+    Approximate dimensions & \(20\times34\times26~\mathrm{mm}\) \\
+    Approximate mass & 18~g per actuator \\
+    Supported control modes & Position, extended position, velocity, PWM, current, and current-based position modes \\
+    Selected variants & M288 for the seven arm joints and M077 for the gripper-related joint \\
+    Source & ROBOTIS XL330 documentation~\cite{dynamixelxl330} \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.50\textwidth]{dr3-report/imgs/gello.png}
+  \caption{GELLO--Franka leader device retained as the component-level teleoperation reference.}
+  \label{fig:app-gello}
+\end{figure}
+
+\clearpage
+\section*{Compliant gripper drawing and fabrication reference}
+
+Each gripper assembly uses two identical TPU~64D fingers, giving four fingers in the dual-arm system. One finger has an overall bounding box of \(123.36\times25.80\times40.00~\mathrm{mm}\), corresponding to \(L/T\approx4.78\) and \(L/H\approx3.08\). It is screw mounted, with a reinforced attachment region and a tapered ribbed body.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Compliant-finger fabrication reference}
+  \label{tab:app-gripper-reference}
+  \small
+  \begin{tabularx}{\textwidth}{p{0.28\textwidth}X}
+    \toprule
+    \textbf{Item} & \textbf{Recorded design information} \\
+    \midrule
+    Material & TPU, Shore hardness 64D \\
+    Overall size & \(123.36\times25.80\times40.00~\mathrm{mm}\) per finger \\
+    Quantity & Two fingers per gripper; four fingers for the dual-arm workcell \\
+    Attachment & Screw-mounted reinforced base \\
+    Contact geometry & Elongated tapered profile with repeated compliant ribs \\
+    Intended function & Passive accommodation of object-shape and pose variation during grasping and contact \\
+    Required inspection & Rib tearing, permanent bending, hole damage, paired-finger symmetry, screw retention, and opening clearance \\
+    Unreported quantities & Print orientation, infill, wall count, print mass and time, calibrated force--deflection curve, fatigue life, and contact load \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.96\textwidth]{dr3-report/imgs/soft_gripper_finger_three_views.png}
+  \caption{Orthographic views of one TPU~64D compliant gripper finger and its overall dimensions.}
+  \label{fig:app-gripper-three-view}
+\end{figure}
+
+\clearpage
+\section*{Complete parts and components record}
+
+Table~\ref{tab:app-parts-components} preserves the complete system composition. Chapter~4 contains only a system-level summary so that component model numbers and procurement-oriented details do not interrupt the engineering argument.
+
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{2.5pt}
+\renewcommand{\arraystretch}{1.08}
+\begin{longtable}{
+  >{\centering\arraybackslash}p{0.045\textwidth}
+  >{\raggedright\arraybackslash}p{0.22\textwidth}
+  >{\raggedright\arraybackslash}p{0.31\textwidth}
+  >{\centering\arraybackslash}p{0.09\textwidth}
+  >{\raggedright\arraybackslash}p{0.25\textwidth}}
+  \caption{Complete parts and components record for the bimanual system}
+  \label{tab:app-parts-components}\\
+  \toprule
+  \textbf{No.} & \textbf{Part or component} & \textbf{Specification} & \textbf{Qty.} & \textbf{Purpose} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{No.} & \textbf{Part or component} & \textbf{Specification} & \textbf{Qty.} & \textbf{Purpose} \\
+  \midrule
+  \endhead
+  1 & Franka Research~3 arm & 7-DoF, 3~kg nominal payload, 855~mm maximum reach, joint torque sensing & 2 & Left and right follower manipulation \\
+  2 & FR3 controller and robot interface & Manufacturer controller, network interface, low-level protection, FCI/ROS~2 integration & 2 sets & State feedback and admissible joint-target execution \\
+  3 & Custom gripper assembly & Project gripper with two screw-mounted compliant fingers & 2 & One end effector per arm \\
+  4 & Compliant finger & TPU~64D, \(123.36\times25.80\times40.00~\mathrm{mm}\), tapered and ribbed & 4 & Object contact with passive geometric tolerance \\
+  5 & Wrist camera & Intel RealSense D405, short-range RGB/depth device; RGB used by policy & 2 & Left- and right-wrist close-range observation \\
+  6 & Overhead camera & Intel RealSense D435i; RGB used by policy & 1 & Global shared-workspace observation \\
+  7 & GELLO leader assembly & 7 arm channels plus 1 gripper channel & 2 & Bilateral human demonstration input \\
+  8 & DYNAMIXEL XL330-M288-T & 3.7--6~V actuator module; 5~V recommended & 14 & Seven arm joints per GELLO leader \\
+  9 & DYNAMIXEL XL330-M077-T & 3.7--6~V actuator module; 5~V recommended & 2 & Gripper-related channel on each GELLO leader \\
+  10 & GELLO control board & ZNJ integrated control board & 2 & Reads and communicates leader joint positions \\
+  11 & GELLO power supply & 5~V, 5~A switched-mode supply & 2 & Leader-device electrical supply \\
+  12 & GELLO structural kit & FPX330-H101 with project 3D-printed links and brackets & 2 sets & Leader mechanism and mounting \\
+  13 & Camera mounts and cable routing & Fixed overhead mount and two wrist mounts & 1 set & Preserves camera identity, pose, and cable clearance \\
+  14 & Training workstation & NVIDIA RTX A6000, 48~GB; physical GPU~1 used & 1 & Joint $\pi_{0.5}$ fine-tuning and validation \\
+  15 & Network and ROS~2 bridge host & Project-configured communication and packet-assembly system & 1 set & Connects robots, grippers, cameras, recorder, and policy \\
+  16 & LeRobot software environment & LeRobot~0.5.2 with local changes; Dataset v3.0 & 1 config. & Recording, preprocessing, training, and deployment \\
+  17 & Can and handled ring & Task~1 objects & 1 set & Repositioning, grasp, and ring placement \\
+  18 & Socket box and plug & Electrically unpowered insertion task fixture and matching plug & 1 set & Repositioning and constrained insertion \\
+  19 & Motherboard, memory module, and tray & Task~3 objects; yellow destination tray & 1 set & Stabilization, extraction, transport, and placement \\
+  20 & Task fixtures and reset references & Printed or manually assembled positioning aids & 3 sets & Repeatable task initialization and terminal-state inspection \\
+  21 & Safety equipment & Physical emergency stop, manufacturer protective functions, supervised operation & 1 set & Deterministic stop and operator protection \\
+  22 & Data storage & Storage for 119,650 frames, three-view video, checkpoints, and logs & 1 set & Dataset and experiment traceability \\
+  \bottomrule
+\end{longtable}
+\endgroup
