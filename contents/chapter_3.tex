@@ -10,7 +10,7 @@ The target assembly system was first decomposed into solution-neutral functions:
 
 \subsection{Structured brainstorming}
 
-The team used structured brainstorming to generate alternatives for each module before choosing a configuration. Candidate ideas were retained when they addressed at least one QFD-linked specification and did not violate laboratory safety, hardware access, or the project schedule. The session considered the available FR3 ecosystem alongside Flexiv and ALOHA-style platforms; direct joint-master, XR, and hand-held teleoperation; progressively richer observation schemas; compliant and rigid end-effectors; and policy families ranging from Diffusion Policy to ACT and future VLA models. This procedure deliberately separates the choice of a data-collection interface from the choice of a learning algorithm, since neither can be justified independently of the sensing and robot-control path.
+The team used structured brainstorming to generate alternatives for each module before choosing a configuration. Candidate ideas were retained when they addressed at least one QFD-linked specification and did not violate laboratory safety, hardware access, or the project schedule. The session considered the available FR3 ecosystem alongside Flexiv and ALOHA-style platforms; direct joint-master, XR, and hand-held teleoperation; progressively richer observation schemas; compliant and rigid end-effectors; and policy families including Diffusion Policy, ACT, and the $\pi_{0.5}$ VLA model. This procedure deliberately separates the choice of a data-collection interface from the choice of a learning algorithm, since neither can be justified independently of the sensing and robot-control path.
 
 The generated alternatives were also informed by established research directions rather than by ad hoc feature lists. Robomimic and MimicGen motivate treating demonstration quality and dataset construction as system-level design variables~\cite{robomimic,mimicgen}; RVT, 3D Diffusion Policy, and R3M respectively motivate the retained alternatives for multi-view geometry, 3D visuomotor control, and reusable robot visual representations~\cite{rvt,dp3,r3m}. These references define the external concept space, while the selected configuration remains constrained by the laboratory hardware, the QFD priorities, and the project schedule.
 
@@ -31,12 +31,12 @@ C1: Platform & \textbf{Dual Franka FR3} & Dual Flexiv platform & ALOHA-style bim
 C2: Teleoperator & \textbf{GELLO joint-master} & PICO 4 Ultra XR & UMI hand-held \\
 C3: Data collection & \textbf{Two wrist + one top camera + robot state/action} & One wrist + one top camera + robot state/action & Robot state/action only \\
 C4: Gripper & Franka parallel gripper & 3D-printed hard gripper & \textbf{3D-printed soft gripper} \\
-C5: Policy & \textbf{ACT in LeRobot} & $\pi$-style VLA policy & Diffusion policy \\
+C5: Policy & ACT in LeRobot & \textbf{$\pi_{0.5}$ VLA in LeRobot} & Diffusion policy \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-The morphological chart produces five leading module concepts, denoted C1--C5. C1 is a dual-FR3 platform; C2 is GELLO-based teleoperation; C3 is a synchronized three-camera, robot-state, and action pipeline; C4 is a 3D-printed soft gripper; and C5 is an ACT policy integrated through LeRobot. Together they form one integrated system concept, rather than five competing end-to-end robot systems. Their alternatives are retained because each exposes a real engineering trade-off: platform precision against integration cost, operator intuitiveness against mapping complexity, observation coverage against synchronization burden, compliance against geometric repeatability, and policy capability against data and deployment maturity. Detailed descriptions of the unselected alternatives are provided in the appendix.
+The morphological chart produces five leading module concepts, denoted C1--C5. C1 is a dual-FR3 platform; C2 is GELLO-based teleoperation; C3 is a synchronized three-camera, robot-state, and action pipeline; C4 is a 3D-printed soft gripper; and C5 is a unified $\pi_{0.5}$ VLA policy integrated through LeRobot. Together they form one integrated system concept, rather than five competing end-to-end robot systems. Their alternatives are retained because each exposes a real engineering trade-off: platform precision against integration cost, operator intuitiveness against mapping complexity, observation coverage against synchronization burden, compliance against geometric repeatability, and policy capability against data and deployment maturity. Detailed descriptions of the unselected alternatives are provided in the appendix.
 
 \section{Concept selection}
 
@@ -96,9 +96,9 @@ C4 Gripper & 3D-printed soft gripper & 4 & 4 & 4 & 5 & \textbf{4.20} \\
  & Franka parallel gripper & 3 & 5 & 4 & 3 & 3.70 \\
  & 3D-printed hard gripper & 4 & 5 & 3 & 4 & 4.05 \\
 \midrule
-C5 Policy & ACT in LeRobot & 4 & 5 & 4 & 5 & \textbf{4.50} \\
+C5 Policy & $\pi_{0.5}$ VLA in LeRobot & 5 & 5 & 4 & 4 & \textbf{4.55} \\
+ & ACT in LeRobot & 4 & 5 & 4 & 5 & 4.50 \\
  & Diffusion Policy & 4 & 3 & 4 & 4 & 3.75 \\
- & $\pi$-style VLA policy (future route) & 5 & 2 & 3 & 1 & 2.75 \\
 \bottomrule
 \end{longtable}
 
@@ -116,7 +116,7 @@ The selected sensing configuration uses one Intel RealSense D435 overhead camera
 \noindent\textbf{C4: 3D-printed soft gripper.}
 The selected end-effector is a 3D-printed soft gripper derived from the open-source gripper design in the referenced UMI material; the project adopts only the gripper-finger component rather than reproducing the complete UMI hardware system~\cite{umi}. Compliant contact and rapid geometry iteration are valuable for handling assembly components with small geometric variation, although deformation may reduce pose repeatability compared with a rigid locating gripper.
 
-\noindent\textbf{C5: ACT policy in LeRobot.}
-ACT was selected as the current policy because it is integrated with the LeRobot workflow and supports task-specific training and checkpoint deployment from synchronized visual observations and robot-state inputs~\cite{act,lerobot}. Action chunking provides a practical temporal-control mechanism for the present imitation-learning pipeline. Deployment remains task-specific and operator-selected: the policy does not yet infer tasks from natural-language input or demonstrate unified multi-task control. This limitation is accepted because ACT provides a deployable and traceable baseline for the current project stage, whereas Diffusion Policy remains an earlier baseline and $\pi$-style VLA models remain a future extension.
+\noindent\textbf{C5: Unified \texorpdfstring{$\pi_{0.5}$}{pi0.5} VLA policy in LeRobot.}
+ACT was initially selected and deployed as the task-specific policy baseline because it was already integrated with the LeRobot workflow and provided a traceable route from synchronized visual observations and robot-state inputs to action-chunk execution~\cite{act,lerobot}. As the project progressed beyond the DR3 baseline, the policy selection was updated to the LeRobot implementation of $\pi_{0.5}$~\cite{pi05,openpi,lerobotpi05}. The final policy receives three synchronized RGB observations, the bilateral robot state, and a language instruction, and predicts bilateral robot and gripper actions. One jointly trained checkpoint is used for the ring, plug-insertion, and memory-module tasks; task identity is provided through the corresponding language instruction rather than by loading separate task-specific checkpoints. Unified language-conditioned multi-task bimanual control was implemented and validated in 75 physical trials, as reported in Chapter~\ref{chap:validation}. ACT and Diffusion Policy are therefore retained as earlier baselines rather than presented as the final deployed policy.
 
 The selected architecture is the combination of the highest-scoring surviving candidate in each module. C1 and C4 establish the physical capability for controlled contact; C2 and C3 make demonstrations and visual evidence available to the learner; and C5 provides the deployable policy path. This combined decision covers the full ES1--ES6 chain while retaining a feasible implementation route for subsequent final design, manufacturing, and validation.

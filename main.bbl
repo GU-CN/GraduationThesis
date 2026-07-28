@@ -1580,8 +1580,8 @@
       \strng{nameanamehash}{e7c54e991d05a41de60c20885f5f2f58}
       \strng{nameafullhash}{e7c54e991d05a41de60c20885f5f2f58}
       \field{extraname}{2}
-      \field{sortinit}{1}
-      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{booktitle}{Robotics: Science and Systems (RSS)}
