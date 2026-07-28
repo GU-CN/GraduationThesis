@@ -38,7 +38,6 @@ INPUT /usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-xetex.def
 INPUT /usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-xetex.def
 INPUT /usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-xetex.def
 INPUT /usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-xetex.def
-INPUT extractbb --version
 INPUT /usr/share/texlive/texmf-dist/tex/latex/l3packages/xparse/xparse.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/l3packages/xparse/xparse.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/l3packages/xparse/xparse.sty
