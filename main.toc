@@ -95,5 +95,8 @@
 \contentsline {chapter}{References}{47}{chapter*.22}%
 \contentsline {chapter}{Appendix I.\ Documentation of Generated Concepts}{49}{chapter*.24}%
 \contentsline {chapter}{Appendix II.\ Hardware Specifications and Parts Records}{52}{chapter*.35}%
-\contentsline {chapter}{Research\ Projects\ and\ Publications\ during\ Undergraduate\ Period}{61}{section*.49}%
-\contentsline {chapter}{Acknowledgements}{62}{section*.51}%
+\contentsline {chapter}{Appendix II.\ Hardware Specifications and Parts Records}{61}{chapter*.50}%
+\contentsline {chapter}{Appendix II.\ Hardware Specifications and Parts Records}{70}{chapter*.65}%
+\contentsline {chapter}{Appendix II.\ Hardware Specifications and Parts Records}{79}{chapter*.80}%
+\contentsline {chapter}{Research\ Projects\ and\ Publications\ during\ Undergraduate\ Period}{88}{section*.94}%
+\contentsline {chapter}{Acknowledgements}{89}{section*.96}%
