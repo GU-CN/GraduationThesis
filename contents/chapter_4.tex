@@ -26,13 +26,13 @@ The final system is organized as four connected layers:
 
 During demonstration collection, the operator moves the two GELLO leaders. The follower-side system commands the two FR3 arms. It records three RGB images, the measured bilateral state, the bilateral arm targets, the gripper commands, the episode index, and the task instruction. Accepted episodes are stored in LeRobot Dataset v3.0 format. During training, the three task datasets are sampled with equal task probability and used to update one $\pi_{0.5}$ model. During deployment, one of the three language instructions and the current three-view observation are supplied to the same checkpoint. The policy returns an action chunk, and the robot-side adapter sends the admissible absolute targets to the two FR3 controllers.
 
-Figure~\ref{fig:ch4-dr3-architecture} is retained from DR3 because it records the selected modular architecture and the intended connection between demonstration collection, learning, and closed-loop execution. Two parts of the diagram are historical: the ACT block has been replaced by $\pi_{0.5}$, and the task-specific checkpoint block has been replaced by one unified checkpoint. The three-camera workcell, GELLO collection concept, LeRobot dataset, action-chunk interface, dual-FR3 controller, and deterministic failure-handling boundary remain consistent with the final system.
+Figure~\ref{fig:ch4-pi05-architecture} summarizes the final $\pi_{0.5}$ training and action-generation architecture. Three synchronized camera views are converted into multi-view visual tokens, while the task instruction and 16-dimensional bilateral proprioceptive state provide language and robot-state conditioning. The conditioned representation is processed by the adapted $\pi_{0.5}$ model and its robot action expert to generate a continuous 16-dimensional bimanual action chunk containing absolute joint targets and gripper widths for the left and right arms. The figure therefore represents the implemented language-conditioned multi-task policy interface rather than the earlier DR3 ACT baseline.
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.98\textwidth]{figures/overview_workflow_gai.png}
-  \caption{System architecture retained from DR3 as the design baseline. In the final implementation, the ACT and task-specific-checkpoint blocks are superseded by one language-conditioned LeRobot $\pi_{0.5}$ checkpoint; the physical workcell and data-flow modules remain applicable.}
-  \label{fig:ch4-dr3-architecture}
+  \caption{Final $\pi_{0.5}$ model architecture for language-conditioned bimanual manipulation. Multi-view visual observations, a task instruction, and the 16-dimensional bilateral robot state condition the adapted model, which produces continuous action chunks for both FR3 arms and grippers.}
+  \label{fig:ch4-pi05-architecture}
 \end{figure}
 
 \subsection{Selected module concepts}
@@ -452,7 +452,7 @@ During motion, the run stops on a missing image, stale state, malformed packet, 
 
 The two FR3 arms are mounted upright on opposite sides of a shared tabletop region. Task fixtures are placed inside the verified overlap of the two practical workspaces. The D435i is fixed above the shared region. One D405 is attached to each wrist. Each arm carries one custom gripper. The two GELLO leaders remain outside the follower workcell and are used by the operator during demonstration collection.
 
-The lower row of Figure~\ref{fig:ch4-dr3-architecture} records the selected physical arrangement: dual FR3 arms, a top view, wrist views, and custom grippers. The final setup extends the depicted single GELLO symbol to two leader assemblies. Exact base spacing, camera height, camera pitch, and fixture coordinates were not included in the supplied implementation record; these values should be added to a future dimensioned workcell drawing rather than inferred from the conceptual image.
+Figure~\ref{fig:ch4-pi05-architecture} identifies the three deployed camera views and the 16-dimensional bilateral state supplied to the policy, but it is a model-level architecture diagram rather than a dimensioned workcell drawing. Exact base spacing, camera height, camera pitch, and fixture coordinates were not included in the supplied implementation record; these values should be added to a future dimensioned workcell drawing rather than inferred from the conceptual image.
 
 \subsection{Dual-arm robotic platform}
 
