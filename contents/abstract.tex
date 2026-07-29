@@ -1,11 +1,11 @@
 % !TEX root = ../main.tex
 \begin{abstract}[zh]
 \addcontentsline{toc}{chapter}{摘 \quad 要}
-现代 3C 电子装配线需要处理小型元器件、高产品多样性和富接触操作，这些任务仍难以通过传统固定程序机器人实现自动化。本项目针对这一缺口，面向双臂工业操作开发视觉-语言-动作（Vision-Language-Action, VLA）系统。系统运行于双臂 Franka 平台，并完成了三个代表性任务：将带手柄的圆环套放到圆柱罐上、将两脚插头插入两孔插座，以及从主板上取下内存条并放入黄色托盘。
+现代 3C 电子装配线需要处理小型元器件、多品种生产和接触密集型操作，而传统固定程序机器人仍难以灵活完成这类任务。本项目针对这一缺口，面向双臂工业操作开发视觉-语言-动作（Vision-Language-Action, VLA）系统。系统运行于双臂 Franka 平台，并完成了三个代表性任务：将带手柄的圆环套放到圆柱罐上、将两脚插头插入两孔插座，以及从主板上取下内存条并放入黄色托盘。
 \par
-最终部署系统采用统一训练的 $\pi_{0.5}$ 检查点，接收三个同步 RGB 图像、16 维双臂机器人状态和任务语言指令，并在闭环执行过程中输出双臂及夹爪动作。三个任务均由同一个检查点根据对应语言指令执行，无需加载任务特定模型。该系统已在真实双 Franka 工作站上完成语言条件多任务双臂控制验证。
+最终部署系统采用在三个任务上联合训练的统一 $\pi_{0.5}$ 检查点，接收由同一软件数据包关联的三幅 RGB 图像、16 维双臂机器人状态和自然语言任务指令，并在闭环执行过程中输出双臂及夹爪动作。三个任务均由同一个检查点根据相应的自然语言指令执行，无需加载任务特定模型。该系统已在真实双 Franka 工作站上完成语言条件化的多任务双臂控制验证。
 \par
-最终实机验证采用 65,000 步检查点，对每项任务进行了 25 次试验，共计 75 次。圆环任务、插头插入任务和内存条任务的成功率分别为 84\%、52\% 和 100\%，总体成功率为 78.7\%。独立的 25 次试验还得到规划成功率 92\%、元件检测率 96\%、失败检测率 92\% 和恢复成功率 92\%；按所采用的记录规则，位姿误差小于 20~mm。六项工程指标的项目级点估计或操作性测量均达到原定阈值，但插头插入任务未能单独达到 70\% 的任务执行目标，表明接触丰富的精细对准与插入仍是当前系统的主要限制。
+最终实机验证采用 65,000 步检查点，对每项任务进行了 25 次试验，共计 75 次。圆环任务、插头插入任务和内存条任务的成功率分别为 84\%、52\% 和 100\%，总体成功率为 78.7\%。独立的 25 次试验还得到规划成功率 92\%、元件检测率 96\%、失败检测率 92\% 和恢复成功率 92\%；按所采用的记录规则，位姿误差小于 20~mm。在项目层面，六项工程指标的点估计或操作性测量均达到最终规定的阈值，但插头插入任务未能单独达到 70\% 的任务执行目标，表明接触密集型任务中的精细对准与插入仍是当前系统的主要限制。
 \end{abstract}
 
 {
@@ -18,10 +18,10 @@
 \ctexset{chapter/format+={\arial}}
 \begin{abstract}[en]
 \addcontentsline{toc}{chapter}{ABSTRACT}
-Modern 3C electronics assembly lines deal with small components, high product variety, and contact-rich operations that remain difficult to automate with conventional fixed-program robots. Our project targets this gap by developing a Vision-Language-Action (VLA) system for bimanual industrial manipulation. The system runs on a dual-arm Franka platform and performs three representative tasks: placing a handled ring over a can, inserting a two-pin plug into a two-hole socket, and removing a memory module from a motherboard and placing it in a yellow tray.
+Modern 3C electronics assembly lines deal with small components, high product variety, and contact-rich operations that remain difficult to automate with conventional fixed-program robots. This project targets this gap by developing a Vision-Language-Action (VLA) system for bimanual industrial manipulation. The system runs on a dual-arm Franka platform and performs three representative tasks: placing a handled ring over a can, inserting a two-pin plug into a two-hole socket, and removing a memory module from a motherboard and placing it in a yellow tray.
 \par
-The final deployed system uses one jointly trained $\pi_{0.5}$ checkpoint. It receives three synchronized RGB images, a 16-dimensional bilateral robot state, and a task-specific language instruction, and outputs bimanual robot and gripper actions during closed-loop execution. All three tasks are executed by the same checkpoint under their corresponding language instructions without loading task-specific models. The system has therefore demonstrated language-conditioned multi-task bimanual control on the physical dual-Franka workcell.
+The final deployed system uses a unified $\pi_{0.5}$ checkpoint trained jointly across the three tasks. It receives three packet-associated RGB images, a 16-dimensional bilateral robot state, and a natural-language task instruction, and outputs bimanual robot and gripper actions during closed-loop execution. All three tasks are executed by the same checkpoint under their corresponding natural-language instructions without loading task-specific models. The system has therefore demonstrated language-conditioned multi-task bimanual control on the physical dual-Franka workcell.
 \par
-The final physical validation used the 65,000-step checkpoint and comprised 25 trials per task and 75 trials in total. The ring, plug-insertion, and memory-module tasks achieved success rates of 84\%, 52\%, and 100\%, respectively, producing an overall success rate of 78.7\%. Separate 25-experiment tests produced 92\% planning success, 96\% component detection, 92\% failure detection, and 92\% recovery; the recorded pose error was below 20~mm under the stated measurement rule. All six project-level point estimates or operational measurements met their original thresholds, although the plug-insertion task did not independently meet the 70\% execution target, identifying contact-rich fine alignment and insertion as the principal limitation of the current system.
+The final physical validation used the 65,000-step checkpoint and comprised 25 trials per task and 75 trials in total. The ring, plug-insertion, and memory-module tasks achieved success rates of 84\%, 52\%, and 100\%, respectively, producing an overall success rate of 78.7\%. Separate 25-experiment tests produced 92\% planning success, 96\% component detection, 92\% failure detection, and 92\% recovery; the recorded pose error was below 20~mm under the stated measurement rule. All six project-level point estimates or operational measurements met their stated thresholds, although the plug-insertion task did not independently meet the 70\% execution target, identifying fine alignment and insertion under contact-rich conditions as the principal limitation of the current system.
 \end{abstract}
 }
