@@ -676,10 +676,9 @@ checkpoint discussion in Chapter~\ref{chap:validation}.
 \medskip
 \noindent\textbf{Adaptation scope and trainable parameters.}
 
-The final run uses action-expert-only adaptation. The entire PaliGemma
-vision-language component, including the SigLIP visual encoder, remains frozen.
-Trainable names are restricted to the Gemma action expert and the action/time
-projection modules. No LoRA or other PEFT adapter is used in this LeRobot
+The final run uses action-path-only adaptation. The Gemma action expert and the
+action/time projection modules are trainable, while the entire PaliGemma
+vision-language component, including the SigLIP visual encoder, remains frozen. No LoRA or other PEFT adapter is used in this LeRobot
 experiment.
 
 \begin{table}[htbp]
