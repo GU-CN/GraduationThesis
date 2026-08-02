@@ -8,9 +8,11 @@
 
 \subsection{Design evolution and engineering change record}
 
-The final implementation uses the LeRobot implementation of $\pi_{0.5}$. It uses two FR3 arms, two grippers, three RGB views, a 16-dimensional bilateral state and action interface, and one jointly trained multi-task checkpoint. The three tasks are selected by natural-language instructions rather than by manually loading three independent policy files. The final physical evaluation used the 65,000-step checkpoint selected by the task-balanced offline validation rule.
+The final implementation retains the modular physical architecture selected in Design Review~3 (DR3), but the learning system and demonstrated scope have changed substantially. DR3 proposed a dual-Franka Research~3 (FR3) workcell, GELLO demonstration collection, two wrist cameras and one overhead camera, custom compliant fingers, a LeRobot dataset, and an imitation-learning policy. At that stage, Action Chunking with Transformers (ACT) and task-specific checkpoints were the deployable baseline. Language-conditioned bimanual control was a future objective.
 
-The two FR3 arms provide a common kinematic and controller interface, and the two GELLO leaders provide matched bilateral demonstration inputs. The wrist and overhead cameras provide complementary local and global views. The 3D-printed compliant fingers provide a task-compatible contact interface.
+The completed system replaces the task-specific ACT controller with the LeRobot implementation of $\pi_{0.5}$. It uses two FR3 arms, two grippers, three RGB views, a 16-dimensional bilateral state and action interface, and one jointly trained multi-task checkpoint. The three tasks are selected by natural-language instructions rather than by manually loading three independent policy files. The final physical evaluation used the 65,000-step checkpoint selected by the task-balanced offline validation rule. ACT therefore remains part of the design history and concept-selection evidence, but it is not presented as the final controller.
+
+The mechanical elements selected in DR3 remain directly relevant. The two FR3 arms provide a common kinematic and controller interface, and the two GELLO leaders provide matched bilateral demonstration inputs. The wrist and overhead cameras provide complementary local and global views. The 3D-printed compliant fingers provide a task-compatible contact interface. The later policy update changes how these modules are connected and trained, but does not remove the need for their original engineering analysis.
 
 The principal engineering change lies in the learning and deployment route. The
 DR3 prototype required an operator to select task-specific ACT checkpoints,
