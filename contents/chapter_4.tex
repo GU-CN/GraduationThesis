@@ -32,7 +32,7 @@ Checkpoint selection and execution were revised together. The final checkpoint
 was chosen before physical testing from the unweighted mean validation loss of
 the three tasks; the minimum recorded value, 0.036552, occurred at 65,000
 optimizer steps. At deployment the model predicts a 50-step action chunk, while
-the executor applies only the first 10 actions at 15~Hz before observing the
+the executor applies the first 10 actions at 15~Hz before observing the
 workcell again. The selected horizon supplies temporal context without
 committing the robot to the complete predicted sequence.
 
