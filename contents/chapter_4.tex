@@ -18,10 +18,7 @@ The principal engineering change lies in the learning and deployment route. The
 DR3 prototype required an operator to select task-specific ACT checkpoints,
 whereas the final system uses one language-conditioned $\pi_{0.5}$ checkpoint
 for the ring, socket, and memory-module tasks. The policy interface now combines
-the task instruction, three RGB views, and the bilateral robot state. This
-change removes manual policy-file switching, but it does not establish that
-$\pi_{0.5}$ is superior to ACT because the two controllers were not evaluated
-under a matched physical protocol.
+the task instruction, three RGB views, and the bilateral robot state.
 
 The bilateral interface was also consolidated. Both FR3 arms and both grippers
 are represented by one 16-dimensional measured state and one 16-dimensional
@@ -35,7 +32,7 @@ Checkpoint selection and execution were revised together. The final checkpoint
 was chosen before physical testing from the unweighted mean validation loss of
 the three tasks; the minimum recorded value, 0.036552, occurred at 65,000
 optimizer steps. At deployment the model predicts a 50-step action chunk, while
-the executor applies only the first 10 actions at 5~Hz before observing the
+the executor applies only the first 10 actions at 15~Hz before observing the
 workcell again. The selected horizon supplies temporal context without
 committing the robot to the complete predicted sequence.
 
