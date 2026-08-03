@@ -9,11 +9,14 @@
 \end{abstract}
 
 {
-  \newfontfamily{\arial}{Arial}[
+  % 容器环境无 Microsoft Arial；TeX Gyre Heros 为同系无衬线替代（与 SJTU newtx 一致）。
+  \newfontfamily{\arial}{TeX Gyre Heros}[
     Scale=0.94,
-    BoldFont={Arial Bold},
-    ItalicFont={Arial Italic},
-    BoldItalicFont={Arial Bold Italic},
+    Extension=.otf,
+    UprightFont=*-regular,
+    BoldFont=*-bold,
+    ItalicFont=*-italic,
+    BoldItalicFont=*-bolditalic,
   ]
 \ctexset{chapter/format+={\arial}}
 \begin{abstract}[en]
