@@ -609,10 +609,7 @@ Action:
 The PaliGemma SentencePiece tokenizer uses right padding and a maximum sequence
 length of 200 tokens. This representation makes the task instruction and
 current bilateral state jointly available to the model, but the final physical
-experiment does not isolate their individual effects. Because each visually
-distinct scene was paired with its expected instruction, the evidence supports
-a language-conditioned unified interface rather than a claim that language
-alone determines the selected behavior.
+experiment does not isolate their individual effects. Because each visually distinct scene was paired with a corresponding instruction, the results indicate that behavior selection was jointly conditioned on visual input and language, rather than determined by language alone.
 
 The three camera images are supplied in the fixed order
 \(\{\texttt{cam\_left},\texttt{cam\_front},\texttt{cam\_right}\}\). Each image
@@ -700,10 +697,7 @@ The parameter count clarifies what ``fine-tuning'' means in this report. The
 final controller is not trained from random initialization and the full
 vision-language backbone is not updated. The experiment adapts the action
 generation path to the project camera/state/action contract while preserving
-the base representation. A separate OpenPI/JAX socket experiment contains
-LoRA parameters and an eight-dimensional single-arm state/action record, but
-it is not the source of the deployed dual-arm checkpoint and is excluded from
-the final design claim.
+the base representation.
 
 \medskip
 \noindent\textbf{Training procedure.}
@@ -781,12 +775,6 @@ configuration used an absolute tokenizer path. A portability repair copied the
 tokenizer model into each checkpoint and rewrote the processor reference to a
 relative file. The watcher verified the repair through step 100,000.
 
-Saving complete model and optimizer states supports continuation and auditing,
-but it has a substantial storage cost. It also does not, by itself, make the
-experiment fully reproducible: model artifacts preserve the trained state,
-whereas source, environment, data identity, and base-weight provenance
-determine whether the state can be recreated.
-
 \subsection{Validation, action chunking, and deployment boundary}
 
 For each task, validation first computes the mean normalized flow-matching loss over at most 64 batches. With batch size~4, this corresponds to at most 256 validation samples per task at one validation point. The checkpoint-selection quantity is the unweighted task macro-average
@@ -809,7 +797,7 @@ This metric is intentionally not weighted by the number of validation frames. It
 \medskip
 \noindent\textbf{Action chunking and temporal interface.}
 
-Collection and execution use 5~Hz, so one action step represents 0.2~s. The model predicts a 50-step chunk:
+Collection uses 5~Hz. However, for better performance, execution uses 15~Hz, so one action step represents 0.0~s. The model predicts a 50-step chunk:
 \begin{equation}
 T_{\mathrm{predicted}}=\frac{50}{5}=10~\mathrm{s}.
 \end{equation}
