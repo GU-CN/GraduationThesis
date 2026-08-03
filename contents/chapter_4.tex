@@ -262,7 +262,7 @@ Each FR3 provides seven degrees of freedom, a nominal payload of 3~kg, a maximum
 
 The complete joint ranges, mounting specification, environmental limits, controller interfaces, and dimension drawings are collected in Appendix~\ref{chap:hardware-records}, Table~\ref{tab:app-fr3-vendor-parameters}, and Figures~\ref{fig:app-fr3-overview}--\ref{fig:app-fr3-configuration}. The practical task workspace is deliberately smaller than those hardware bounds so that action chunks do not intentionally approach joint limits.
 
-Figure~\ref{fig:ch4-fr3-workspace} shows the placement of the shared task region. The 855~mm maximum reach is not treated as an invitation to place objects at the boundary: motion near maximum extension reduces available orientation freedom and can bring the arm closer to singular configurations.
+Figure~\ref{fig:ch4-fr3-workspace} shows the placement of the shared task region. The robotic arm has a maximum working radius of 855~mm. However, motion near full extension reduces the available orientation freedom and may bring the arm closer to singular configurations; therefore, objects should preferably not be placed near the workspace boundary.
 
 \begin{figure}[htbp]
   \centering
