@@ -298,7 +298,7 @@ g^{R,\mathrm{target}}_t
 
 Indices 0--6 correspond to the left arm, index~7 to the left gripper, indices 8--14 to the right arm, and index~15 to the right gripper. Arm actions are absolute next-step joint targets, not joint increments. Gripper actions are absolute \texttt{open\_width\_m} commands. The implemented setting is therefore \texttt{use\_relative\_actions=false} in both training and deployment.
 
-The $\pi_{0.5}$ implementation pads state and action features to an internal maximum of 32 dimensions. Only entries 0--15 contain project data. Entries 16--31 are padding and are never interpreted as additional robot commands. The robot adapter explicitly slices and validates the first 16 entries before decomposing them into left-arm, left-gripper, right-arm, and right-gripper targets.
+The $\pi_{0.5}$ implementation pads state and action features to an internal maximum of 32 dimensions. Only entries 0--15 contain project data. Entries 16--31 are padding and are not for additional robot commands. The robot adapter explicitly slices and validates the first 16 entries before decomposing them into left-arm, left-gripper, right-arm, and right-gripper targets.
 
 \medskip
 \noindent\textbf{Shared workspace and role allocation.}
