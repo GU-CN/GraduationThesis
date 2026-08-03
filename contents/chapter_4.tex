@@ -834,12 +834,12 @@ The two FR3 arms are mounted upright on opposite sides of a shared tabletop regi
 
 Both arms use the same 16-value bilateral ordering defined in Equations~\ref{eq:ch4-bimanual-state} and~\ref{eq:ch4-bimanual-action}. The left and right controllers remain independent low-level systems, but they are driven from one policy output and one episode timeline. Each arm can perform a large scene-preparation motion or a precise manipulation motion, depending on the demonstrated task role.
 
-The redundant seventh joint is important in the shared workcell because end-effector pose alone does not determine a unique arm posture. Demonstrations implicitly select postures that provide camera visibility, avoid fixtures, and reduce inter-arm interference. The low-level controller remains responsible for executing the admissible targets; the learned model does not directly output torque.
+The redundant seventh joint is important in the shared workcell because end-effector pose alone does not determine a unique arm posture. Demonstrations implicitly select postures that provide camera visibility, avoid fixtures, and reduce inter-arm interference. The low-level controller remains responsible for executing the admissible targets, the learned model does not directly output torque.
 
 \medskip
 \noindent\textbf{GELLO leader assemblies.}
 
-Each leader measures seven arm channels and one gripper-related channel for its assigned follower. The operator does not bear follower-arm load through the leader; it is a position-input and command device. Mechanical looseness, servo zero error, cable interference, or incorrect joint signs can degrade demonstration quality, so the two leader assemblies are inspected and checked independently before bilateral collection. The component-level construction and quantities are recorded in Appendix~\ref{chap:hardware-records}, rather than repeated in the system-level design description.
+Each leader measures seven arm channels and one gripper-related channel for its assigned follower. The operator does not bear follower-arm load through the leader; it is a position-input and command device. Mechanical looseness, servo zero error, cable interference, or incorrect joint signs can degrade demonstration quality, so the two leader assemblies are inspected and checked independently before bilateral collection. The component-level construction and quantities are recorded in Appendix~\ref{chap:hardware-records}.
 
 \medskip
 \noindent\textbf{End-effector and mechanical components.}
