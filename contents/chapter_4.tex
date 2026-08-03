@@ -584,14 +584,10 @@ measure real-robot task completion.
 
 The final controller uses the official \texttt{pi05\_base} model. The upstream checkpoint is identified by
 \nolinkurl{gs://openpi-assets/checkpoints/pi05_base/params},
-and training reads the converted PyTorch parameters from
-\nolinkurl{real-exp/.hf-cache/pi05_base_pytorch/model.safetensors}.
+and training reads the converted PyTorch parameters.
 The base architecture combines a PaliGemma \texttt{gemma\_2b} vision-language component with a \texttt{gemma\_300m} action expert. The model weights use \texttt{bfloat16}.
 
-The project uses LeRobot~0.5.2 with local project modifications. The base commit is
-\begin{center}
-\small\texttt{dc06dba9d6220ab99c94e83ec7f0d45a35b44bed}.
-\end{center}
+The project uses LeRobot~0.5.2 with local project modifications.
 The dataset format is LeRobot Dataset v3.0. Training is executed on physical GPU~1 of an NVIDIA RTX~A6000 with 48~GB of memory.
 
 \subsection{\texorpdfstring{$\pi_{0.5}$}{pi0.5} objective, adaptation, and training}
