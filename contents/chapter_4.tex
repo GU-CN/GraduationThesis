@@ -807,7 +807,7 @@ T_{\mathrm{executed}}=\frac{10}{15}=0.67~\mathrm{s}
 \end{equation}
 before requesting a new policy result from updated observations.
 
-This is a receding-horizon interface. The 50-step prediction gives the action expert a longer temporal target, while executing only 10 steps limits the amount of open-loop motion. The exact policy-query interval may also include capture, preprocessing, inference, transfer, and queue overhead; therefore, the nominal 0.67~\mathrm{s} value describes the consumed action segment rather than a measured end-to-end latency.
+This is a receding-horizon interface. The 50-step prediction gives the action expert a longer temporal target, while executing only 10 steps limits the amount of open-loop motion. The exact policy-query interval may also include capture, preprocessing, inference, transfer, and queue overhead; therefore, the nominal \(0.67~\mathrm{s}\) value describes the consumed action segment rather than a measured end-to-end latency.
 
 \medskip
 \noindent\textbf{Deployment pipeline.}
