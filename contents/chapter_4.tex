@@ -412,7 +412,7 @@ Pixel values are represented in \([0,1]\) after decoding and are normalized to \
 \medskip
 \noindent\textbf{GELLO channel architecture and leader--follower mapping.}
 
-The bilateral collection system uses two GELLO--Franka leaders. Each leader provides seven arm channels and one gripper-related channel, matching the seven joint targets and one gripper command required by its FR3 follower. This channel correspondence is the design-relevant property; the detailed actuator, controller-board, power-supply, structural-kit, and dual-system quantities are listed in Appendix~\ref{chap:hardware-records}, Table~\ref{tab:app-gello-components}. The leader drawing and actuator reference data are also moved there.
+The bilateral collection system uses two GELLO--Franka leaders. Each leader provides seven arm channels and one gripper-related channel, matching the seven joint targets and one gripper command required by its FR3 follower. This channel correspondence is the design-relevant property; the detailed actuator, controller-board, power-supply, structural-kit, and dual-system quantities are listed in Appendix~\ref{chap:hardware-records}, Table~\ref{tab:app-gello-components}.
 
 Leader motion must be mapped to follower joint order, sign convention, zero offset, and permitted range. An incorrect offset can generate a valid numeric command that is unsafe for the follower. The pre-collection procedure therefore verifies the leader zero, moves each channel through a small range, confirms the corresponding follower direction, and checks the gripper-width mapping before a task episode is recorded.
 
@@ -463,7 +463,7 @@ The stored cadence is 5~Hz, corresponding to approximately 0.2~s per step. The r
 \end{equation}
 Images and measured state therefore come from the same current packet. The arm label is shifted forward by one packet so that the current observation is paired with the next absolute joint target. The gripper label follows the existing same-packet convention.
 
-This procedure guarantees consistency of the saved software packet and label rule. It does not prove that all three camera exposures occurred at the same physical instant. The recorder does not interpolate device timestamps, perform ROS approximate-time alignment, or use a hardware trigger. It trusts the upstream bridge to provide an assembled packet. This limitation must be retained in the report because a nominal 5~Hz LeRobot timestamp alone cannot be used to reconstruct true camera skew or end-to-end latency.
+This procedure guarantees consistency of the saved software packet and label rule. It does not prove that all three camera exposures occurred at the same physical instant. The recorder does not interpolate device timestamps, perform ROS approximate-time alignment, or use a hardware trigger. It trusts the upstream bridge to provide an assembled packet.
 
 \subsection{Dataset design and task-balanced training}
 
@@ -513,7 +513,7 @@ and the same wording is used during physical deployment. Language conditioning
 is therefore part of the model input contract rather than a descriptive label
 added after training.
 
-Only the 240 episodes and 119,650 frames reported in
+The 240 episodes and 119,650 frames reported in
 Table~\ref{tab:ch4-dataset-split} contribute to the normalization statistics,
 task sampler, optimization updates, validation losses, checkpoint selection,
 and physical evaluation. This fixed scope keeps the reported 65,000-step
