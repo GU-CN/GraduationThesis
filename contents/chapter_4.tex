@@ -1151,7 +1151,7 @@ Table~\ref{tab:ch4-budget} separates the reported incremental cash cost from the
 \end{longtable}
 \endgroup
 
-The CNY~0 value is an incremental cash figure, not the total system value. A full economic budget would require the purchase or replacement value of two FR3 systems, two GELLO assemblies, three cameras, the GPU workstation, storage, safety hardware, print material, print time, labour, and energy. Those values were not included in the supplied DR3 or final implementation record and should be added only from invoices or the laboratory asset register.
+The CNY~0 value is an incremental cash figure, not the total system value. A full economic budget would require the purchase or replacement value of two FR3 systems, two GELLO assemblies, three cameras, the GPU workstation, storage, safety hardware, print material, print time, labour, and energy.
 
 \medskip
 \noindent\textbf{Software, environment, and checkpoint provenance.}
@@ -1170,38 +1170,38 @@ normalization assets, task manifest, environment lock, and checkpoint-selection
 record. The deployed checkpoint remains identifiable and usable, but exact
 retraining from the repository alone is not claimed.
 
-\medskip
-\noindent\textbf{Reproduction checklist for the final configuration.}
+%\medskip
+%\noindent\textbf{Reproduction checklist for the final configuration.}
 
-A future release should treat the physical and virtual assets as one versioned
-prototype package. At minimum, reproduction of the final configuration
-requires the following checks:
-\begin{enumerate}
-  \item archive the complete training and deployment source snapshot under one
-        versioned release;
-  \item export a complete environment lock including CUDA-dependent packages;
-  \item record the upstream base-checkpoint identifier and conversion command;
-  \item preserve the three evaluated dataset versions, language instructions,
-        episode indices, and normalization statistics;
-  \item retain the step-65,000 checkpoint, its model-side assets, multi-task
-        manifest, and training state;
-  \item record camera identities, bilateral feature ordering, absolute-action
-        convention, chunk settings, and robot-side limits;
-  \item perform a no-motion policy dry run before enabling either FR3 command
-        path; and
-  \item reproduce the Chapter~\ref{chap:validation} trial definitions without
-        using the reported outcomes to alter the checkpoint.
-\end{enumerate}
+%A future release should treat the physical and virtual assets as one versioned
+%prototype package. At minimum, reproduction of the final configuration
+%requires the following checks:
+%\begin{enumerate}
+%  \item archive the complete training and deployment source snapshot under one
+%        versioned release;
+%  \item export a complete environment lock including CUDA-dependent packages;
+%  \item record the upstream base-checkpoint identifier and conversion command;
+%  \item preserve the three evaluated dataset versions, language instructions,
+%        episode indices, and normalization statistics;
+%  \item retain the step-65,000 checkpoint, its model-side assets, multi-task
+%        manifest, and training state;
+%  \item record camera identities, bilateral feature ordering, absolute-action
+%        convention, chunk settings, and robot-side limits;
+%  \item perform a no-motion policy dry run before enabling either FR3 command
+%        path; and
+%  \item reproduce the Chapter~\ref{chap:validation} trial definitions without
+%        using the reported outcomes to alter the checkpoint.
+%\end{enumerate}
 
-Items such as exact base poses, camera extrinsics, print settings, fixture
-coordinates, and measured latency remain necessary for a stronger
-reproduction package. They are listed as gaps rather than filled with inferred
-values.
+%Items such as exact base poses, camera extrinsics, print settings, fixture
+%coordinates, and measured latency remain necessary for a stronger
+%reproduction package. They are listed as gaps rather than filled with inferred
+%values.
 
-\subsection{Current implementation status and remaining documentation}
+%\subsection{Current implementation status and remaining documentation}
 
-The final implementation now includes dual-arm state and action handling, three RGB inputs, LeRobot Dataset v3.0 data, one jointly trained $\pi_{0.5}$ checkpoint, equal-probability three-task sampling, the defined episode-level validation split, macro flow-matching checkpoint selection, and a 5~Hz absolute-action deployment interface. The deployed artifact is the step-65,000 checkpoint; the later step-100,000 checkpoint is retained as the final training state but is not re-labelled as the validation optimum. The selected DR3 hardware modules and engineering drawings have been retained in this chapter.
+%The final implementation now includes dual-arm state and action handling, three RGB inputs, LeRobot Dataset v3.0 data, one jointly trained $\pi_{0.5}$ checkpoint, equal-probability three-task sampling, the defined episode-level validation split, macro flow-matching checkpoint selection, and a 5~Hz absolute-action deployment interface. The deployed artifact is the step-65,000 checkpoint; the later step-100,000 checkpoint is retained as the final training state but is not re-labelled as the validation optimum. The selected DR3 hardware modules and engineering drawings have been retained in this chapter.
 
-Several quantities remain documentation gaps rather than model-design gaps. They include measured FR3 base poses, camera extrinsics and mounting distances, dimensioned fixture locations, ring and can clearances, and final socket insertion clearance and depth. They also include motherboard and memory-module clearances, measured gripper force--deflection behaviour, TPU print settings, print mass and time, full in-kind asset value, and measured end-to-end latency. These values should be added if the report is expected to make production-level tolerance, structural, timing, or economic claims.
+%Several quantities remain documentation gaps rather than model-design gaps. They include measured FR3 base poses, camera extrinsics and mounting distances, dimensioned fixture locations, ring and can clearances, and final socket insertion clearance and depth. They also include motherboard and memory-module clearances, measured gripper force--deflection behaviour, TPU print settings, print mass and time, full in-kind asset value, and measured end-to-end latency. These values should be added if the report is expected to make production-level tolerance, structural, timing, or economic claims.
 
 \setlength{\emergencystretch}{0pt}
