@@ -884,7 +884,7 @@ Validation runs every 5,000 steps. Each task is evaluated separately before the 
 \medskip
 \noindent\textbf{Robot control and deployment system.}
 
-The deployment system loads one checkpoint for all three instructions. The selected instruction and current observation are sent to $\pi_{0.5}$. A 50-step action chunk is returned, and the executor uses the first ten steps. The target ordering, absolute-action interpretation, 5~Hz cadence, and camera mapping are identical to training.
+The deployment system loads one checkpoint for all three instructions. The selected instruction and current observation are sent to $\pi_{0.5}$. A 50-step action chunk is returned, and the executor uses the first ten steps. The target ordering, absolute-action interpretation, and camera mapping are identical to training, but the .
 
 The left and right arm targets are separated only after policy output validation. The gripper commands are expressed as absolute opening widths in metres. After each executed segment, the queue is not blindly extended with the rest of the old 50-step chunk; the policy is queried again using updated images and state.
 
