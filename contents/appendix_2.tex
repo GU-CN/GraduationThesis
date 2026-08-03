@@ -109,7 +109,7 @@ The XL330 reference properties used during hardware selection are summarized in 
 \clearpage
 \section*{Compliant gripper drawing and fabrication reference}
 
-Each gripper assembly uses two identical TPU~64D fingers, giving four fingers in the dual-arm system. One finger has an overall bounding box of \(123.36\times25.80\times40.00~\mathrm{mm}\), corresponding to \(L/T\approx4.78\) and \(L/H\approx3.08\). It is screw mounted, with a reinforced attachment region and a tapered ribbed body.
+Each gripper assembly uses two fingers of the same geometry. The left gripper has two TPU~64D fingers, while the right gripper has two TPU~95A fingers, giving four fingers in the dual-arm system. One finger has an overall bounding box of \(123.36\times25.80\times40.00~\mathrm{mm}\), corresponding to \(L/T\approx4.78\) and \(L/H\approx3.08\). It is screw mounted, with a reinforced attachment region and a tapered ribbed body.
 
 \begin{table}[htbp]
   \centering
@@ -120,9 +120,9 @@ Each gripper assembly uses two identical TPU~64D fingers, giving four fingers in
     \toprule
     \textbf{Item} & \textbf{Recorded design information} \\
     \midrule
-    Material & TPU, Shore hardness 64D \\
+    Material & Left gripper: TPU, Shore hardness 64D; right gripper: TPU, Shore hardness 95A \\
     Overall size & \(123.36\times25.80\times40.00~\mathrm{mm}\) per finger \\
-    Quantity & Two fingers per gripper; four fingers for the dual-arm workcell \\
+    Quantity & Two TPU~64D fingers on the left gripper and two TPU~95A fingers on the right gripper \\
     Attachment & Screw-mounted reinforced base \\
     Contact geometry & Elongated tapered profile with repeated compliant ribs \\
     Intended function & Passive accommodation of object-shape and pose variation during grasping and contact \\
@@ -135,7 +135,7 @@ Each gripper assembly uses two identical TPU~64D fingers, giving four fingers in
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.96\textwidth]{dr3-report/imgs/soft_gripper_finger_three_views.png}
-  \caption{Orthographic views of one TPU~64D compliant gripper finger and its overall dimensions.}
+  \caption{Orthographic views of the common compliant-finger geometry used for the TPU~64D left-gripper pair and TPU~95A right-gripper pair.}
   \label{fig:app-gripper-three-view}
 \end{figure}
 
@@ -167,7 +167,7 @@ Table~\ref{tab:app-parts-components} preserves the complete system composition. 
   1 & Franka Research~3 arm & 7-DoF, 3~kg nominal payload, 855~mm maximum reach, joint torque sensing & 2 & Left and right follower manipulation \\
   2 & FR3 controller and robot interface & Manufacturer controller, network interface, low-level protection, FCI/ROS~2 integration & 2 sets & State feedback and admissible joint-target execution \\
   3 & Custom gripper assembly & Project gripper with two screw-mounted compliant fingers & 2 & One end effector per arm \\
-  4 & Compliant finger & TPU~64D, \(123.36\times25.80\times40.00~\mathrm{mm}\), tapered and ribbed & 4 & Object contact with passive geometric tolerance \\
+  4 & Compliant finger & TPU~64D (left pair) and TPU~95A (right pair), \(123.36\times25.80\times40.00~\mathrm{mm}\), tapered and ribbed & 4 & Object contact with passive geometric tolerance \\
   5 & Wrist camera & Intel RealSense D405, short-range RGB/depth device; RGB used by policy & 2 & Left- and right-wrist close-range observation \\
   6 & Overhead camera & Intel RealSense D435i; RGB used by policy & 1 & Global shared-workspace observation \\
   7 & GELLO leader assembly & 7 arm channels plus 1 gripper channel & 2 & Bilateral human demonstration input \\

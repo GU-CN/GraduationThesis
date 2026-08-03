@@ -225,7 +225,7 @@ measured only by the trials reported below.
 
 Training was performed on the RTX A6000 system documented in Chapter~\ref{chap:final-design}. Physical deployment used an NVIDIA GeForce RTX~5070~Ti. The deployed policy used the same three image inputs, 16-dimensional bilateral state, absolute 16-dimensional action representation, language-instruction interface, and \texttt{use\_relative\_actions=false} setting as the training configuration. It predicted a 50-step action chunk and the executor consumed ten steps before requesting an updated prediction.
 
-The deployment-GPU model is recorded to distinguish training compute from inference compute. A complete task execution took approximately one minute under the evaluated conditions. This is an approximate operational duration rather than a mean calculated from per-trial timestamps. End-to-end policy inference latency, GPU utilization, and the achieved policy-query period were not measured separately, so the nominal 5~Hz action cadence and approximately two-second executed chunk remain interface settings rather than measured latency results.
+The deployment-GPU model is recorded to distinguish training compute from inference compute. A complete task execution took approximately one minute under the evaluated conditions. This is an approximate operational duration rather than a mean calculated from per-trial timestamps. End-to-end policy inference latency, GPU utilization, and the achieved policy-query period were not measured separately. The executor was configured to apply actions at 15~Hz; consequently, the ten-action executed segment represents a nominal $10/15\approx0.67$~s of commanded motion rather than a measured end-to-end policy-query latency.
 
 \section{Physical trial protocol and success definition}
 
@@ -552,8 +552,9 @@ Several limitations constrain interpretation of the reported results.
         not a quantified spatial-generalization distribution.
   \item The approximately one-minute completion time was not recorded as a
         per-trial timing series, and end-to-end inference latency was not
-        measured separately. The nominal 5~Hz cadence and ten-action segment
-        are configured interfaces rather than measured timing performance.
+        measured separately. The nominal 15~Hz deployment cadence and
+        0.67~s ten-action segment are configured interfaces rather than
+        measured end-to-end timing performance.
   \item The evaluation contains one selected checkpoint and no ACT,
         single-task, or alternative-checkpoint physical baseline. It
         demonstrates final-system performance but not the superiority of

@@ -189,12 +189,12 @@ The operator performs the selected task using the two GELLO leaders. The ROS~2 b
 \medskip
 \noindent\textbf{Dataset screening and training.}
 
-The recorded episode is checked for the presence and consistent length of all three image streams, the 16-dimensional state, the 16-dimensional action, the task identity, and the episode metadata. Accepted episodes are added to one of the three task datasets. Training then samples the three tasks with equal probability, applies the defined image and numeric preprocessing, and fine-tunes one $\pi_{0.5}$ checkpoint for 100,000 optimizer steps.
+The recorded episode is checked for the presence and consistent length of all three image streams, the 16-dimensional state, the 16-dimensional action, the task identity, and the episode metadata. Accepted episodes are added to one of the three task datasets. The stored trajectories retain the 5~Hz collection time base, and training samples action sequences on that 5~Hz time base. Training then samples the three tasks with equal probability, applies the defined image and numeric preprocessing, and fine-tunes one $\pi_{0.5}$ checkpoint for 100,000 optimizer steps.
 
 \medskip
 \noindent\textbf{Closed-loop deployment.}
 
-At deployment, the operator selects the natural-language instruction that matches the prepared scene. The model receives the instruction, three current images, and the current bilateral state. It predicts 50 actions, of which the first 10 are consumed before a new observation is evaluated. The executor checks the returned targets and sends them to the two arms at the dataset-aligned control rate. A task terminates on completion, timeout, invalid observation, invalid action, protective stop, emergency stop, or manual intervention.
+At deployment, the operator selects the natural-language instruction that matches the prepared scene. The model receives the instruction, three current images, and the current bilateral state. It predicts 50 actions, of which the first 10 are consumed before a new observation is evaluated. The executor checks the returned targets and sends them to the two arms at the 15~Hz deployment rate. A task terminates on completion, timeout, invalid observation, invalid action, protective stop, emergency stop, or manual intervention.
 
 \section{Engineering design analysis}
 
@@ -347,7 +347,7 @@ The mechanical tolerance is governed by the free space around the memory module,
 \medskip
 \noindent\textbf{Custom gripper geometry and mechanical analysis.}
 
-Each gripper assembly uses two identical TPU~64D fingers, and the dual-arm workcell therefore uses four fingers. For one finger,
+The two fingers on the left gripper are printed in TPU~64D, while the two fingers on the right gripper are printed in TPU~95A. All four fingers share the same geometry. For one finger,
 \[
 L=123.36~\mathrm{mm},\qquad
 T=25.80~\mathrm{mm},\qquad
@@ -1006,7 +1006,7 @@ Table~\ref{tab:ch4-system-component-summary} retains only the system-level compo
     \textbf{System group} & \textbf{Quantity} & \textbf{Function} \\
     \midrule
     FR3 follower systems & 2 & Left- and right-arm manipulation with low-level robot control and protection. \\
-    Custom grippers & 2 & Task-compatible grasping with four compliant TPU fingers in total. \\
+    Custom grippers & 2 & Task-compatible grasping with two TPU~64D fingers on the left gripper and two TPU~95A fingers on the right gripper. \\
     RGB camera views & 3 & One fixed overhead view and two wrist-local views. \\
     GELLO leaders & 2 & Bilateral demonstration input, one leader per follower arm. \\
     Training and bridge compute & 1 system & Dataset recording, packet assembly, policy training, validation, and deployment. \\
@@ -1037,7 +1037,7 @@ The full economic value of the workcell is not equal to the incremental cash exp
     \textbf{No.} & \textbf{Part or resource} & \textbf{Material or source} & \textbf{Process or tool} & \textbf{Critical consideration} \\
     \midrule
     1 & FR3 arms and controllers & Laboratory equipment & Upright installation and interface configuration & Base rigidity, shared workspace, controller limits, network isolation, emergency stop \\
-    2 & Compliant fingers & TPU~64D & Fused-filament 3D printing, support removal, inspection & Print orientation, rib integrity, screw-hole quality, paired geometry, permanent deformation \\
+    2 & Compliant fingers & TPU~64D (left pair); TPU~95A (right pair) & Fused-filament 3D printing, support removal, inspection & Print orientation, rib integrity, screw-hole quality, paired geometry, permanent deformation \\
     3 & Gripper attachment & Existing gripper and printed/adapted interfaces & Mechanical assembly with screws & Alignment, thread engagement, consistent tightening, opening clearance \\
     4 & GELLO structures & FPX330-H101 and printed parts & Additive manufacturing and modular assembly & Joint-axis alignment, low friction, cable strain relief, repeatable zero offsets \\
     5 & Camera mounts & Laboratory or printed brackets & Rigid mounting and cable routing & Working distance, FOV, gripper visibility, occlusion, cable interference \\
@@ -1051,7 +1051,7 @@ The full economic value of the workcell is not equal to the incremental cash exp
 \medskip
 \noindent\textbf{Gripper fabrication and inspection.}
 
-The finger CAD is prepared for TPU~64D printing with the mounting face and rib structure preserved. The selected print orientation must avoid weak inter-layer loading at the mounting holes and rib roots. After printing, supports and stringing are removed without cutting the compliant ribs. The overall envelope, paired symmetry, hole condition, and free deformation are inspected before assembly.
+The common finger CAD is prepared for TPU printing with the mounting face and rib structure preserved. Two copies are printed in TPU~64D for the left gripper and two copies in TPU~95A for the right gripper. The selected print orientation must avoid weak inter-layer loading at the mounting holes and rib roots. After printing, supports and stringing are removed without cutting the compliant ribs. The overall envelope, within-gripper paired symmetry, hole condition, and free deformation are inspected before assembly.
 
 The two fingers on one gripper are installed with matching orientation and adequate clearance through the commanded opening range. A manual opening-and-closing check verifies that neither finger contacts the camera mount or wrist cable. The assembly is rejected if a rib is torn, the base is permanently warped, a screw cannot retain the finger, or the two contact surfaces are visibly mismatched.
 
@@ -1135,7 +1135,7 @@ Table~\ref{tab:ch4-budget} separates the reported incremental cash cost from the
   4 & GELLO leader assemblies (2) &
   Laboratory / project resources & CNY~0 incremental &
   DR3 records availability; itemized acquisition value not supplied \\
-  5 & TPU~64D compliant fingers (4) &
+  5 & TPU~64D compliant fingers (2) and TPU~95A compliant fingers (2) &
   Student Innovation Center & CNY~0 incremental &
   Fabricated through available resources; material mass and print time not recorded \\
   6 & Task objects and fixtures (3 sets) &
@@ -1201,7 +1201,7 @@ retraining from the repository alone is not claimed.
 
 %\subsection{Current implementation status and remaining documentation}
 
-%The final implementation now includes dual-arm state and action handling, three RGB inputs, LeRobot Dataset v3.0 data, one jointly trained $\pi_{0.5}$ checkpoint, equal-probability three-task sampling, the defined episode-level validation split, macro flow-matching checkpoint selection, and a 5~Hz absolute-action deployment interface. The deployed artifact is the step-65,000 checkpoint; the later step-100,000 checkpoint is retained as the final training state but is not re-labelled as the validation optimum. The selected DR3 hardware modules and engineering drawings have been retained in this chapter.
+%The final implementation now includes dual-arm state and action handling, three RGB inputs, LeRobot Dataset v3.0 data, one jointly trained $\pi_{0.5}$ checkpoint, equal-probability three-task sampling, the defined episode-level validation split, macro flow-matching checkpoint selection, a 5~Hz collection and training time base, and a 15~Hz deployment interface. The deployed artifact is the step-65,000 checkpoint; the later step-100,000 checkpoint is retained as the final training state but is not re-labelled as the validation optimum. The selected DR3 hardware modules and engineering drawings have been retained in this chapter.
 
 %Several quantities remain documentation gaps rather than model-design gaps. They include measured FR3 base poses, camera extrinsics and mounting distances, dimensioned fixture locations, ring and can clearances, and final socket insertion clearance and depth. They also include motherboard and memory-module clearances, measured gripper force--deflection behaviour, TPU print settings, print mass and time, full in-kind asset value, and measured end-to-end latency. These values should be added if the report is expected to make production-level tolerance, structural, timing, or economic claims.
 
