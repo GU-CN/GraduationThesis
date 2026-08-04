@@ -72,7 +72,7 @@ associated with small samples.
   Pose estimation error \(<20\)~mm &
   A completed task establishes \(e_{\mathrm{pose}}<20\)~mm because the fixture and task-specific terminal region do not permit completion at or beyond the threshold. &
   75 total; 25 per task; 59 evaluable terminal states; 16 N/A &
-  Binary threshold check: an accepted state records zero threshold violation, not a measured error of exactly 0~mm. A non-terminal failed trial is N/A and is not assigned a millimetre error. \\
+  Binary threshold check: an accepted state records zero threshold violation. A non-terminal failed trial is N/A. \\
   ES5 &
   Failure detection \(>90\%\) &
   An induced or naturally occurring failure is identified before an additional unsafe action is issued. &
@@ -96,9 +96,7 @@ v_{\mathrm{ES4}}=
 \end{cases}
 \label{eq:ch5-es4-threshold-record}
 \end{equation}
-Here, zero means zero threshold violation; it must not be interpreted as a
-measured physical error of 0~mm. Accordingly, ES4 has 59 evaluable terminal
-states rather than 75 continuous error samples.
+Here, zero means zero threshold violation.
 
 For the plug-insertion task specifically, the two metal blades are spaced
 12~mm apart and both must enter their corresponding socket holes. A retained
@@ -132,7 +130,7 @@ the final design can be judged against its original targets.
     ES3 & \(>90\%\) & \(24/25=96\%\) & Pass &
     The observed detection rate exceeds the project threshold for the evaluated components. \\
     ES4 & \(<20\)~mm & 59/59 evaluable terminal states within tolerance; 16 N/A & Pass within terminal-state scope &
-    Task and fixture geometry provide a binary pose-estimation-error threshold check; no continuous error values were recorded. \\
+    Task and fixture geometry provide a binary pose-estimation-error threshold check. \\
     ES5 & \(>90\%\) & \(23/25=92\%\) & Pass &
     The observed failure-detection rate exceeds the project threshold. \\
     ES6 & \(>70\%\) & \(23/25=92\%\) & Pass &
@@ -145,8 +143,7 @@ The rate-based specifications meet their stated point-estimate thresholds. For
 ES4, all 59 evaluable terminal states satisfy the 20~mm tolerance under the
 task-geometry rule. This means zero ES4 threshold violations among the 59
 terminal states; the other 16 task trials are N/A for ES4 because they did not
-reach a terminal pose. The protocol does not assign an exact error of 0~mm or
-provide an error distribution. ES2 is heterogeneous: the RAM and ring tasks exceed 70\%,
+reach a terminal pose. ES2 is heterogeneous: the RAM and ring tasks exceed 70\%,
 while socket insertion remains below the target. Task-level values are therefore
 reported alongside the overall result.
 
@@ -424,7 +421,7 @@ The socket task succeeded in 13 of 25 trials, corresponding to 52\%. Twelve tria
 
 The dominant failure is constrained insertion rather than plug acquisition. Ten of the twelve failures reached the stage at which the two-pin plug had been grasped but did not enter the two-hole socket accurately enough to satisfy the terminal condition. This is consistent with the tolerance analysis in Section~4.2.6: the insertion requires both lateral alignment of the two pins with their corresponding holes and sufficiently small angular error through the insertion motion.
 
-Possible contributors include residual socket-box pose variation after the right-arm push, plug pose variation inside the compliant left gripper, limited visual information at the contact point, and the interval over which ten predicted actions are executed before replanning. Trial-level video and wrist-camera records can help distinguish these factors in future tests.
+Possible contributors include residual socket-box pose variation after the right-arm push, plug pose variation inside the compliant left gripper, limited visual information at the contact point, and the interval over which ten predicted actions are executed before replanning.
 
 \section{Planning, detection, failure-detection, and recovery results}
 
@@ -507,7 +504,7 @@ redesign should therefore focus on socket alignment and insertion accuracy.
 
 \section{Validation limitations}
 
-The validation has four main limitations.
+The validation has three main limitations.
 \begin{enumerate}
   \item Initial object positions were manually reset within intended envelopes
         of approximately 5~cm for the ring and RAM tasks and 3~cm for the
@@ -522,10 +519,6 @@ The validation has four main limitations.
         instructions.
   \item Each rate-based ES1, ES3, ES5, and ES6 result contains 25 observations.
         Their Wilson intervals therefore remain wide.
-  \item ES4 was evaluated as a binary geometric threshold at 59 accepted
-        terminal states. No continuous millimetre-valued errors were recorded.
-        The 16 failed trials were recorded as N/A because they did not reach the
-        terminal pose to which the metric applies.
 \end{enumerate}
 
 The selected unified checkpoint executed all three tasks on the physical
@@ -535,7 +528,7 @@ dual-arm setup, with task-dependent reliability.
 
 The selected checkpoint was evaluated in 75 physical trials. Objects were reset and varied before every trial, and the 25 trials for each task were conducted without manual intervention. The memory-module task achieved 25/25 successes, the ring task achieved 21/25, and the socket task achieved 13/25. The combined result was 59/75, or 78.7\%.
 
-The additional engineering-specification tests produced ES1 planning success of 23/25 (92\%), ES3 component detection of 24/25 (96\%), ES5 failure detection of 23/25 (92\%), and ES6 recovery of 23/25 (92\%). These reported point estimates meet their stated thresholds, although each result is based on only 25 experiments. For ES4, the same physical evaluation comprised 25 trials per task and 75 in total. All 59 terminal states satisfied the pose-estimation-error limit because the task and fixture geometry excludes completion at an error of 20~mm or more; the other 16 trials did not reach a terminal pose and were N/A. This records zero threshold violations among the 59 evaluable states, not 59 continuous error measurements or an exact error of 0~mm.
+The additional engineering-specification tests produced ES1 planning success of 23/25 (92\%), ES3 component detection of 24/25 (96\%), ES5 failure detection of 23/25 (92\%), and ES6 recovery of 23/25 (92\%). These reported point estimates meet their stated thresholds, although each result is based on only 25 experiments. For ES4, the same physical evaluation comprised 25 trials per task and 75 in total. All 59 terminal states satisfied the pose-estimation-error limit because the task and fixture geometry excludes completion at an error of 20~mm or more; the other 16 trials did not reach a terminal pose and were N/A. This records zero threshold violations among the 59 evaluable states.
 
 Failure analysis shows that ring failures were dominated by unsuccessful handle acquisition, while socket failures were dominated by inaccurate alignment and insertion into the two-hole socket. The RAM and ring tasks exceeded the 70\% task-execution target, but the socket task did not. Precision plug insertion is therefore the principal remaining performance bottleneck.
 

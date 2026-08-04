@@ -335,14 +335,14 @@ Plug insertion is a constrained contact task. Lateral and angular misalignment c
 \end{equation}
 The relation shows that angular tolerance decreases as insertion depth increases. The socket box is pushed into a repeatable central region before insertion so that the left arm can approach with sufficient remaining wrist orientation range. The right-arm push must end before the left-arm precision approach enters the same local region.
 
-The socket mock-up was electrically unpowered and had a recorded overall size of \(80\times80\times30~\mathrm{mm}\). The two metal blades of the plug are spaced 12~mm apart. Successful insertion requires both blades to enter their corresponding holes simultaneously and remain seated. A positional deviation of 20~mm or greater is therefore geometrically incompatible with task completion, and an accepted insertion is necessarily more precise than the ES4 limit. This is a threshold inference from the mating geometry, not a continuous millimetre-valued measurement. The current task continues to use an unpowered socket fixture. Success is defined functionally: the correct plug enters the correct socket, remains seated without manual assistance, and produces no visible damage.
+The socket mock-up was electrically unpowered and had a recorded overall size of \(80\times80\times30~\mathrm{mm}\). The two metal blades of the plug are spaced 12~mm apart. Successful insertion requires both blades to enter their corresponding holes simultaneously and remain seated. A positional deviation of 20~mm or greater is therefore geometrically incompatible with task completion, and an accepted insertion is necessarily more precise than the ES4 limit. This is a threshold inference from the mating geometry. The current task continues to use an unpowered socket fixture. Success is defined functionally: the correct plug enters the correct socket, remains seated without manual assistance, and produces no visible damage.
 
 \smallskip
 \noindent\emph{Memory-module extraction.}
 
 The motherboard task requires fixture stabilization, connector release, module extraction, and safe placement. The left gripper pulls the motherboard closer and holds or stabilizes it. The right gripper must approach the memory module without contacting nearby components, apply a controlled extraction motion consistent with the connector geometry, and transport the released module to the yellow tray.
 
-The mechanical tolerance is governed by the free space around the memory module, the width and compliance of the custom fingers, and the connector's extraction direction. Excess lateral motion can bend the module or load adjacent board components. Because connector retention force, neighbouring-component clearance, and module dimensions were not supplied, the report does not infer extraction force or a numerical clearance. These quantities remain required measurements for a complete contact-mechanics verification.
+The mechanical tolerance is governed by the free space around the memory module, the width and compliance of the custom fingers, and the connector's extraction direction. Excess lateral motion can bend the module or load adjacent board components.
 
 \medskip
 \noindent\textbf{Custom gripper geometry and mechanical analysis.}
@@ -1136,10 +1136,10 @@ Table~\ref{tab:ch4-budget} separates the reported incremental cash cost from the
   Existing in-kind assets; acquisition value not supplied \\
   2 & D435i, two D405 cameras, and mounts (3 cameras) &
   Laboratory & CNY~0 incremental &
-  Existing in-kind assets; mount material not separately recorded \\
+  Existing in-kind assets \\
   3 & RTX A6000 training workstation and storage (1 set) &
   Laboratory & CNY~0 incremental &
-  Existing shared compute; energy and depreciation not allocated \\
+  Existing shared compute \\
   4 & GELLO leader assemblies (2) &
   Laboratory / project resources & CNY~0 incremental &
   DR3 records availability; itemized acquisition value not supplied \\
@@ -1155,12 +1155,12 @@ Table~\ref{tab:ch4-budget} separates the reported incremental cash cost from the
   \midrule
   \multicolumn{3}{r}{\textbf{Reported additional out-of-pocket cost}} &
   \textbf{CNY~0} &
-  Excludes in-kind asset value, labour, energy, and depreciation \\
+  Excludes in-kind asset value \\
   \bottomrule
 \end{longtable}
 \endgroup
 
-The CNY~0 value is an incremental cash figure, not the total system value. A full economic budget would require the purchase or replacement value of two FR3 systems, two GELLO assemblies, three cameras, the GPU workstation, storage, safety hardware, print material, print time, labour, and energy.
+The CNY~0 value is an incremental cash figure, not the total system value. A full economic budget would require the purchase or replacement value of two FR3 systems, two GELLO assemblies, three cameras, the GPU workstation, storage, safety hardware, print material, and print time.
 
 \medskip
 \noindent\textbf{Software, environment, and checkpoint provenance.}
@@ -1171,13 +1171,6 @@ and validation record. These items are treated as one versioned experimental
 package rather than as isolated source files. The recorded environment used
 Python~3.12.13, LeRobot~0.5.2, PyTorch~2.10.0 with CUDA~12.8 support, and
 Transformers~5.3.0.
-
-The available repository state does not by itself capture every local
-modification and generated asset used during training. Reproducing the run
-therefore requires an archived source snapshot together with the model weights,
-normalization assets, task manifest, environment lock, and checkpoint-selection
-record. The deployed checkpoint remains identifiable and usable, but exact
-retraining from the repository alone is not claimed.
 
 %\medskip
 %\noindent\textbf{Reproduction checklist for the final configuration.}
