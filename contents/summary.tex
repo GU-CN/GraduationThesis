@@ -43,7 +43,7 @@ This extension can retain the existing deterministic checks while adding learned
 
 \section{Expand data coverage and model evaluation}
 
-The present validation covers controlled scenes with moderate object-position perturbations. Future datasets should systematically vary object pose, lighting, camera displacement, background clutter, component type, and fixture tolerance. Initial conditions should be recorded numerically for every episode and physical trial so that performance can be compared across different perturbation ranges.
+The present validation covers controlled scenes with manually varied but unmeasured initial object positions. Future datasets should systematically vary object pose, lighting, camera displacement, background clutter, component type, and fixture tolerance. Initial conditions should be recorded numerically for every episode and physical trial so that performance can be compared across different perturbation ranges.
 
 Data collection should emphasize failure-prone and boundary conditions while preserving task balance. Failed demonstrations, recovery demonstrations, and successful corrections should be retained with explicit stage and outcome labels. Dataset versions should record episode counts, frame counts, camera calibration, operator identity, task instruction, object configuration, and the software commit used for collection. A held-out test set should remain unchanged across model revisions so that improvements are not inferred from repeatedly tuned validation data.
 
