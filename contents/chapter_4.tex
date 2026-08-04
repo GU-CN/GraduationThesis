@@ -233,7 +233,7 @@ Equation~\ref{eq:ch4-relative-ee} explains why the two base installations and ta
 
 The system operates in a structured indoor workcell. Lighting, camera mounts, robot bases, and task fixtures remain sufficiently repeatable for the learned visual policy. Each trial begins within the demonstrated workspace. The can, handled ring, socket box, plug, motherboard, memory module, and yellow tray are treated as task-specific laboratory objects rather than arbitrary unseen industrial components.
 
-The current model uses RGB images and bilateral proprioception. Although the selected RealSense devices can provide depth, and the D435i includes inertial sensing, depth and inertial measurements are not included in the implemented $\pi_{0.5}$ feature contract. The chapter therefore uses manufacturer depth ranges and fields of view to justify camera placement, but it does not claim that the policy performs explicit metric depth reconstruction or six-degree-of-freedom pose estimation.
+The current model uses RGB images and bilateral proprioception. Although the selected RealSense devices can provide depth, and the D435i includes inertial sensing, depth and inertial measurements are not included in the implemented $\pi_{0.5}$ feature contract. The chapter therefore uses manufacturer depth ranges and fields of view to justify camera placement, but it does not claim that the policy performs explicit metric depth reconstruction or exposes a six-degree-of-freedom pose output. This does not change the project label \emph{pose estimation error} for ES4: ES4 is evaluated at the terminal outcome level through the task-specific geometric threshold defined in Chapter~\ref{chap:validation}, rather than through a continuous pose value produced by the policy.
 
 The recorder relies on software packets assembled by an upstream ROS~2 bridge. It does not use a hardware trigger or exposure-level synchronization. It also does not perform device-time interpolation or ROS approximate-time alignment. The valid engineering claim is packet-level synchronization, not exact simultaneity of the three camera exposures.
 
@@ -956,20 +956,28 @@ The left and right arm targets are separated only after policy output validation
     T1 &
     First, push the can to the middle, then pick up the black ring with the handle, put it over the can, and set it down. &
     Left arm pushes the can; right arm grasps the handled ring and places it. &
-    The can is repositioned and the released ring remains stably over the can. \\
+    The can is repositioned and the released ring remains stably over the can; the ring--can centre offset is below the measured 18.5~mm radial clearance. \\
     \addlinespace
     T2 &
     Push the box with the power socket to the middle, then pick up the plug and insert it into the socket. &
     Right arm pushes the socket box; left arm grasps and inserts the plug. &
-    The socket box is repositioned and the plug remains inserted without manual assistance. \\
+    The socket box is repositioned and the plug remains inserted without manual assistance; the mating pin--hole geometry excludes a positional deviation of 20~mm or greater. \\
     \addlinespace
     T3 &
     Pull the computer motherboard closer, then remove the memory module and place it in the yellow tray. &
     Left arm grips and pulls the motherboard; right arm removes and places the memory module. &
-    The memory module is fully removed and remains inside the yellow tray. \\
+    The memory module is fully removed and remains inside the designated yellow-tray acceptance region, defined as less than 20~mm from the reference placement position. \\
     \bottomrule
-  \end{tabularx}
+\end{tabularx}
 \end{table}
+
+For ES4, these terminal conditions act as task-specific geometric gauges. The
+measured ring--can radial clearance is 18.5~mm, retained plug insertion requires
+the mating pins and holes to remain engaged, and RAM placement is accepted only
+inside the designated 20~mm tray region. Consequently, a terminal state cannot
+be accepted when its task-specific positional deviation is 20~mm or greater.
+This rule produces a binary threshold result; it does not produce a continuous
+millimetre-valued error measurement.
 
 \medskip
 \noindent\textbf{Pre-run checks.}
@@ -1067,7 +1075,7 @@ After electrical assembly, servo identifiers, zero positions, directions, and ra
 
 The overhead mount is installed so that the complete source, interaction, and destination regions remain visible. Each D405 is mounted within its intended 7--50~cm close-range operating envelope during manipulation. The wrist view is checked at approach, contact, and retreat postures, not only at the robot start pose.
 
-Task fixtures are placed in the verified shared workspace. The can, socket box, and motherboard must permit the instructed preparation motion, while their target regions remain visible. The yellow tray is fixed against accidental displacement. The socket fixture is electrically isolated and unpowered. Reference markings or stops are used where necessary to make scene reset repeatable.
+Task fixtures are placed in the verified shared workspace. The can, socket box, and motherboard must permit the instructed preparation motion, while their target regions remain visible. The yellow tray is fixed against accidental displacement, and its designated terminal acceptance region is bounded at 20~mm from the reference placement position for binary ES4 adjudication. The socket fixture is electrically isolated and unpowered. Reference markings or stops are used where necessary to make scene reset repeatable.
 
 \medskip
 \noindent\textbf{Software implementation.}
