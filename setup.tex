@@ -193,78 +193,71 @@
   }
 
 % ============================================================
-% 声明页电子签名与签署日期（保持模板原有位置）
+% 声明页电子签名与签署日期
+% 签名标题、三行高签名区、日期依次排列
 % ============================================================
-\cs_new_protected:Npn \__team_author_signature:
-  {
-    \parbox [ t ] { 12 em }
-      {
-        \c__sjtu_name_decl_author_zh_tl
-        \c__sjtu_signature_text_zh_tl
-      }
-  }
-\cs_new_protected:Npn \__team_supervisor_signature:
-  {
-    \parbox [ t ] { 12 em }
-      {
-        \c__sjtu_name_decl_supervisor_zh_tl
-        \c__sjtu_signature_text_zh_tl
-      }
-  }
 
-% 将原空白签名文字替换为电子签名和当天日期。
-\tl_set:Nn \c__sjtu_signature_text_zh_tl
-  {
-    签名：
-    \hspace { 0.2 em }
-    \makebox [ 0 pt ] [ l ]
-      {
-        \raisebox { -0.20 cm } [ 0 pt ] [ 0 pt ]
-          {
-            \includegraphics
-              [ width = 3.6 cm, height = 0.75 cm, keepaspectratio ]
-              { figures/all.jpg }
-          }
-      }
-    \\
-    日期：2026~年~8~月~4~日
-  }
-
-% 原创性声明：保留原来的右侧位置与 4 em 右侧留白。
+% 原创性声明：作者签名与日期整体左对齐。
+% 签名图最大尺寸为原设置的 3 倍（3.6 cm x 0.75 cm -> 10.8 cm x 2.25 cm）。
 \EditInstance { sjtu } { copyright / orig / sign }
   {
     content =
       {
-        \__team_author_signature:
-        \skip_horizontal:n { 4 em } \hbox:n { }
-      }
+        \begin{minipage} [ t ] { \textwidth }
+          \raggedright
+          \c__sjtu_name_decl_author_zh_tl 签名：
+          \par
+          \parbox [ t ] [ 3 \baselineskip ] [ c ] { \textwidth }
+            {
+              \raggedright
+              \includegraphics
+                [ width = 10.8 cm, height = 2.25 cm, keepaspectratio ]
+                { figures/all.jpg }
+            }
+          \par
+          日期：2026~年~8~月~4~日
+        \end{minipage}
+      },
+    align = left
   }
 
-% 授权书：作者签名仍在左栏，指导教师签名仍在右栏。
+% 使用授权书：保留作者/指导教师左右双栏。
+% 每栏均设置三行高签名区，日期相对原位置下移约三行。
 \EditInstance { sjtu } { copyright / auth / sign }
   {
     content =
       {
-        \__team_author_signature:
+        \begin{minipage} [ t ] { 0.47 \textwidth }
+          \raggedright
+          \c__sjtu_name_decl_author_zh_tl 签名：
+          \par
+          \parbox [ t ] [ 3 \baselineskip ] [ c ] { \linewidth }
+            {
+              \raggedright
+              \includegraphics
+                [ width = \linewidth, height = 2.25 cm, keepaspectratio ]
+                { figures/all.jpg }
+            }
+          \par
+          日期：2026~年~8~月~4~日
+        \end{minipage}
         \hfill
-        \parbox [ t ] { 12 em }
-          {
-            \c__sjtu_name_decl_supervisor_zh_tl
-            签名：
-            \hspace { 0.2 em }
-            \makebox [ 0 pt ] [ l ]
-              {
-                \raisebox { -0.20 cm } [ 0 pt ] [ 0 pt ]
-                  {
-                    \includegraphics
-                      [ width = 2.1 cm, height = 0.75 cm, keepaspectratio ]
-                      { figures/hps.jpg }
-                  }
-              }
-            \\
-            日期：2026~年~8~月~4~日
-          }
-      }
+        \begin{minipage} [ t ] { 0.47 \textwidth }
+          \raggedright
+          \c__sjtu_name_decl_supervisor_zh_tl 签名：
+          \par
+          \parbox [ t ] [ 3 \baselineskip ] [ c ] { \linewidth }
+            {
+              \raggedright
+              \includegraphics
+                [ width = 6.3 cm, height = 2.25 cm, keepaspectratio ]
+                { figures/hps.jpg }
+            }
+          \par
+          日期：2026~年~8~月~4~日
+        \end{minipage}
+      },
+    align = normal
   }
 \ExplSyntaxOff
 
