@@ -9,11 +9,11 @@ The validation evaluates the final unified $\pi_{0.5}$ system described in Chapt
 \begin{enumerate}
   \item the offline normalized flow-matching loss used to select a checkpoint; and
   \item the separate 25-trial planning, detection, failure-detection, and recovery evaluations associated with ES1, ES3, ES5, and ES6; and
-  \item the physical task success rate measured over 75 trials for ES2.
+  \item the physical task outcomes measured over 75 trials for ES2 and used as the operational ES4 threshold checks.
 \end{enumerate}
-The first quantity measures agreement with held-out demonstration samples and is used for model selection. The second family evaluates defined intermediate engineering outcomes under separate 25-trial protocols. The third measures whether a complete physical trial reaches the task-specific terminal condition in Table~\ref{tab:ch4-task-definitions}. Offline validation loss selects the checkpoint, while physical trials determine task success.
+The first quantity measures agreement with held-out demonstration samples and is used for model selection. The second family evaluates defined intermediate engineering outcomes under separate 25-trial protocols. The third measures whether a complete physical trial reaches the task-specific terminal condition in Table~\ref{tab:ch4-task-definitions}. Because each terminal condition is geometrically restricted to a positional deviation below 20~mm, these same trials also provide the binary ES4 threshold check. Offline validation loss selects the checkpoint, while physical trials determine task success and ES4 threshold compliance at an accepted terminal state.
 
-The physical ES2 evaluation covers the three task configurations used during final implementation: ring placement over a can, insertion of a two-pin plug into a two-hole socket, and memory-module removal from a motherboard followed by placement in a yellow tray. Each task was evaluated in 25 trials, giving 75 physical trials in total. The ES1, ES3, ES5, and ES6 records each use 25 experiments under their own operational definitions. These populations are reported separately because their denominators and success events are not interchangeable.
+The physical ES2/ES4 evaluation covers the three task configurations used during final implementation: ring placement over a can, insertion of a two-pin plug into a two-hole socket, and memory-module removal from a motherboard followed by placement in a yellow tray. Each task was evaluated in 25 trials, giving 75 physical trials in total and 59 accepted terminal states. The ES1, ES3, ES5, and ES6 records each use 25 experiments under their own operational definitions. These populations are reported separately because their denominators and success events are not interchangeable.
 
 \section{Validation design and engineering-specification mapping}
 
@@ -69,10 +69,10 @@ associated with small samples.
   25 &
   The result applies to the documented objects and final camera arrangement. \\
   ES4 &
-  Position error \(<20\)~mm &
-  A completed task is counted as satisfying the 20~mm position-error limit because the task terminal condition requires the component to be aligned or placed within this tolerance. &
-  75 task trials; 59 successful trials &
-  The task-completion condition is used as the operational ES4 check. \\
+  Pose estimation error \(<20\)~mm &
+  A completed task establishes \(e_{\mathrm{pose}}<20\)~mm because the fixture and task-specific terminal region do not permit completion at or beyond the threshold. &
+  75 total; 25 per task; 59 accepted terminal states &
+  Binary threshold check: an accepted state records zero threshold violation, not a measured error of exactly 0~mm. Failed trials do not reach a terminal pose and are not assigned a millimetre error. \\
   ES5 &
   Failure detection \(>90\%\) &
   An induced or naturally occurring failure is identified before an additional unsafe action is issued. &
@@ -113,8 +113,8 @@ the final design can be judged against its original targets.
     The aggregate passes; the socket subtask is 52\% and does not pass individually. \\
     ES3 & \(>90\%\) & \(24/25=96\%\) & Pass &
     The observed detection rate exceeds the project threshold for the evaluated components. \\
-    ES4 & \(<20\)~mm & 59 successful trials within tolerance & Pass for successful trials &
-    Successful task completion is used as the operational position-error check. \\
+    ES4 & \(<20\)~mm & 59 accepted terminal states within tolerance & Pass for accepted terminal states &
+    Task and fixture geometry provide a binary pose-estimation-error threshold check; no continuous error values were recorded. \\
     ES5 & \(>90\%\) & \(23/25=92\%\) & Pass &
     The observed failure-detection rate exceeds the project threshold. \\
     ES6 & \(>70\%\) & \(23/25=92\%\) & Pass &
@@ -124,8 +124,10 @@ the final design can be judged against its original targets.
 \end{table}
 
 The rate-based specifications meet their stated point-estimate thresholds. For
-ES4, the 59 successful task trials satisfy the 20~mm tolerance under the
-task-completion rule. ES2 is heterogeneous: the RAM and ring tasks exceed 70\%,
+ES4, the 59 accepted terminal states satisfy the 20~mm tolerance under the
+task-geometry rule. This means zero ES4 threshold violations among accepted
+terminal states; it does not assign an exact error of 0~mm or provide an error
+distribution. ES2 is heterogeneous: the RAM and ring tasks exceed 70\%,
 while socket insertion remains below the target. Task-level values are therefore
 reported alongside the overall result.
 
@@ -474,8 +476,8 @@ The current three scenes are visually distinct and each scene is paired with its
 \subsection{Requirements-level interpretation}
 
 At the project level, the rate-based specifications meet their stated
-point-estimate thresholds, and successful task completion satisfies the ES4
-position-error rule. The configured scene and instruction generally form an
+point-estimate thresholds, and the 59 accepted terminal states satisfy the ES4
+pose-estimation-error threshold under the task-geometry rule. The configured scene and instruction generally form an
 executable plan, required components are detected, the same unified checkpoint
 completes all three task types, and most tested failure and recovery events are
 handled successfully.
@@ -485,7 +487,7 @@ redesign should therefore focus on socket alignment and insertion accuracy.
 
 \section{Validation limitations}
 
-The validation has three main limitations.
+The validation has four main limitations.
 \begin{enumerate}
   \item Initial object positions were varied within approximately 5~cm for
         the ring and RAM tasks and 3~cm for the socket task, but individual
@@ -494,6 +496,10 @@ The validation has three main limitations.
         instructions, so instruction sensitivity was not tested separately.
   \item Each rate-based ES1, ES3, ES5, and ES6 result contains 25 observations.
         Their Wilson intervals therefore remain wide.
+  \item ES4 was evaluated as a binary geometric threshold at accepted terminal
+        states. No continuous millimetre-valued errors were recorded, and
+        failed trials were not assigned a terminal pose error because they did
+        not reach the state to which that terminal metric applies.
 \end{enumerate}
 
 The selected unified checkpoint executed all three tasks on the physical
@@ -503,7 +509,7 @@ dual-arm setup, with task-dependent reliability.
 
 The selected checkpoint was evaluated in 75 physical trials. Objects were reset and varied before every trial, and the 25 trials for each task were conducted without manual intervention. The memory-module task achieved 25/25 successes, the ring task achieved 21/25, and the socket task achieved 13/25. The combined result was 59/75, or 78.7\%.
 
-The additional engineering-specification tests produced ES1 planning success of 23/25 (92\%), ES3 component detection of 24/25 (96\%), ES5 failure detection of 23/25 (92\%), and ES6 recovery of 23/25 (92\%). These reported point estimates meet their stated thresholds, although each result is based on only 25 experiments. For ES4, the 59 successful task trials were counted as satisfying the 20~mm position-error limit because each trial reached its required alignment or placement condition.
+The additional engineering-specification tests produced ES1 planning success of 23/25 (92\%), ES3 component detection of 24/25 (96\%), ES5 failure detection of 23/25 (92\%), and ES6 recovery of 23/25 (92\%). These reported point estimates meet their stated thresholds, although each result is based on only 25 experiments. For ES4, the same physical evaluation comprised 25 trials per task and 75 in total. Its 59 accepted terminal states satisfied the pose-estimation-error limit because the task and fixture geometry excludes completion at an error of 20~mm or more. This records zero threshold violations among accepted states, not 59 continuous error measurements or an exact error of 0~mm.
 
 Failure analysis shows that ring failures were dominated by unsuccessful handle acquisition, while socket failures were dominated by inaccurate alignment and insertion into the two-hole socket. The RAM and ring tasks exceeded the 70\% task-execution target, but the socket task did not. Precision plug insertion is therefore the principal remaining performance bottleneck.
 
