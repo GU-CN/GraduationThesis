@@ -607,8 +607,15 @@ Action:
 \end{quote}
 The PaliGemma SentencePiece tokenizer uses right padding and a maximum sequence
 length of 200 tokens. This representation makes the task instruction and
-current bilateral state jointly available to the model, but the final physical
-experiment does not isolate their individual effects. Because each visually distinct scene was paired with a corresponding instruction, the results indicate that behavior selection was jointly conditioned on visual input and language, rather than determined by language alone.
+current bilateral state jointly available to the model. In the evaluated
+system, the policy was deployed with the complete input tuple of images,
+instruction, and state, and one shared checkpoint successfully executed the
+three fixed scene--instruction configurations. However, because each visually
+distinct scene was always paired with its corresponding fixed instruction, the
+experiment cannot determine whether or how strongly the policy relied on
+language rather than visual scene recognition. The result therefore validates
+the fixed scene--instruction deployment configuration, not independent language
+grounding or robustness to instruction variation.
 
 The three camera images are supplied in the fixed order
 \(\{\texttt{cam\_left},\texttt{cam\_front},\texttt{cam\_right}\}\). Each image
