@@ -601,8 +601,14 @@ Action:
 \end{quote}
 The PaliGemma SentencePiece tokenizer uses right padding and a maximum sequence
 length of 200 tokens. This representation makes the task instruction and
-current bilateral state jointly available to the model. Each physical task is
-executed with its corresponding instruction.
+current bilateral state jointly available to the model. In the evaluated
+system, one shared checkpoint executed the three fixed scene--instruction
+configurations with the complete input tuple of images, instruction, and state.
+However, because each visually distinct scene was always paired with its
+corresponding fixed instruction, the experiment cannot determine whether or how
+strongly the policy relied on language rather than visual scene recognition.
+The result therefore validates fixed scene--instruction deployment, not
+independent language grounding or robustness to instruction variation.
 
 The three camera images are supplied in the fixed order
 \(\{\texttt{cam\_left},\texttt{cam\_front},\texttt{cam\_right}\}\). Each image
