@@ -52,12 +52,31 @@ The customer requirements were converted into six measurable engineering specifi
 ES1 & Planning success rate & $>90\%$ & Fraction of trials in which the selected task policy and initialized scene form a valid executable plan. \\
 ES2 & Task execution success rate & $>70\%$ & Fraction of trials in which the prescribed assembly operation reaches its task-specific completion condition. \\
 ES3 & Component detection accuracy & $>90\%$ & Fraction of evaluated observations in which the required component is correctly detected for the active task. \\
-ES4 & Pose estimation error & $<20$\,mm & Euclidean position error between the estimated and reference component pose. \\
+ES4 & Pose estimation error & $<20$\,mm & Terminal pose error relative to the task-specific reference pose, evaluated as a binary threshold from the completion geometry. \\
 ES5 & Failure detection rate & $>90\%$ & Fraction of induced or naturally occurring execution failures that are identified before further unsafe action is issued. \\
 ES6 & Recovery rate & $>70\%$ & Fraction of detected failures for which the defined recovery procedure restores a valid task state. \\
 \bottomrule
 \end{tabularx}
 \end{table}
+
+ES4 retains the project term \emph{pose estimation error}. Conceptually, its
+translational component is
+\begin{equation}
+e_{\mathrm{pose}}=\left\lVert \hat{\mathbf p}-\mathbf p_{\mathrm{ref}}\right\rVert_2,
+\label{eq:es4-pose-error}
+\end{equation}
+where \(\hat{\mathbf p}\) denotes the terminal component position assessed by
+the task geometry and \(\mathbf p_{\mathrm{ref}}\) is the task-specific
+reference position. The final protocol evaluates only whether
+\(e_{\mathrm{pose}}<20\)~mm; it does not log a continuous millimetre value.
+For each of the three tasks, the fixture and accepted terminal region are
+defined so that completion is not possible when
+\(e_{\mathrm{pose}}\geq20\)~mm. A successful terminal state is therefore
+recorded as zero threshold violation, not as a measured error of exactly
+0~mm. A failed trial does not reach the terminal state to which ES4 applies
+and is recorded as not applicable for ES4. Chapter~\ref{chap:validation}
+applies this rule to 25 trials per task: 75 attempts produced 59
+ES4-evaluable terminal states and 16 non-terminal outcomes.
 
 \section{Quality function deployment}
 
