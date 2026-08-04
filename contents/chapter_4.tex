@@ -720,6 +720,7 @@ The three tasks are trained jointly for 100,000 optimizer steps. Batch size is 4
     LeRobot version & 0.5.2, with local modifications \\
     Dataset format & LeRobot Dataset v3.0 \\
     Training hardware & NVIDIA RTX A6000 48~GB, physical GPU~1 \\
+    Deployment workstation & NVIDIA GeForce RTX 5070 Ti \\
     Batch size & 4 \\
     Optimizer & AdamW \\
     Training length & 100,000 joint-training steps \\
@@ -885,7 +886,7 @@ Validation runs every 5,000 steps. Each task is evaluated separately before the 
 \medskip
 \noindent\textbf{Robot control and deployment system.}
 
-The deployment system loads one checkpoint for all three instructions. The selected instruction and current observation are sent to $\pi_{0.5}$. A 50-step action chunk is returned, and the executor uses the first ten steps. The target ordering, absolute-action interpretation, and camera mapping are identical to those used during training, while the control frequency is increased from 5~Hz to 15~Hz.
+The deployment system runs on a workstation equipped with an NVIDIA GeForce RTX 5070 Ti and loads one checkpoint for all three instructions. The selected instruction and current observation are sent to $\pi_{0.5}$. A 50-step action chunk is returned, and the executor uses the first ten steps. The target ordering, absolute-action interpretation, and camera mapping are identical to those used during training, while the control frequency is increased from 5~Hz to 15~Hz.
 
 The left and right arm targets are separated only after policy output validation. The gripper commands are expressed as absolute opening widths in metres. After each executed segment, the queue is not blindly extended with the rest of the old 50-step chunk; the policy is queried again using updated images and state.
 
