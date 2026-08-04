@@ -235,7 +235,7 @@ The system operates in a structured indoor workcell. Lighting, camera mounts, ro
 
 The current model uses RGB images and bilateral proprioception. Although the selected RealSense devices can provide depth, and the D435i includes inertial sensing, depth and inertial measurements are not included in the implemented $\pi_{0.5}$ feature contract. The chapter therefore uses manufacturer depth ranges and fields of view to justify camera placement, but it does not claim that the policy performs explicit metric depth reconstruction or exposes a six-degree-of-freedom pose output. This does not change the project label \emph{pose estimation error} for ES4: ES4 is evaluated at the terminal outcome level through the task-specific geometric threshold defined in Chapter~\ref{chap:validation}, rather than through a continuous pose value produced by the policy.
 
-The recorder relies on software packets assembled by an upstream ROS~2 bridge. It does not use a hardware trigger or exposure-level synchronization. It also does not perform device-time interpolation or ROS approximate-time alignment. The valid engineering claim is packet-level synchronization, not exact simultaneity of the three camera exposures.
+The perception system uses three synchronized cameras: one overhead D435i and two wrist-mounted D405 units. Here, synchronized means that the three images are associated within the same software packet assembled by the upstream ROS~2 bridge. The recorder does not independently apply hardware triggering, exposure-level synchronization, device-time interpolation, or ROS approximate-time alignment.
 
 The design also assumes that deterministic safeguards remain outside the policy. The learned action is accepted only after dimensional, finite-value, joint, gripper, workspace, freshness, and communication checks. The socket task uses an electrically unpowered fixture. The system is a supervised research workcell and is not represented as a certified production cell.
 
@@ -445,7 +445,7 @@ Collection and task review are intentionally separate operations. The recorder v
 \medskip
 \noindent\textbf{Packet synchronization and action-label alignment.}
 
-The stored cadence is 5~Hz, corresponding to approximately 0.2~s per step. The recorder pairs adjacent assembled packets. For the saved sample at index \(t\), the four recorded relationships are written as separate centred expressions:
+The three synchronized cameras are recorded at 5~Hz, corresponding to approximately 0.2~s per step. The upstream ROS~2 bridge groups the three camera images and bilateral robot state into one software-synchronized packet, and the recorder pairs adjacent assembled packets. For the saved sample at index \(t\), the four recorded relationships are written as separate centred expressions:
 \begin{equation}
 \mathbf{o}^{\mathrm{visual}}_t
 =\text{three images from packet }t .
@@ -464,7 +464,7 @@ The stored cadence is 5~Hz, corresponding to approximately 0.2~s per step. The r
 \end{equation}
 Images and measured state therefore come from the same current packet. The arm label is shifted forward by one packet so that the current observation is paired with the next absolute joint target. The gripper label follows the existing same-packet convention.
 
-This procedure guarantees consistency of the saved software packet and label rule. It does not prove that all three camera exposures occurred at the same physical instant. The recorder does not interpolate device timestamps, perform ROS approximate-time alignment, or use a hardware trigger. It trusts the upstream bridge to provide an assembled packet.
+This procedure preserves the three-camera synchronization supplied by the upstream bridge and guarantees consistency of the saved software packet and label rule. In this thesis, synchronized cameras therefore refers to their association in the same assembled ROS~2 packet; it does not assert hardware-triggered simultaneity of the three exposures.
 
 \subsection{Dataset design and task-balanced training}
 
