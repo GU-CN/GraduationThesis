@@ -194,35 +194,44 @@
 
 % ============================================================
 % 声明页电子签名与签署日期
-% 签名标题、三行高签名区、日期依次排列
+% 原创性声明同一行签名；授权书保留三行高签名区
 % ============================================================
 
-% 原创性声明：作者签名与日期整体左对齐。
-% 签名图最大尺寸为原设置的 3 倍（3.6 cm x 0.75 cm -> 10.8 cm x 2.25 cm）。
+% 平衡利用上下页边距，为放大的电子签名留出空间。
+\EditInstance { sjtu } { copyright }
+  {
+    top-skip = -1.2 cm
+  }
+
+% 原创性声明：签名图片与“学位论文作者签名：”位于同一行，
+% 日期与标签左缘对齐。图片向下放置，避免遮挡上一段正文。
 \EditInstance { sjtu } { copyright / orig / sign }
   {
     content =
       {
-        \begin{minipage} [ t ] { \textwidth }
-          \raggedright
-          \c__sjtu_name_decl_author_zh_tl 签名：
-          \par
-          \parbox [ t ] [ 3 \baselineskip ] [ c ] { \textwidth }
-            {
-              \raggedright
-              \includegraphics
-                [ width = 10.8 cm, height = 2.25 cm, keepaspectratio ]
-                { figures/all.jpg }
-            }
-          \par
-          日期：2026~年~8~月~4~日
-        \end{minipage}
+        \enlargethispage { 1.3 cm }
+        \noindent
+        \c__sjtu_name_decl_author_zh_tl 签名：
+        \hspace { 1 em }
+        \makebox [ 0 pt ] [ l ]
+          {
+            \raisebox { -1.55 cm } [ 0 pt ] [ 0 pt ]
+              {
+                \includegraphics
+                  [ width = 9.6 cm, height = 2.25 cm, keepaspectratio ]
+                  { figures/all.jpg }
+              }
+          }
+        \par
+        \vspace { 2 \baselineskip }
+        \noindent
+        日期：2026~年~8~月~4~日
       },
     align = left
   }
 
 % 使用授权书：保留作者/指导教师左右双栏。
-% 每栏均设置三行高签名区，日期相对原位置下移约三行。
+% 每栏设置三行高签名区，日期位于签名区下方。
 \EditInstance { sjtu } { copyright / auth / sign }
   {
     content =
