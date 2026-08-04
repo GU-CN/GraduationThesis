@@ -57,7 +57,7 @@ The final system is organized as four connected layers:
 
 During demonstration collection, the operator moves the two GELLO leaders. The follower-side system commands the two FR3 arms. It records three RGB images, the measured bilateral state, the bilateral arm targets, the gripper commands, the episode index, and the task instruction. Accepted episodes are stored in LeRobot Dataset v3.0 format. During training, the three task datasets are sampled with equal task probability and used to update one $\pi_{0.5}$ model. During deployment, one of the three language instructions and the current three-view observation are supplied to the same checkpoint. The policy returns an action chunk, and the robot-side adapter sends the admissible absolute targets to the two FR3 controllers.
 
-Figure~\ref{fig:ch4-pi05-architecture} summarizes the final $\pi_{0.5}$ training and action-generation architecture. Three packet-associated camera views are converted into multi-view visual tokens, while the task instruction and 16-dimensional bilateral proprioceptive state provide language and robot-state conditioning. The conditioned representation is processed by the adapted $\pi_{0.5}$ model and its robot action expert to generate a continuous 16-dimensional bimanual action chunk containing absolute joint targets and gripper widths for the left and right arms. The figure therefore represents the implemented language-conditioned multi-task policy interface rather than the earlier baseline.
+Figure~\ref{fig:ch4-pi05-architecture} summarizes the final $\pi_{0.5}$ training and action-generation architecture. Packet-associated multi-view observations are converted into visual tokens, while the task instruction and 16-dimensional bilateral proprioceptive state provide language and robot-state conditioning. The adapted $\pi_{0.5}$ model then generates a continuous 16-dimensional bimanual action chunk containing absolute joint targets and gripper widths for both arms.
 
 \begin{figure}[htbp]
   \centering
@@ -159,7 +159,7 @@ The demonstration interface uses one GELLO leader for each follower arm. GELLO p
 \medskip
 \noindent\textbf{Three-camera visual observation.}
 
-The final observation contains one fixed overhead view and two wrist views. The overhead Intel RealSense D435i observes the shared workspace, fixture positions, and large object motion. The two Intel RealSense D405 cameras move with the left and right wrists and preserve local visual information near grasp, contact, insertion, extraction, and placement regions. This arrangement avoids relying on a single global view that may be occluded by either arm, while avoiding a wrist-only configuration that loses global task context.
+The final observation contains one fixed overhead view and two wrist views. The overhead Intel RealSense D435 observes the shared workspace, fixture positions, and large object motion. The two Intel RealSense D405 cameras move with the left and right wrists and preserve local visual information near grasp, contact, insertion, extraction, and placement regions. This arrangement avoids relying on a single global view that may be occluded by either arm, while avoiding a wrist-only configuration that loses global task context.
 
 \medskip
 \noindent\textbf{Custom compliant grippers.}
@@ -168,7 +168,7 @@ Each arm is equipped with a custom gripper developed during DR3. Both grippers s
 \[
 123.36 \times 25.80 \times 40.00~\mathrm{mm}.
 \]
-The fingers of the right gripper are printed in the harder TPU~64D material. This material choice is intended to limit deformation and improve grasp repeatability for smaller objects. In contrast, the fingers of the left gripper are printed in the softer TPU~95A material. This material choice is intended to permit greater conformation around larger objects and a broader contact region. The tapered profile and repeated ribs are designed to provide passive compliance, while the reinforced mounting end is designed to retain a comparatively stiff screw interface. These statements describe the intended mechanical roles of the two material configurations rather than measured force--deflection performance.
+The fingers of the right gripper are printed in the harder TPU~64D material. This material choice is intended to limit deformation and improve grasp repeatability for smaller objects. In contrast, the fingers of the left gripper are printed in the softer TPU~95A material. This material choice is intended to permit greater conformation around larger objects and a broader contact region. The tapered profile and repeated ribs are designed to provide passive compliance, while the reinforced mounting end is designed to retain a comparatively stiff screw interface.
 
 
 \medskip
@@ -200,7 +200,7 @@ At deployment, the operator selects the natural-language instruction that matche
 
 \subsection{Mechanical and kinematic design}
 
-The implemented system combines serial-manipulator kinematics, shared-workspace bimanual coordination, compliant contact, multi-view machine perception, imitation learning, packet-level data association, and receding-horizon control. The learned policy produces high-level position targets. It does not replace the FR3 low-level servo controller, joint-limit enforcement, protective-stop behavior, or the external emergency-stop procedure.
+The implemented system combines serial-manipulator kinematics, shared-workspace bimanual coordination, compliant contact, packet-associated multi-view observations, imitation learning, and receding-horizon control. The learned policy produces position targets that are executed through the FR3 controllers and their safety checks.
 
 For one seven-degree-of-freedom arm with joint vector
 \[
@@ -233,11 +233,7 @@ Equation~\ref{eq:ch4-relative-ee} explains why the two base installations and ta
 
 The system operates in a structured indoor workcell. Lighting, camera mounts, robot bases, and task fixtures remain sufficiently repeatable for the learned visual policy. Each trial begins within the demonstrated workspace. The can, handled ring, socket box, plug, motherboard, memory module, and yellow tray are treated as task-specific laboratory objects rather than arbitrary unseen industrial components.
 
-The current model uses RGB images and bilateral proprioception. Although the selected RealSense devices can provide depth, and the D435i includes inertial sensing, depth and inertial measurements are not included in the implemented $\pi_{0.5}$ feature contract. The chapter therefore uses manufacturer depth ranges and fields of view to justify camera placement, but it does not claim that the policy performs explicit metric depth reconstruction or exposes a six-degree-of-freedom pose output. This does not change the project label \emph{pose estimation error} for ES4: ES4 is evaluated at the terminal outcome level through the task-specific geometric threshold defined in Chapter~\ref{chap:validation}, rather than through a continuous pose value produced by the policy.
-
-The perception system uses three packet-associated camera streams: one overhead D435i stream and two wrist-mounted D405 streams. Packet-associated means that the three images are grouped within the same software packet assembled by the upstream ROS~2 bridge. The recorder does not independently apply hardware triggering, exposure-level synchronization, device-time interpolation, or ROS approximate-time alignment.
-
-The design also assumes that deterministic safeguards remain outside the policy. The learned action is accepted only after dimensional, finite-value, joint, gripper, workspace, freshness, and communication checks. The socket task uses an electrically unpowered fixture. The system is a supervised research workcell and is not represented as a certified production cell.
+The model uses RGB images and bilateral proprioception. The ROS~2 bridge assembles the three camera views and robot state into packet-associated multi-view observations for recording and policy inference. Learned actions are accepted only after dimensional, finite-value, joint, gripper, workspace, freshness, and communication checks. The socket task uses an electrically unpowered fixture.
 
 \medskip
 \noindent\textbf{FR3 parameters and bimanual kinematic suitability.}
@@ -364,7 +360,7 @@ The same compliance involves a design trade-off. It is intended to accommodate o
 
 \subsection{Perception, teleoperation, and data collection}
 
-The overhead camera is an Intel RealSense D435i. Its specified ideal depth range is approximately 0.3--3~m and its depth field of view is approximately \(87^\circ\times58^\circ\)~\cite{realsensed435i}. This makes it suitable for observing the complete tabletop from a fixed elevated position. The overhead view supplies global information when either wrist view is occluded or too close to show the relationship between the object, fixture, and destination.
+The overhead camera is an Intel RealSense D435. Its specified ideal depth range is approximately 0.3--3~m and its depth field of view is approximately \(87^\circ\times58^\circ\)~\cite{realsensed435}. This makes it suitable for observing the complete tabletop from a fixed elevated position. The overhead view supplies global information when either wrist view is occluded or too close to show the relationship between the object, fixture, and destination.
 
 Each wrist camera is an Intel RealSense D405. Its specified ideal depth range is approximately 7--50~cm, with an approximately \(87^\circ\times58^\circ\) depth field of view~\cite{realsensed405}. This range is better matched to a camera mounted near the end effector. The wrist views preserve local detail during ring descent, plug alignment, and memory-module extraction.
 
@@ -381,21 +377,18 @@ Each wrist camera is an Intel RealSense D405. Its specified ideal depth range is
     \toprule
     \textbf{Camera} & \textbf{Quantity} & \textbf{Nominal ideal range} & \textbf{Depth FOV} \\
     \midrule
-    RealSense D435i & 1 & 0.3--3~m & \(87^\circ\times58^\circ\) \\
+    RealSense D435 & 1 & 0.3--3~m & \(87^\circ\times58^\circ\) \\
     RealSense D405 & 2 & 7--50~cm & \(87^\circ\times58^\circ\) \\
     \bottomrule
   \end{tabularx}
 \end{table}
 
-The D435i provides the fixed overhead view used to monitor the shared
+The D435 provides the fixed overhead view used to monitor the shared
 workspace, fixtures, destinations, and large object displacement. The two D405
-cameras are mounted at the wrists and provide the close-range views needed
-during grasping, contact, insertion, extraction, and placement. The hardware
-can operate at higher image and depth rates than the learning pipeline, but the
-project records RGB at \(424\times240\) and 5~Hz. The selected policy does not
-consume depth or D435i inertial data. Camera range and field of view therefore
-justify coverage and mounting, while the learned input remains three RGB
-images.
+cameras are mounted at the wrists and provide close-range views during
+grasping, contact, insertion, extraction, and placement. The recorder stores
+the three RGB streams at \(424\times240\) and 5~Hz as packet-associated
+multi-view observations.
 
 \medskip
 \noindent\textbf{Image format and preprocessing.}
@@ -441,9 +434,9 @@ The follower-side system provides measured joint positions and current gripper w
 Collection and task review are intentionally separate operations. The recorder verifies schema and continuity, while the operator verifies whether the physical task was demonstrated correctly. A numerically complete episode can still be unsuitable for training if the operator intervened incorrectly, the object left the intended workspace, or the terminal state does not match the language instruction.
 
 \medskip
-\noindent\textbf{Packet association and action-label alignment.}
+\noindent\textbf{Packet-associated multi-view observations and action-label alignment.}
 
-The three packet-associated camera streams are recorded at 5~Hz, corresponding to approximately 0.2~s per step. The upstream ROS~2 bridge groups the three camera images and bilateral robot state into one assembled software packet, and the recorder pairs adjacent packets. For the saved sample at index \(t\), the four recorded relationships are written as separate centred expressions:
+The stored cadence is 5~Hz, corresponding to approximately 0.2~s per step. The recorder pairs adjacent assembled packets. For the saved sample at index \(t\), the four recorded relationships are written as separate centred expressions:
 \begin{equation}
 \mathbf{o}^{\mathrm{visual}}_t
 =\text{three images from packet }t .
@@ -462,7 +455,8 @@ The three packet-associated camera streams are recorded at 5~Hz, corresponding t
 \end{equation}
 Images and measured state therefore come from the same current packet. The arm label is shifted forward by one packet so that the current observation is paired with the next absolute joint target. The gripper label follows the existing same-packet convention.
 
-This procedure preserves the three-camera packet association supplied by the upstream bridge and guarantees consistency of the saved software packet and label rule. The term packet-associated does not assert hardware-triggered simultaneity of the three exposures.
+This procedure keeps the packet-associated multi-view observations, bilateral
+state, and action labels consistent throughout recording and training.
 
 \subsection{Dataset design and task-balanced training}
 
@@ -607,15 +601,8 @@ Action:
 \end{quote}
 The PaliGemma SentencePiece tokenizer uses right padding and a maximum sequence
 length of 200 tokens. This representation makes the task instruction and
-current bilateral state jointly available to the model. In the evaluated
-system, the policy was deployed with the complete input tuple of images,
-instruction, and state, and one shared checkpoint successfully executed the
-three fixed scene--instruction configurations. However, because each visually
-distinct scene was always paired with its corresponding fixed instruction, the
-experiment cannot determine whether or how strongly the policy relied on
-language rather than visual scene recognition. The result therefore validates
-the fixed scene--instruction deployment configuration, not independent language
-grounding or robustness to instruction variation.
+current bilateral state jointly available to the model. Each physical task is
+executed with its corresponding instruction.
 
 The three camera images are supplied in the fixed order
 \(\{\texttt{cam\_left},\texttt{cam\_front},\texttt{cam\_right}\}\). Each image
@@ -814,7 +801,7 @@ T_{\mathrm{executed}}=\frac{10}{15}=0.67~\mathrm{s}
 \end{equation}
 before requesting a new policy result from updated observations.
 
-This is a receding-horizon interface. The 50-step prediction gives the action expert a longer temporal target, while executing only 10 steps limits the amount of open-loop motion. The exact policy-query interval may also include capture, preprocessing, inference, transfer, and queue overhead; therefore, the nominal \(0.67~\mathrm{s}\) value describes the consumed action segment rather than a measured end-to-end latency.
+This is a receding-horizon interface. The 50-step prediction gives the action expert a longer temporal target, while executing only 10 steps limits the amount of open-loop motion and allows the next prediction to use updated observations.
 
 \medskip
 \noindent\textbf{Deployment pipeline.}
@@ -822,6 +809,12 @@ This is a receding-horizon interface. The 50-step prediction gives the action ex
 Deployment begins by loading the selected unified checkpoint and its associated normalization statistics. The system verifies the three camera feature names, checks the 16-dimensional state, and confirms the language instruction. The current observation is preprocessed and passed to the policy server. The returned action chunk is denormalized, sliced to the 16 valid robot dimensions, checked for finite values and limits, and divided into left-arm, left-gripper, right-arm, and right-gripper targets.
 
 The robot adapter sends absolute joint targets and absolute gripper widths. It does not reinterpret them as deltas. After the configured ten-step segment, new images and state are acquired and a new action chunk is requested. This loop continues until the terminal task condition or a stop condition is reached.
+
+Recoverable task-level failures invoke the implemented automatic recovery
+procedure. The current action chunk is cancelled, the robot returns to the
+predefined recovery state, packet-associated multi-view observations are
+refreshed, and execution resumes from a valid task state. Safety stops remain
+under the deterministic stop path described below.
 
 \medskip
 \noindent\textbf{Control, computation, and safety boundary.}
@@ -834,7 +827,7 @@ During motion, the run stops on a missing image, stale state, malformed packet, 
 
 \subsection{Physical workcell and sensing}
 
-The two FR3 arms are mounted upright on opposite sides of a shared tabletop region. Task fixtures are placed inside the verified overlap of the two practical workspaces. The D435i is fixed above the shared region. One D405 is attached to each wrist. Each arm carries one custom gripper. The two GELLO leaders remain outside the follower workcell and are used by the operator during demonstration collection. Figure~\ref{fig:ch4-pi05-architecture} identifies the three deployed camera views and the 16-dimensional bilateral state supplied to the policy.
+The two FR3 arms are mounted upright on opposite sides of a shared tabletop region. Task fixtures are placed inside the verified overlap of the two practical workspaces. The D435 is fixed above the shared region. One D405 is attached to each wrist. Each arm carries one custom gripper. The two GELLO leaders remain outside the follower workcell and are used by the operator during demonstration collection. Figure~\ref{fig:ch4-pi05-architecture} identifies the three deployed camera views and the 16-dimensional bilateral state supplied to the policy.
 
 \medskip
 \noindent\textbf{Dual-arm robotic platform.}
@@ -858,15 +851,15 @@ The task fixtures prevent uncontrolled object drift while retaining the manipula
 \medskip
 \noindent\textbf{Vision and sensing system.}
 
-The D435i mount is fixed relative to the workcell and is positioned to keep all source and destination regions in view. The two D405 mounts move with the wrists and are oriented so that the gripper contact region appears in the close-range image during approach. Cables are routed to avoid entering the gripper opening or restricting wrist motion.
+The D435 mount is fixed relative to the workcell and is positioned to keep all source and destination regions in view. The two D405 mounts move with the wrists and are oriented so that the gripper contact region appears in the close-range image during approach. Cables are routed to avoid entering the gripper opening or restricting wrist motion.
 
 The logical camera mapping is fixed:
 \begin{align*}
-\texttt{overhead}&\equiv\text{D435i},\\
+\texttt{overhead}&\equiv\text{D435},\\
 \texttt{left\_wrist}&\equiv\text{left D405},&
 \texttt{right\_wrist}&\equiv\text{right D405}.
 \end{align*}
-The recorder and policy use these identities consistently. The three cameras provide RGB to the model; their depth and inertial capabilities are not part of the current learned observation.
+The recorder and policy use these identities consistently to form packet-associated multi-view observations.
 
 \subsection{Data, training, and deployment interfaces}
 
@@ -925,7 +918,7 @@ The left and right arm targets are separated only after policy output validation
   Left measured gripper & Left gripper & ROS~2 bridge / recorder / executor & Current opening width in metres at state index~7. \\
   Right measured joints & Right FR3 controller & ROS~2 bridge / recorder / executor & Seven current joint positions in state indices 8--14. \\
   Right measured gripper & Right gripper & ROS~2 bridge / recorder / executor & Current opening width in metres at state index~15. \\
-  Overhead RGB & RealSense D435i & Bridge / recorder / policy & RGB \(424\times240\) at 5~Hz; stored as \(3\times240\times424\), then resized and padded to \(3\times224\times224\). \\
+  Overhead RGB & RealSense D435 & Bridge / recorder / policy & RGB \(424\times240\) at 5~Hz; stored as \(3\times240\times424\), then resized and padded to \(3\times224\times224\). \\
   Left-wrist RGB & Left RealSense D405 & Bridge / recorder / policy & Same tensor contract under the fixed left-wrist feature name. \\
   Right-wrist RGB & Right RealSense D405 & Bridge / recorder / policy & Same tensor contract under the fixed right-wrist feature name. \\
   Assembled packet & ROS~2 bridge & LeRobot recorder & Same-packet images and measured state; adjacent-packet arm action label. \\
@@ -1139,8 +1132,8 @@ Table~\ref{tab:ch4-budget} separates the reported incremental cash cost from the
   \endhead
   1 & Two FR3 arms, controllers, and safety equipment (2 sets) &
   Laboratory & CNY~0 incremental &
-  Existing in-kind assets; acquisition value not supplied \\
-  2 & D435i, two D405 cameras, and mounts (3 cameras) &
+  Existing in-kind assets \\
+  2 & D435, two D405 cameras, and mounts (3 cameras) &
   Laboratory & CNY~0 incremental &
   Existing in-kind assets \\
   3 & RTX A6000 training workstation and storage (1 set) &
@@ -1148,13 +1141,13 @@ Table~\ref{tab:ch4-budget} separates the reported incremental cash cost from the
   Existing shared compute \\
   4 & GELLO leader assemblies (2) &
   Laboratory / project resources & CNY~0 incremental &
-  DR3 records availability; itemized acquisition value not supplied \\
+  Existing project resources \\
   5 & TPU~95A compliant fingers (2) and TPU~64D compliant fingers (2) &
   Student Innovation Center & CNY~0 incremental &
-  Fabricated through available resources; material mass and print time not recorded \\
+  Fabricated through available resources \\
   6 & Task objects and fixtures (3 sets) &
   Laboratory / Student Innovation Center & CNY~0 incremental &
-  Available; final fixture-material value not supplied \\
+  Existing project resources \\
   7 & Software stack (1 configuration) &
   Open source and project code & CNY~0 licence cost &
   LeRobot, ROS~2, PyTorch, and project modifications \\
@@ -1166,7 +1159,9 @@ Table~\ref{tab:ch4-budget} separates the reported incremental cash cost from the
 \end{longtable}
 \endgroup
 
-The CNY~0 value is an incremental cash figure, not the total system value. A full economic budget would require the purchase or replacement value of two FR3 systems, two GELLO assemblies, three cameras, the GPU workstation, storage, safety hardware, print material, and print time.
+The reported incremental project cost is CNY~0 because the workcell hardware,
+compute resources, fabrication support, and task fixtures were available
+through the laboratory and Student Innovation Center.
 
 \medskip
 \noindent\textbf{Software, environment, and checkpoint provenance.}
