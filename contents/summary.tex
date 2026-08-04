@@ -14,7 +14,7 @@ The ring results show that the system can perform a multi-stage reposition--gras
 
 The plug-insertion task is the least successful and the clearest remaining engineering bottleneck. Two of its twelve failures occurred because the left gripper did not acquire or retain the plug, while ten failures (83.3\% of socket failures) occurred after grasping because the two pins were not aligned accurately enough with the two socket holes. The system can complete the bimanual sequence of repositioning the socket box and acquiring the plug, but it needs greater local precision for reliable insertion. Likely contributors include residual socket-box pose variation, plug-pose variation within the compliant left gripper, and limited visual information at the contact point.
 
-The first priority for further development is to improve plug alignment and insertion through a more constrained fixture or lead-in geometry, a clearer close-range view, shorter action execution between observations, and force- or torque-informed contact handling. The ring task would benefit from targeted demonstrations and pre-grasp alignment around difficult handle poses. A subsequent evaluation should record initial object coordinates, test instruction variations, and evaluate failure detection and recovery.
+The first priority for further development is to improve plug alignment and insertion through a more constrained fixture or lead-in geometry, a clearer close-range view, shorter action execution between observations, and force- or torque-informed contact handling. The ring task would benefit from targeted demonstrations and pre-grasp alignment around difficult handle poses. A subsequent evaluation should record initial object coordinates, test instruction variations, and extend the validated ES5--ES6 procedures to stage-level autonomous failure handling.
 
 
 \section{Conclusions}
@@ -35,11 +35,11 @@ The first priority is the plug-insertion task. Its observed success rate was 52\
 
 The insertion stage would benefit from a more constrained mechanical and sensing design. Recommended changes include adding a passive lead-in chamfer or alignment fixture, improving plug-grasp repeatability, reducing socket-box motion during insertion, and recording a close-range view that clearly exposes the plug pins and socket openings. If the available robot interface permits it, force or joint-torque feedback should be used to detect premature contact and to execute a compliant search or guarded insertion motion. The redesigned system should then be evaluated using the same success criterion and at least the same number of trials as the present study so that the result can be compared directly with the 52\% baseline.
 
-\section{Develop autonomous failure detection and recovery}
+\section{Extend failure detection and recovery toward stage-level autonomy}
 
-Future work should extend recovery handling for manipulation errors such as a missed grasp, an object displaced within the reachable workspace, an incomplete insertion, or a ring that remains graspable after a failed placement. Protective stops, unexpected human entry, invalid sensor data, and objects leaving the verified workspace should continue to require operator intervention.
+The present system already includes the failure-detection checks and defined recovery procedure evaluated for ES5 and ES6, which achieved 23/25 (92\%) in their respective test sets. Future work should extend these validated mechanisms from their current bounded test conditions to explicit stage-level monitoring and autonomous recovery during complete task runs. Target errors include a missed grasp, an object displaced within the reachable workspace, an incomplete insertion, or a ring that remains graspable after a failed placement. Protective stops, unexpected human entry, invalid sensor data, and objects leaving the verified workspace should continue to require operator intervention.
 
-A practical recovery architecture can combine deterministic checks with learned visual assessment. After each important task stage, the controller should evaluate whether the expected state has been reached. If not, it should select a bounded recovery routine such as reopening the gripper, retreating to a safe pose, reacquiring the object, or repeating the final alignment. Every recovery attempt should be logged separately from the initial attempt. Future validation should report the failure-detection rate, false-alarm rate, recovery-attempt rate, and recovery success rate, including whether the current engineering target of greater than 70\% recovery success is achieved.
+This extension can retain the existing deterministic checks while adding learned visual assessment at important task stages. If the expected state has not been reached, the controller should autonomously select a bounded routine such as reopening the gripper, retreating to a safe pose, reacquiring the object, or repeating the final alignment. Every recovery attempt should remain logged separately from the initial attempt. Future validation should reproduce the existing ES5--ES6 baselines and additionally report false-alarm rate, stage coverage, autonomous recovery-attempt rate, and end-to-end task success after recovery.
 
 \section{Expand data coverage and model evaluation}
 
@@ -74,7 +74,7 @@ To avoid expanding the project before its present weaknesses are resolved, futur
   \item reproduce the current 75-trial result using the archived checkpoint, configuration, and task definitions;
   \item complete the missing dimensional, calibration, fabrication, cost, and latency records;
   \item improve the plug-insertion mechanics and collect targeted demonstrations until the task independently exceeds the 70\% success target;
-  \item implement stage-level failure detection and bounded recovery, then evaluate recovery against the defined engineering specifications;
+  \item extend the validated ES5--ES6 mechanisms to stage-level detection and autonomous bounded recovery, then compare them with the current 92\% baselines;
   \item expand language and scene variation after the revised system remains stable under the original evaluation protocol.
 \end{enumerate}
 
