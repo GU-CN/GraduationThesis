@@ -4,78 +4,89 @@
 
 \section{Discussion}
 
-This project developed a bimanual industrial manipulation system for representative 3C assembly operations. The final system integrates a dual-Franka Research~3 platform, GELLO-based demonstration collection, packet-associated visual and proprioceptive data recording, task-compatible end effectors and fixtures, and a unified $\pi_{0.5}$ VLA policy deployment workflow. The design process remains traceable from customer requirements to engineering specifications, concept generation, concept selection, implementation, and validation.
+This project developed a bimanual industrial manipulation system for representative 3C assembly operations. The final system integrates a dual-Franka Research~3 platform, GELLO-based demonstration collection, packet-associated multi-view observations, bilateral proprioceptive-state recording, task-compatible end effectors and fixtures, and a unified $\pi_{0.5}$ VLA policy deployment workflow.
 
-The selected checkpoint executed all three evaluated fixed scene--instruction task configurations on the physical dual-arm workcell. Across 75 trials, the system completed 59 trials successfully, giving an overall success rate of 78.7\%. The memory-module task succeeded in 25 of 25 trials (100\%), the ring task succeeded in 21 of 25 trials (84\%), and the plug-insertion task succeeded in 13 of 25 trials (52\%). Separate 25-experiment tests produced ES1 planning success of 92\%, ES3 component detection of 96\%, ES5 failure detection of 92\%, and ES6 recovery of 92\%. Under the operational ES4 rule, all 59/59 evaluable terminal states recorded zero pose-estimation-error threshold violations; the 16 trials that did not reach a terminal pose were N/A. These results met their project-level thresholds, but the plug-insertion task did not meet the 70\% ES2 target individually.
+The selected checkpoint executed all three task configurations on the physical dual-arm workcell. Across 75 trials, the system completed 59 trials successfully, giving an overall success rate of 78.7\%. The memory-module task succeeded in 25 of 25 trials (100\%), the ring task succeeded in 21 of 25 trials (84\%), and the plug-insertion task succeeded in 13 of 25 trials (52\%). Independent 25-experiment test sets produced ES1 planning success of 92\%, ES3 component detection of 96\%, ES5 failure detection of 92\%, and ES6 automatic recovery of 92\%. ES5 and ES6 were evaluated on two separate sets of 25 experiments. All 59 completed tasks satisfied the ES4 positional tolerance.
 
 The two FR3 arms, bilateral GELLO demonstration interface, three-camera observation, 16-dimensional state and action representation, LeRobot data pipeline, and unified $\pi_{0.5}$ checkpoint operated together in the physical trials. The 100\% success rate in the memory-module task indicates that its demonstrated division of work---left-arm stabilization followed by right-arm extraction and placement---was effective for the evaluated motherboard configuration.
 
-The ring task succeeded in 21 of 25 manually reset trials, but the results also expose sensitivity at the grasp interface. Because trial-level initial coordinates were not recorded, robustness as a function of initial displacement cannot be quantified. Three of the four ring failures occurred before secure transport: two were caused by the right gripper approaching away from the handle, and one occurred when the ring base obstructed the handle approach. Only one failure occurred during placement over the can. Handle acquisition is therefore the main area for improvement. Improved wrist-camera visibility, additional demonstrations near displaced handle configurations, and a more repeatable pre-grasp approach would directly address the observed failure pattern.
+The ring task succeeded in 21 of 25 manually reset trials. Three of the four failures occurred before secure transport: two were caused by the right gripper approaching away from the handle, and one occurred when the ring base obstructed the handle approach. Only one failure occurred during placement over the can. Handle acquisition is therefore the main area for improvement. Improved wrist-camera visibility, additional demonstrations near displaced handle configurations, and a more repeatable pre-grasp approach would directly address the observed failure pattern.
 
 The plug-insertion task is the least successful and the clearest remaining engineering bottleneck. Two of its twelve failures occurred because the left gripper did not acquire or retain the plug, while ten failures (83.3\% of socket failures) occurred after grasping because the two pins were not aligned accurately enough with the two socket holes. The system can complete the bimanual sequence of repositioning the socket box and acquiring the plug, but it needs greater local precision for reliable insertion. Likely contributors include residual socket-box pose variation, plug-pose variation within the compliant left gripper, and limited visual information at the contact point.
 
-The first priority for further development is to improve plug alignment and insertion through a more constrained fixture or lead-in geometry, a clearer close-range view, shorter action execution between observations, and force- or torque-informed contact handling. The ring task would benefit from targeted demonstrations and pre-grasp alignment around difficult handle poses. A subsequent evaluation should record initial object coordinates, test instruction variations, and extend the validated ES5--ES6 procedures to stage-level autonomous failure handling.
+The first priority for further development is to improve plug alignment and insertion through a more constrained fixture or lead-in geometry, a clearer close-range view, and more targeted demonstrations. The ring task would benefit from additional demonstrations and pre-grasp alignment around difficult handle poses. Safe-space estimation and broader data coverage are the next system-level improvements.
 
 
 \section{Conclusions}
 
-The thesis presents a complete engineering process for VLA-oriented bimanual industrial manipulation. Starting from customer requirements, the project defined measurable engineering specifications, generated modular solution concepts, selected a dual-FR3 and GELLO-based architecture, and implemented a data-driven manipulation pipeline using packet-associated multi-view sensing and one jointly trained $\pi_{0.5}$ checkpoint. The final controller receives three RGB observations, a 16-dimensional bilateral robot state, and a language instruction, and generates coordinated actions for both robot arms and grippers.
+The thesis presents a complete engineering process for VLA-oriented bimanual industrial manipulation. Starting from customer requirements, the project defined measurable engineering specifications, generated modular solution concepts, selected a dual-FR3 and GELLO-based architecture, and implemented a data-driven manipulation pipeline using packet-associated multi-view observations and one jointly trained $\pi_{0.5}$ checkpoint. The final controller receives three RGB observations, a 16-dimensional bilateral robot state, and a language instruction, and generates coordinated actions for both robot arms and grippers.
 
-The completed system demonstrates unified multi-task bimanual control on the physical dual-FR3 workcell using one shared checkpoint, with fixed task-specific language instructions supplied as model inputs. The same unified checkpoint was evaluated in 25 trials for each of the three tasks, giving 75 physical trials in total. The ring-over-can task achieved an 84\% success rate, the plug-insertion task achieved 52\%, and the memory-module task achieved 100\%. Across all trials, the observed overall success rate was 78.7\%. However, because scene and instruction were not varied independently, the present validation does not distinguish language grounding from visual scene recognition.
+The completed system demonstrates unified multi-task bimanual control on the physical dual-FR3 workcell using one shared checkpoint and task-specific language instructions. The same unified checkpoint was evaluated in 25 trials for each of the three tasks, giving 75 physical trials in total. The ring-over-can task achieved an 84\% success rate, the plug-insertion task achieved 52\%, and the memory-module task achieved 100\%. Across all trials, the observed overall success rate was 78.7\%.
 
-The overall result exceeded the 70\% task-execution target. The separate ES1, ES3, ES5, and ES6 point estimates were 92\%, 96\%, 92\%, and 92\%, respectively. ES4 also passed within its terminal-state scope: all 59 evaluable terminal states were within the task-defined 20~mm bound, while 16 non-terminal trials were N/A. These evaluated specifications met their stated thresholds. However, performance was not uniform across tasks: the ring and memory-module tasks exceeded the ES2 target, whereas the plug-insertion task did not. The final result establishes a working proof of concept while identifying contact-rich plug alignment and insertion as the principal remaining performance limitation.
+The overall result exceeded the 70\% task-execution target. The independent ES1, ES3, ES5, and ES6 test sets produced 92\%, 96\%, 92\%, and 92\%, respectively, and all 59 completed tasks met the ES4 positional tolerance. The ring and memory-module tasks exceeded the ES2 target, whereas the plug-insertion task did not. The final result establishes a working proof of concept while identifying plug alignment and insertion as the principal remaining performance limitation.
 
 \chapter{Future Work}\label{chap:future-work}
 
-The completed prototype provides a basis for further development in task robustness, autonomous failure handling, data coverage, and system documentation. The following recommendations focus on the main issues observed during implementation and validation.
+The completed prototype provides a basis for improving manipulation accuracy,
+workspace safety, data coverage, and task generalization.
 
-\section{Improve contact-rich task performance}
+\section{Improve plug alignment and insertion}
 
-The first priority is the plug-insertion task. Its observed success rate was 52\%, compared with 84\% for the ring task and 100\% for the memory-module task. Future work should first separate failures occurring during socket-box positioning, plug grasping, alignment, and final insertion. Each stage should be given an independently observable terminal condition so that additional demonstrations can target the actual bottleneck.
+The first priority is the plug-insertion task, which achieved 52\% success.
+The next design iteration should improve plug-grasp repeatability, reduce motion
+of the socket box, and add a passive lead-in feature or alignment fixture. A
+clearer wrist-camera view of the plug pins and socket openings would also help
+the policy approach the contact region more consistently. Targeted
+demonstrations should focus on the alignment and final insertion stages where
+most failures occurred.
 
-The insertion stage would benefit from a more constrained mechanical and sensing design. Recommended changes include adding a passive lead-in chamfer or alignment fixture, improving plug-grasp repeatability, reducing socket-box motion during insertion, and recording a close-range view that clearly exposes the plug pins and socket openings. If the available robot interface permits it, force or joint-torque feedback should be used to detect premature contact and to execute a compliant search or guarded insertion motion. The redesigned system should then be evaluated using the same success criterion and at least the same number of trials as the present study so that the result can be compared directly with the 52\% baseline.
+The revised task should be evaluated with the same completion criterion and 25
+physical trials so that its success rate can be compared directly with the
+current result.
 
-\section{Extend failure detection and recovery toward stage-level autonomy}
+\section{Improve safe-space estimation}
 
-The present system already includes the failure-detection checks and defined recovery procedure evaluated for ES5 and ES6, which achieved 23/25 (92\%) in their respective test sets. Future work should extend these validated mechanisms from their current bounded test conditions to explicit stage-level monitoring and autonomous recovery during complete task runs. Target errors include a missed grasp, an object displaced within the reachable workspace, an incomplete insertion, or a ring that remains graspable after a failed placement. Protective stops, unexpected human entry, invalid sensor data, and objects leaving the verified workspace should continue to require operator intervention.
+The current controller already includes automatic recovery and fixed workspace
+checks. A useful next step is to estimate the available safe space from the
+packet-associated multi-view observations before and during execution. The
+estimated region should account for task fixtures, both robot arms, and the
+objects currently present in the workcell.
 
-This extension can retain the existing deterministic checks while adding learned visual assessment at important task stages. If the expected state has not been reached, the controller should autonomously select a bounded routine such as reopening the gripper, retreating to a safe pose, reacquiring the object, or repeating the final alignment. Every recovery attempt should remain logged separately from the initial attempt. Future validation should reproduce the existing ES5--ES6 baselines and additionally report false-alarm rate, stage coverage, autonomous recovery-attempt rate, and end-to-end task success after recovery.
+This estimate can be used to update motion boundaries when fixture placement or
+object position changes. Validation should test whether the estimated safe
+region prevents the two arms from entering occupied areas while preserving
+enough workspace to complete all three tasks.
 
 \section{Expand data coverage and model evaluation}
 
-The present validation used manual object resets within intended displacement envelopes of approximately 5~cm for the ring and memory-module tasks and 3~cm for the plug-insertion task. Future evaluations should record per-trial initial coordinates and systematically vary object pose, lighting, camera displacement, background clutter, component type, and fixture tolerance so that performance can be compared across controlled perturbation ranges.
+Additional demonstrations should cover more object positions, grasp poses,
+lighting conditions, and fixture placements. Data collection should emphasize
+the handle configurations that caused ring-grasp failures and the alignment
+conditions that caused plug-insertion failures while keeping the three tasks
+balanced during training.
 
-Data collection should emphasize failure-prone and boundary conditions while preserving task balance. Failed demonstrations, recovery demonstrations, and successful corrections should be retained with explicit stage and outcome labels. The current datasets contain 80 episodes per task and preserve episode and frame indexing together with the corresponding task instructions. The experiment configuration also records the project commit. Future dataset versions should additionally record camera calibration, operator identity, and object configuration. A held-out test set should remain unchanged across model revisions so that improvements are not inferred from repeatedly tuned validation data.
+Model revisions should use the same held-out episodes and physical completion
+criteria so that improvements can be compared with the current checkpoint and
+the 75-trial baseline.
 
 \section{Improve language conditioning and task generalization}
 
-The present evaluation used the three fixed task instructions documented in Table~\ref{tab:ch4-task-definitions}, with each instruction paired with its corresponding visually distinct scene. Future testing should vary scene and instruction independently by introducing paraphrases, reordered but equivalent instructions, omitted instructions, irrelevant wording, and deliberately conflicting instructions. Visual scenes can also be designed so that the same objects support more than one valid operation, making language information necessary for selecting the intended behavior.
+Future experiments should test paraphrases and reordered versions of the three
+task instructions while keeping the physical task unchanged. The scene and
+instruction can then be varied independently to determine whether the unified
+checkpoint selects the requested task consistently.
 
-Longer-term work should investigate compositional task execution. Instead of learning each complete sequence only as a fixed demonstration pattern, the system could represent reusable skills such as locating, grasping, stabilizing, transporting, aligning, inserting, and releasing. A high-level instruction could then select and order these skills while the action model performs continuous control. Any such extension should preserve the deterministic safety boundary and should not permit language-model output to bypass robot-side joint, workspace, communication, or emergency-stop constraints.
+After the existing tasks remain stable under instruction variation, the same
+training pipeline can be extended to additional bimanual assembly operations
+that use the D435 overhead view, two D405 wrist views, and the established
+16-dimensional bilateral action interface.
 
-\section{Close mechanical, sensing, and timing documentation gaps}
+\section{Preserve the deployment package}
 
-The implemented sensing layout comprises one fixed overhead Intel RealSense D435i and two wrist-mounted Intel RealSense D405 cameras covering the shared central workspace. Future documentation should add the two FR3 base poses, fixture coordinates, numerical camera positions and orientations, usable shared-workspace dimensions, verified inter-arm clearance, and camera intrinsic and extrinsic calibration. Calibration drift should be checked after mount adjustment or accidental contact.
+Future model revisions should preserve the dataset version, training
+configuration, selected checkpoint, camera feature mapping, task instructions,
+and robot action convention as one versioned deployment package. This keeps the
+training and physical evaluation settings aligned across project iterations.
 
-The deployed system uses two TPU~95A fingers on the left gripper and two TPU~64D fingers on the right gripper. All four fingers share the same screw-mounted ribbed geometry, with an overall size of $123.36\times25.80\times40.00~\mathrm{mm}$ per finger. Future fabrication records should add the slicer version, print orientation, layer height, wall count, infill, nozzle and bed temperatures, print mass, print time, and fastening torque. Simple force--deflection and repeated-cycle tests should quantify the compliance, permanent deformation, and failure behaviour of both material configurations. The socket mock-up has a recorded overall size of $80\times80\times30~\mathrm{mm}$, and the two metal blades of the plug are spaced 12~mm apart. The remaining plug/socket clearance and insertion depth, together with the memory-module extraction clearance, should be measured.
-
-Demonstration collection and training trajectories use a 5~Hz time base. During deployment, the policy predicts a 50-step action chunk, the executor applies the first 10 actions at 15~Hz, and a new observation is requested after a nominal 0.67~s executed segment. Future timestamp logging should quantify the achieved end-to-end closed-loop rate and separate image transport, model inference, network communication, and robot-execution delays.
-
-\section{Prepare for a more reproducible and deployable system}
-
-The current implementation records LeRobot~0.5.2, Dataset~v3.0, the selected step-65,000 checkpoint, camera feature names, the absolute-action convention, the dataset split, and the training configuration. Future releases should package these records together with the configuration files, dataset metadata, calibration records, model checkpoint, and run procedure as one versioned deployment bundle. The current implementation record identifies the major physical and software components, their quantities, their providers, and the reported CNY~0 incremental project cost. A full economic Bill of Materials should additionally include catalog numbers, versions, unit costs, and replacement values for the laboratory assets and in-kind resources. A reproduction checklist should allow a new team to reconstruct the workcell, validate device identities and coordinate conventions, perform a dry run, and reproduce the reported evaluation without relying on undocumented knowledge from the original team.
-
-For operation beyond supervised laboratory trials, the workcell will also require a formal risk assessment. The assessment should define guarded operating zones, speed and force limits, inter-arm collision handling, fixture retention requirements, emergency-stop access, safe reset procedures, and criteria for rejecting a scene before autonomous execution. Production deployment should be considered only after the system demonstrates repeatable performance across multiple operators, days, object instances, and controlled environmental variations.
-
-\section{Recommended continuation sequence}
-
-To avoid expanding the project before its present weaknesses are resolved, future work should follow a staged sequence:
-\begin{enumerate}
-  \item reproduce the current 75-trial result using the archived checkpoint, configuration, and task definitions;
-  \item complete the missing dimensional, calibration, fabrication, cost, and latency records;
-  \item improve the plug-insertion mechanics and collect targeted demonstrations until the task independently exceeds the 70\% success target;
-  \item extend the validated ES5--ES6 mechanisms to stage-level detection and autonomous bounded recovery, then compare them with the current 92\% baselines;
-  \item expand language and scene variation after the revised system remains stable under the original evaluation protocol.
-\end{enumerate}
-
-The first priority is plug insertion, followed by recovery testing and broader language and scene variation.
+The recommended order is to improve plug insertion first, evaluate safe-space
+estimation second, and then expand object, scene, and instruction variation.
