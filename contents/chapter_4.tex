@@ -168,7 +168,7 @@ Each arm is equipped with a custom gripper developed during DR3. Both grippers s
 \[
 123.36 \times 25.80 \times 40.00~\mathrm{mm}.
 \]
-The fingers of the right gripper are printed in the harder TPU~64D material. Their relatively low deformation provides a more stable grasp and is therefore better suited to small objects. In contrast, the fingers of the left gripper are printed in the softer TPU~95A material. Their greater deformation allows the fingers to conform more closely to large objects and produce a larger contact area. The tapered profile and repeated ribs provide controlled passive compliance, while the reinforced mounting end maintains a comparatively stiff screw interface. This compliance increases tolerance to geometric variation.
+The fingers of the right gripper are printed in the harder TPU~64D material. This material choice is intended to limit deformation and improve grasp repeatability for smaller objects. In contrast, the fingers of the left gripper are printed in the softer TPU~95A material. This material choice is intended to permit greater conformation around larger objects and a broader contact region. The tapered profile and repeated ribs are designed to provide passive compliance, while the reinforced mounting end is designed to retain a comparatively stiff screw interface. These statements describe the intended mechanical roles of the two material configurations rather than measured force--deflection performance.
 
 
 \medskip
@@ -200,7 +200,7 @@ At deployment, the operator selects the natural-language instruction that matche
 
 \subsection{Mechanical and kinematic design}
 
-The implemented system combines serial-manipulator kinematics, shared-workspace bimanual coordination, compliant contact, multi-view machine perception, imitation learning, packet-level data synchronization, and receding-horizon control. The learned policy produces high-level position targets. It does not replace the FR3 low-level servo controller, joint-limit enforcement, protective-stop behavior, or the external emergency-stop procedure.
+The implemented system combines serial-manipulator kinematics, shared-workspace bimanual coordination, compliant contact, multi-view machine perception, imitation learning, packet-level data association, and receding-horizon control. The learned policy produces high-level position targets. It does not replace the FR3 low-level servo controller, joint-limit enforcement, protective-stop behavior, or the external emergency-stop procedure.
 
 For one seven-degree-of-freedom arm with joint vector
 \[
@@ -235,7 +235,7 @@ The system operates in a structured indoor workcell. Lighting, camera mounts, ro
 
 The current model uses RGB images and bilateral proprioception. Although the selected RealSense devices can provide depth, and the D435i includes inertial sensing, depth and inertial measurements are not included in the implemented $\pi_{0.5}$ feature contract. The chapter therefore uses manufacturer depth ranges and fields of view to justify camera placement, but it does not claim that the policy performs explicit metric depth reconstruction or exposes a six-degree-of-freedom pose output. This does not change the project label \emph{pose estimation error} for ES4: ES4 is evaluated at the terminal outcome level through the task-specific geometric threshold defined in Chapter~\ref{chap:validation}, rather than through a continuous pose value produced by the policy.
 
-The perception system uses three synchronized cameras: one overhead D435i and two wrist-mounted D405 units. Here, synchronized means that the three images are associated within the same software packet assembled by the upstream ROS~2 bridge. The recorder does not independently apply hardware triggering, exposure-level synchronization, device-time interpolation, or ROS approximate-time alignment.
+The perception system uses three packet-associated camera streams: one overhead D435i stream and two wrist-mounted D405 streams. Packet-associated means that the three images are grouped within the same software packet assembled by the upstream ROS~2 bridge. The recorder does not independently apply hardware triggering, exposure-level synchronization, device-time interpolation, or ROS approximate-time alignment.
 
 The design also assumes that deterministic safeguards remain outside the policy. The learned action is accepted only after dimensional, finite-value, joint, gripper, workspace, freshness, and communication checks. The socket task uses an electrically unpowered fixture. The system is a supervised research workcell and is not represented as a certified production cell.
 
@@ -308,8 +308,6 @@ The two arms operate in a shared central region, so task role allocation is sele
 
 These assignments separate the large preparation motion from the subsequent precision motion. They also preserve the view of the precision-side wrist camera: the wrist that performs the ring placement, plug insertion, or RAM extraction approaches the relevant contact region directly. Role allocation is encoded by the demonstrations and the fixed action indexing.
 
-%The workcell dimensions and exact base-to-fixture transforms were not supplied as final measured values. Consequently, this report does not invent a dimensioned collision-free volume. The implemented engineering rule is that fixtures are placed in an experimentally verified overlap region, nominal trajectories stay away from the manufacturer reach boundary, and the robot-side workspace limits are tighter than the theoretical workspace shown in Figure~\ref{fig:ch4-fr3-workspace}. A production release would require the final base poses, fixture coordinates, swept-volume analysis, and inter-arm collision geometry to be documented numerically.
-
 \medskip
 \noindent\textbf{Contact, clearance, and insertion tolerance analysis.}
 
@@ -360,9 +358,9 @@ The principal geometric ratios are
 \frac{L}{H}=\frac{123.36}{40.00}\approx3.08.
 \label{eq:ch4-finger-ratios}
 \end{equation}
-These ratios describe an elongated finger rather than a short rigid jaw. The repeated ribs reduce local bending stiffness along the contact region, the tapered outline improves access, and the thicker mounting end distributes screw load.
+These ratios describe an elongated finger rather than a short rigid jaw. The repeated ribs are intended to reduce local bending stiffness along the contact region, the tapered outline is intended to improve access, and the thicker mounting end is intended to distribute screw load.
 
-The same compliance has a trade-off. It accommodates object-shape and pose variation and can reduce concentrated contact pressure, but deformation can reduce grasp repeatability and make the effective fingertip pose load dependent. The task design therefore uses compliance for tolerance while retaining fixed camera identities, repeatable starts, and arm-side position control. The full orthographic drawing and fabrication-reference dimensions are provided in Appendix~\ref{chap:hardware-records}, Figure~\ref{fig:app-gripper-three-view}.
+The same compliance involves a design trade-off. It is intended to accommodate object-shape and pose variation and may reduce concentrated contact pressure, while deformation may reduce grasp repeatability and make the effective fingertip pose load dependent. The task design therefore combines the intended compliance with fixed camera identities, repeatable starts, and arm-side position control. The full orthographic drawing and fabrication-reference dimensions are provided in Appendix~\ref{chap:hardware-records}, Figure~\ref{fig:app-gripper-three-view}.
 
 \subsection{Perception, teleoperation, and data collection}
 
@@ -443,9 +441,9 @@ The follower-side system provides measured joint positions and current gripper w
 Collection and task review are intentionally separate operations. The recorder verifies schema and continuity, while the operator verifies whether the physical task was demonstrated correctly. A numerically complete episode can still be unsuitable for training if the operator intervened incorrectly, the object left the intended workspace, or the terminal state does not match the language instruction.
 
 \medskip
-\noindent\textbf{Packet synchronization and action-label alignment.}
+\noindent\textbf{Packet association and action-label alignment.}
 
-The three synchronized cameras are recorded at 5~Hz, corresponding to approximately 0.2~s per step. The upstream ROS~2 bridge groups the three camera images and bilateral robot state into one software-synchronized packet, and the recorder pairs adjacent assembled packets. For the saved sample at index \(t\), the four recorded relationships are written as separate centred expressions:
+The three packet-associated camera streams are recorded at 5~Hz, corresponding to approximately 0.2~s per step. The upstream ROS~2 bridge groups the three camera images and bilateral robot state into one assembled software packet, and the recorder pairs adjacent packets. For the saved sample at index \(t\), the four recorded relationships are written as separate centred expressions:
 \begin{equation}
 \mathbf{o}^{\mathrm{visual}}_t
 =\text{three images from packet }t .
@@ -464,7 +462,7 @@ The three synchronized cameras are recorded at 5~Hz, corresponding to approximat
 \end{equation}
 Images and measured state therefore come from the same current packet. The arm label is shifted forward by one packet so that the current observation is paired with the next absolute joint target. The gripper label follows the existing same-packet convention.
 
-This procedure preserves the three-camera synchronization supplied by the upstream bridge and guarantees consistency of the saved software packet and label rule. In this thesis, synchronized cameras therefore refers to their association in the same assembled ROS~2 packet; it does not assert hardware-triggered simultaneity of the three exposures.
+This procedure preserves the three-camera packet association supplied by the upstream bridge and guarantees consistency of the saved software packet and label rule. The term packet-associated does not assert hardware-triggered simultaneity of the three exposures.
 
 \subsection{Dataset design and task-balanced training}
 
@@ -1172,39 +1170,5 @@ and validation record. These items are treated as one versioned experimental
 package rather than as isolated source files. The recorded environment used
 Python~3.12.13, LeRobot~0.5.2, PyTorch~2.10.0 with CUDA~12.8 support, and
 Transformers~5.3.0.
-
-%\medskip
-%\noindent\textbf{Reproduction checklist for the final configuration.}
-
-%A future release should treat the physical and virtual assets as one versioned
-%prototype package. At minimum, reproduction of the final configuration
-%requires the following checks:
-%\begin{enumerate}
-%  \item archive the complete training and deployment source snapshot under one
-%        versioned release;
-%  \item export a complete environment lock including CUDA-dependent packages;
-%  \item record the upstream base-checkpoint identifier and conversion command;
-%  \item preserve the three evaluated dataset versions, language instructions,
-%        episode indices, and normalization statistics;
-%  \item retain the step-65,000 checkpoint, its model-side assets, multi-task
-%        manifest, and training state;
-%  \item record camera identities, bilateral feature ordering, absolute-action
-%        convention, chunk settings, and robot-side limits;
-%  \item perform a no-motion policy dry run before enabling either FR3 command
-%        path; and
-%  \item reproduce the Chapter~\ref{chap:validation} trial definitions without
-%        using the reported outcomes to alter the checkpoint.
-%\end{enumerate}
-
-%Items such as exact base poses, camera extrinsics, print settings, fixture
-%coordinates, and measured latency remain necessary for a stronger
-%reproduction package. They are listed as gaps rather than filled with inferred
-%values.
-
-%\subsection{Current implementation status and remaining documentation}
-
-%The final implementation now includes dual-arm state and action handling, three RGB inputs, LeRobot Dataset v3.0 data, one jointly trained $\pi_{0.5}$ checkpoint, equal-probability three-task sampling, the defined episode-level validation split, macro flow-matching checkpoint selection, a 5~Hz collection and training time base, and a 15~Hz deployment interface. The deployed artifact is the step-65,000 checkpoint; the later step-100,000 checkpoint is retained as the final training state but is not re-labelled as the validation optimum. The selected DR3 hardware modules and engineering drawings have been retained in this chapter.
-
-%Several quantities remain documentation gaps rather than model-design gaps. They include measured FR3 base poses, camera extrinsics and mounting distances, dimensioned fixture locations, ring and can clearances, and final socket insertion clearance and depth. They also include motherboard and memory-module clearances, measured gripper force--deflection behaviour, TPU print settings, print mass and time, full in-kind asset value, and measured end-to-end latency. These values should be added if the report is expected to make production-level tolerance, structural, timing, or economic claims.
 
 \setlength{\emergencystretch}{0pt}
