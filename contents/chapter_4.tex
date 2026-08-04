@@ -159,7 +159,7 @@ The demonstration interface uses one GELLO leader for each follower arm. GELLO p
 \medskip
 \noindent\textbf{Three-camera visual observation.}
 
-The final observation contains one fixed overhead view and two wrist views. The overhead Intel RealSense D435 observes the shared workspace, fixture positions, and large object motion. The two Intel RealSense D405 cameras move with the left and right wrists and preserve local visual information near grasp, contact, insertion, extraction, and placement regions. This arrangement avoids relying on a single global view that may be occluded by either arm, while avoiding a wrist-only configuration that loses global task context.
+The final observation contains one fixed overhead view and two wrist views. The overhead Intel RealSense D435i observes the shared workspace, fixture positions, and large object motion. The two Intel RealSense D405 cameras move with the left and right wrists and preserve local visual information near grasp, contact, insertion, extraction, and placement regions. This arrangement avoids relying on a single global view that may be occluded by either arm, while avoiding a wrist-only configuration that loses global task context.
 
 \medskip
 \noindent\textbf{Custom compliant grippers.}
@@ -360,7 +360,7 @@ The same compliance involves a design trade-off. It is intended to accommodate o
 
 \subsection{Perception, teleoperation, and data collection}
 
-The overhead camera is an Intel RealSense D435. Its specified ideal depth range is approximately 0.3--3~m and its depth field of view is approximately \(87^\circ\times58^\circ\)~\cite{realsensed435}. This makes it suitable for observing the complete tabletop from a fixed elevated position. The overhead view supplies global information when either wrist view is occluded or too close to show the relationship between the object, fixture, and destination.
+The overhead camera is an Intel RealSense D435i. Its specified ideal depth range is approximately 0.3--3~m and its depth field of view is approximately \(87^\circ\times58^\circ\)~\cite{realsenseD435i}. This makes it suitable for observing the complete tabletop from a fixed elevated position. The overhead view supplies global information when either wrist view is occluded or too close to show the relationship between the object, fixture, and destination.
 
 Each wrist camera is an Intel RealSense D405. Its specified ideal depth range is approximately 7--50~cm, with an approximately \(87^\circ\times58^\circ\) depth field of view~\cite{realsensed405}. This range is better matched to a camera mounted near the end effector. The wrist views preserve local detail during ring descent, plug alignment, and memory-module extraction.
 
@@ -377,13 +377,13 @@ Each wrist camera is an Intel RealSense D405. Its specified ideal depth range is
     \toprule
     \textbf{Camera} & \textbf{Quantity} & \textbf{Nominal ideal range} & \textbf{Depth FOV} \\
     \midrule
-    RealSense D435 & 1 & 0.3--3~m & \(87^\circ\times58^\circ\) \\
+    RealSense D435i & 1 & 0.3--3~m & \(87^\circ\times58^\circ\) \\
     RealSense D405 & 2 & 7--50~cm & \(87^\circ\times58^\circ\) \\
     \bottomrule
   \end{tabularx}
 \end{table}
 
-The D435 provides the fixed overhead view used to monitor the shared
+The D435i provides the fixed overhead view used to monitor the shared
 workspace, fixtures, destinations, and large object displacement. The two D405
 cameras are mounted at the wrists and provide close-range views during
 grasping, contact, insertion, extraction, and placement. The recorder stores
@@ -828,7 +828,7 @@ During motion, the run stops on a missing image, stale state, malformed packet, 
 
 \subsection{Physical workcell and sensing}
 
-The two FR3 arms are mounted upright on opposite sides of a shared tabletop region. Task fixtures are placed inside the verified overlap of the two practical workspaces. The D435 is fixed above the shared region. One D405 is attached to each wrist. Each arm carries one custom gripper. The two GELLO leaders remain outside the follower workcell and are used by the operator during demonstration collection. Figure~\ref{fig:ch4-pi05-architecture} identifies the three deployed camera views and the 16-dimensional bilateral state supplied to the policy.
+The two FR3 arms are mounted upright on opposite sides of a shared tabletop region. Task fixtures are placed inside the verified overlap of the two practical workspaces. The D435i is fixed above the shared region. One D405 is attached to each wrist. Each arm carries one custom gripper. The two GELLO leaders remain outside the follower workcell and are used by the operator during demonstration collection. Figure~\ref{fig:ch4-pi05-architecture} identifies the three deployed camera views and the 16-dimensional bilateral state supplied to the policy.
 
 \medskip
 \noindent\textbf{Dual-arm robotic platform.}
@@ -852,11 +852,11 @@ The task fixtures prevent uncontrolled object drift while retaining the manipula
 \medskip
 \noindent\textbf{Vision and sensing system.}
 
-The D435 mount is fixed relative to the workcell and is positioned to keep all source and destination regions in view. The two D405 mounts move with the wrists and are oriented so that the gripper contact region appears in the close-range image during approach. Cables are routed to avoid entering the gripper opening or restricting wrist motion.
+The D435i mount is fixed relative to the workcell and is positioned to keep all source and destination regions in view. The two D405 mounts move with the wrists and are oriented so that the gripper contact region appears in the close-range image during approach. Cables are routed to avoid entering the gripper opening or restricting wrist motion.
 
 The logical camera mapping is fixed:
 \begin{align*}
-\texttt{overhead}&\equiv\text{D435},\\
+\texttt{overhead}&\equiv\text{D435i},\\
 \texttt{left\_wrist}&\equiv\text{left D405},&
 \texttt{right\_wrist}&\equiv\text{right D405}.
 \end{align*}
@@ -919,7 +919,7 @@ The left and right arm targets are separated only after policy output validation
   Left measured gripper & Left gripper & ROS~2 bridge / recorder / executor & Current opening width in metres at state index~7. \\
   Right measured joints & Right FR3 controller & ROS~2 bridge / recorder / executor & Seven current joint positions in state indices 8--14. \\
   Right measured gripper & Right gripper & ROS~2 bridge / recorder / executor & Current opening width in metres at state index~15. \\
-  Overhead RGB & RealSense D435 & Bridge / recorder / policy & RGB \(424\times240\) at 5~Hz; stored as \(3\times240\times424\), then resized and padded to \(3\times224\times224\). \\
+  Overhead RGB & RealSense D435i & Bridge / recorder / policy & RGB \(424\times240\) at 5~Hz; stored as \(3\times240\times424\), then resized and padded to \(3\times224\times224\). \\
   Left-wrist RGB & Left RealSense D405 & Bridge / recorder / policy & Same tensor contract under the fixed left-wrist feature name. \\
   Right-wrist RGB & Right RealSense D405 & Bridge / recorder / policy & Same tensor contract under the fixed right-wrist feature name. \\
   Assembled packet & ROS~2 bridge & LeRobot recorder & Same-packet images and measured state; adjacent-packet arm action label. \\
@@ -1132,7 +1132,7 @@ Table~\ref{tab:ch4-budget} separates the reported incremental cash cost from the
   1 & Two FR3 arms, controllers, and safety equipment (2 sets) &
   Laboratory & CNY~0 incremental &
   Existing in-kind assets \\
-  2 & D435, two D405 cameras, and mounts (3 cameras) &
+  2 & D435i, two D405 cameras, and mounts (3 cameras) &
   Laboratory & CNY~0 incremental &
   Existing in-kind assets \\
   3 & RTX A6000 training workstation and storage (1 set) &
