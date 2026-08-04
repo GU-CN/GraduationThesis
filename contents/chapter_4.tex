@@ -786,7 +786,7 @@ For each task, validation first computes the mean normalized flow-matching loss 
 \end{equation}
 The best checkpoint is the validation point with the lowest \(\mathcal L_{\mathrm{macro}}\).
 
-This metric is intentionally not weighted by the number of validation frames. It gives each task equal influence, just as the training sampler gives each task equal selection probability. The loss supports checkpoint comparison, but it is not a physical success rate, insertion-depth measurement, contact-force measurement, or calibrated pose error. Real-robot performance is evaluated separately in Chapter~5.
+This metric is intentionally not weighted by the number of validation frames. It gives each task equal influence, just as the training sampler gives each task equal selection probability. The loss supports checkpoint comparison. Real-robot performance is evaluated separately in Chapter~5.
 
 \medskip
 \noindent\textbf{Action chunking and temporal interface.}
@@ -975,8 +975,6 @@ measured ring--can radial clearance is 18.5~mm, retained plug insertion requires
 both 12~mm-spaced blades to engage their corresponding holes, and RAM placement is accepted only
 inside the designated 20~mm tray region. Consequently, a terminal state cannot
 be accepted when its task-specific positional deviation is 20~mm or greater.
-This rule produces a binary threshold result; it does not produce a continuous
-millimetre-valued error measurement.
 
 \medskip
 \noindent\textbf{Pre-run checks.}
