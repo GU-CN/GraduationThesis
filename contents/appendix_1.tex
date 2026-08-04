@@ -47,7 +47,7 @@ The standard Franka parallel gripper provides a direct robot interface and repea
 
 ACT was the deployable DR3 baseline because it was integrated with the existing LeRobot demonstration workflow and could predict temporally structured actions from images and robot state~\cite{act}. Diffusion Policy remains a credible visuomotor baseline for contact-rich manipulation~\cite{diffusionpolicy}. Neither model natively provides the same language-conditioned task interface required by the final three-task system.
 
-The final implementation therefore uses $\pi_{0.5}$ through LeRobot~\cite{pi05,lerobotpi05}. Compared with the ACT baseline, the selected VLA policy accepts a natural-language task description in addition to visual and proprioceptive observations. This supports a common interface for the three demonstrated tasks and aligns the deployed controller with the original VLA objective. The selection is an implementation decision; superiority over ACT or Diffusion Policy should only be claimed if controlled comparative trials are reported.
+The final implementation therefore uses $\pi_{0.5}$ through LeRobot~\cite{pi05,lerobotpi05}. Compared with the ACT baseline, the selected VLA policy accepts a natural-language task description in addition to visual and proprioceptive observations. This supports a common interface for the three demonstrated tasks and aligns the deployed controller with the original VLA objective.
 
 \section*{Generated task concepts}
 
