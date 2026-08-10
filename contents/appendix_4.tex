@@ -1,0 +1,109 @@
+% !TEX root = ../main.tex
+
+\appchapter{Detailed Disclosure of Artificial Intelligence Tool Use}\label{chap:ai-tool-use-disclosure}
+\addcontentsline{toc}{chapter}{Appendix 4.\ Detailed Disclosure of Artificial Intelligence Tool Use}
+
+\section*{Thesis record}
+
+\begingroup
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\textwidth}{p{0.18\textwidth}X}
+  \toprule
+  \textbf{Item} & \textbf{Record} \\
+  \midrule
+  Thesis title & Vision-Language-Action for Bimanual Industrial Manipulations \\
+  Authors & Yang Haoran (521111910083); Wu Lv (522370910167); Wu Yixin (522370910185); Cheng Tianzong (522370910227); Gu Yiming (522370910228) \\
+  Supervisor & Prof. Peisen Huang \\
+  \bottomrule
+\end{tabularx}
+\endgroup
+
+\section*{Application-code mapping}
+
+The application codes below follow the categories in the university's
+\emph{Instructions for the Use of Artificial Intelligence Tools in Graduation
+Design (Thesis)}.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Application codes used in this disclosure}
+  \label{tab:app-ai-codes}
+  \small
+  \begin{tabularx}{\textwidth}{p{0.12\textwidth}X}
+    \toprule
+    \textbf{Code} & \textbf{Application} \\
+    \midrule
+    C2 & Code writing and debugging during research implementation \\
+    D3 & Translation, language editing, and grammar polishing during thesis writing \\
+    E1 & Reference verification and reference-format checking \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\section*{AI tools and human-verification procedures}
+
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{
+  >{\centering\arraybackslash}p{0.045\textwidth}
+  >{\raggedright\arraybackslash}p{0.14\textwidth}
+  >{\raggedright\arraybackslash}p{0.13\textwidth}
+  >{\centering\arraybackslash}p{0.11\textwidth}
+  >{\raggedright\arraybackslash}p{0.48\textwidth}}
+  \caption{Artificial intelligence tools and their declared uses in this thesis}
+  \label{tab:app-ai-tools}\\
+  \toprule
+  \textbf{No.} & \textbf{AI tool} & \textbf{Model/version} & \textbf{Code} & \textbf{Human-verification procedure} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{No.} & \textbf{AI tool} & \textbf{Model/version} & \textbf{Code} & \textbf{Human-verification procedure} \\
+  \midrule
+  \endhead
+  1 & OpenAI Codex & GPT-5.6 Sol & E1 & Each cited item was checked against the original paper, publisher page, official project page, or other primary source. The authors manually verified the authorship, title, year, venue, volume, issue, pages, DOI or URL, access date where applicable, and correspondence between the cited source and the claim in the thesis. The final entries were reviewed against GB/T 7714--2015. \\
+  2 & OpenAI Codex & GPT-5.6 Sol & D3 & The authors compared every adopted translation or language edit with the intended technical meaning. Terminology, numerical values, equations, figure and table references, camera model names, and the logical relationship among claims were checked manually. Only edits that did not change the technical content, experimental evidence, or conclusions were retained. \\
+  3 & OpenAI Codex & GPT-5.6 Sol & C2 & Suggested code and debugging changes were reviewed before integration and were verified through compilation, interface tests, dimensional checks, camera-identity and action-index checks, logs, and executed outputs. Unverified code was not used in the final system. \\
+  4 & Anthropic Claude & Claude Opus 5 & C2 & The tool was used for selected code implementation, debugging suggestions, and code review. The authors assessed whether each suggestion matched the project interfaces and experimental requirements, then verified adopted changes through compilation, software-interface tests, and actual execution. \\
+  \bottomrule
+\end{longtable}
+\endgroup
+
+\section*{Detailed use description}
+
+\noindent\textbf{Reference verification and formatting (E1).}
+GPT-5.6 Sol assisted with checking the completeness and consistency of the
+reference list and with identifying possible GB/T 7714--2015 formatting
+problems. No suggested reference was accepted solely on the basis of an AI
+response. Bibliographic records and the claims supported by them were checked
+against the corresponding source materials by the authors.
+
+\noindent\textbf{Translation and language polishing (D3).}
+GPT-5.6 Sol assisted with English translation, expression, grammar, and
+readability. The authors retained control of the technical meaning and checked
+domain-specific terms concerning bimanual manipulation, vision-language-action
+models, imitation learning, ROS~2, and LeRobot. Hardware names, including the
+Intel RealSense D435i and D405, as well as equations, parameters, results, and
+conclusions, were checked against the project records before the edits were
+accepted.
+
+\noindent\textbf{Code writing and debugging (C2).}
+GPT-5.6 Sol and Claude Opus 5 assisted with selected programming and debugging
+tasks associated with ROS~2 data collection, multi-camera packet handling,
+LeRobot dataset and training interfaces, policy inference, and robot-interface
+integration. The authors selected, revised, integrated, and executed the final
+code. Model suggestions were treated as implementation proposals rather than
+as evidence that a function was correct.
+
+\section*{Academic integrity declaration}
+
+The AI tools described above were used only for auxiliary work. They did not
+independently determine the research design, generate experimental data, select
+the final engineering solution, evaluate task success, or determine the
+conclusions of this thesis. All experimental records, numerical results,
+figures, tables, and conclusions were checked against the executed software and
+the project records. The authors made all final decisions and retain full
+academic responsibility for the originality, accuracy, integrity, and content
+of the thesis.
