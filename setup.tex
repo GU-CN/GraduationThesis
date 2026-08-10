@@ -31,18 +31,22 @@
 \newcommand{\TeamMemberFiveID}{522370910228}
 
 % 其他封面信息
-% Mentor / 导师
-\newcommand{\ThesisMentorZh}{班雨桐}
-\newcommand{\ThesisMentorEn}{Prof.\ Yutong Ban}
-% Instructor / 指导教师
-\newcommand{\ThesisInstructorZh}{黄佩森}
-\newcommand{\ThesisInstructorEn}{Prof.\ Peisen Huang}
+% Supervisor / 导师（封面仅保留学校要求的导师）
+\newcommand{\ThesisMentorZh}{黄佩森}
+\newcommand{\ThesisMentorEn}{Prof.\ Peisen Huang}
 
-\newcommand{\ThesisDepartmentZh}{浦江国际学院}
-\newcommand{\ThesisDepartmentEn}{Global College}
+\newcommand{\ThesisDepartmentZh}{浦江国际学院（原密西根学院）}
+\newcommand{\ThesisDepartmentEn}{Global College (Formerly UM-SJTU Joint Institute)}
+\newcommand{\ThesisDepartmentEnCover}{%
+  \begin{tabular}[t]{@{}l@{}}
+    Global College\\
+    (Formerly UM-SJTU Joint Institute)
+  \end{tabular}%
+}
 
 \newcommand{\ThesisMajorZh}{电子与计算机工程}
 \newcommand{\ThesisMajorEn}{Electrical and Computer Engineering}
+\newcommand{\ThesisResearchFieldsZh}{机器人学习;工业自动化}
 
 \newcommand{\ThesisDegreeZh}{学士}
 
@@ -81,15 +85,15 @@
                         & \TeamMemberFourZh  & \TeamMemberFourID  \\
                         & \TeamMemberFiveZh  & \TeamMemberFiveID  \\
     \CoverLabelZh{导师} & \ThesisMentorZh & \\
-    \CoverLabelZh{指导教师} & \ThesisInstructorZh & \\
     \CoverLabelZh{学院} & \ThesisDepartmentZh & \\
     \CoverLabelZh{专业名称} & \ThesisMajorZh & \\
+    \CoverLabelZh{研究方向} & \ThesisResearchFieldsZh & \\
     \CoverLabelZh{申请学位层次} & \ThesisDegreeZh &
   \end{tabular}%
   \endgroup
 }
 
-% 英文封面标签：固定宽度左对齐，Name / Mentor / Instructor / College 左缘对齐
+% 英文封面标签：固定宽度左对齐，Name / Mentor / College 左缘对齐
 \newcommand{\CoverLabelEn}[1]{\hbox to 10em{\textbf{#1}:\hss}}
 
 % 英文封面：单层表格；续行不输出冒号；内容同一左缘
@@ -105,8 +109,8 @@
                         & \TeamMemberFourEn  & \TeamMemberFourID  \\
                         & \TeamMemberFiveEn  & \TeamMemberFiveID  \\
     \CoverLabelEn{Mentor} & \ThesisMentorEn & \\
-    \CoverLabelEn{Instructor} & \ThesisInstructorEn & \\
-    \CoverLabelEn{College} & \ThesisDepartmentEn &
+    \CoverLabelEn{College} &
+      \multicolumn{2}{l@{}}{\ThesisDepartmentEnCover}
   \end{tabular}%
   \endgroup
 }
@@ -129,20 +133,18 @@
     },
     % 关键词
     zh / keywords = {
-      双臂机器人，视觉-语言-动作模型，工业自动化
+      双臂机器人;视觉-语言-动作模型;工业自动化
     },
     en / keywords = {
-      dual-arm robot, vision-language-action model,
+      dual-arm robot; vision-language-action model;
       industrial automation
     },
     % 作者（元数据用；封面显示由 CoverInfo 宏负责）
     zh / author = {\TeamNamesZhInline},
     en / author = {\TeamNamesEnInline},
-    % 导师（Mentor）与指导教师（Instructor）
+    % 导师
     zh / supervisor = {\ThesisMentorZh},
     en / supervisor = {\ThesisMentorEn},
-    zh / assoc-supervisor = {\ThesisInstructorZh},
-    en / assoc-supervisor = {\ThesisInstructorEn},
     % 五个学号
     id = {\TeamIDsInline},
     % 学位

@@ -369,8 +369,8 @@ C5 Policy & ACT in LeRobot & 4 & 5 & 4 & 5 & \textbf{4.50} \\
   data representation used by the FR3 and LeRobot workflow.
 
   \noindent\textbf{C3: Three-Camera Data Pipeline.}
-  The selected sensing configuration uses one Intel RealSense D435 overhead camera and two Intel RealSense D405 wrist-
-  mounted cameras, together with synchronized robot state, gripper state, and action records. The D435 provides a stable
+  The selected sensing configuration uses one Intel RealSense D435i overhead camera and two Intel RealSense D405 wrist-
+  mounted cameras, together with synchronized robot state, gripper state, and action records. The D435i provides a stable
   global view of the shared workspace, fixtures, and object locations, while the two D405 cameras are intended to
   preserve local visual information near the two end-effectors and contact regions. This complementary arrangement
   reduces visual blind spots and directly supports the component-detection and pose-estimation requirements in ES3--ES4.
@@ -412,7 +412,7 @@ The project follows a closed pipeline that connects demonstration collection, po
   and task-level validation. For each selected assembly task, the workcell is initialized to a documented starting
   condition and demonstrations are collected through the GELLO interface. The collection process records synchronized
   robot state, gripper state, commanded actions, two wrist-camera RGB streams, and one overhead RGB stream. The overhead
-  Intel RealSense D435 provides global workspace context, while the two wrist-mounted Intel RealSense D405 cameras are
+  Intel RealSense D435i provides global workspace context, while the two wrist-mounted Intel RealSense D405 cameras are
   intended to capture local visual information near the manipulation and contact regions. Accepted episodes are screened
   for synchronization, completeness, and task validity before they enter the learning dataset.
 
