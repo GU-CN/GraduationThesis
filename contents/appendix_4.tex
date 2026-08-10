@@ -3,10 +3,20 @@
 % Appendix 4 reproduces the completed four-page Chinese university form
 % without applying the thesis page style on top of the original pages.
 \clearpage
+\newif\ifappendixfourfirstpage
+\appendixfourfirstpagetrue
 \includepdf[
   pages=-,
   fitpaper=true,
-  pagecommand={\thispagestyle{empty}},
-  addtotoc={1,chapter,1,{Appendix 4.\ 毕业设计（论文）中人工智能工具使用说明},chap:ai-tool-use-disclosure}
+  pagecommand={%
+    \thispagestyle{empty}%
+    \ifappendixfourfirstpage
+      \global\appendixfourfirstpagefalse
+      \refstepcounter{chapter}%
+      \phantomsection
+      \addcontentsline{toc}{chapter}{Appendix 4.\ 毕业设计（论文）中人工智能工具使用说明}%
+      \label{chap:ai-tool-use-disclosure}%
+    \fi
+  }
 ]{assets/ai_usage_form_filled.pdf}
 \clearpage
